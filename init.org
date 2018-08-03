@@ -9,6 +9,8 @@
 * Credits
   Inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup.
 
+  Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
+
 * Installing
   I think it'll be better not to clone and use this as is, but rather build your config using mine as a starting point. But if you really want to try it, then follow these steps:
 
