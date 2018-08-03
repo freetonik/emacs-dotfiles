@@ -248,7 +248,9 @@
   While writing this configuration file in Org mode, I have to write code blocks all the time. Org has templates, so doing =<s TAB= creates a source code block. Here I create a custom template for emacs-lisp specifically. So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
 
   #+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
+  (eval-after-load 'org
+    '(progn
+      (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))))
   #+END_SRC
 
 * Problems
