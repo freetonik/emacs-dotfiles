@@ -9,3 +9,6 @@ elpa
 ido.last
 init.elc
 url
+/init.tex
+/projectile-bookmarks.eld
+/projectile.cache
