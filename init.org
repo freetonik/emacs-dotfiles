@@ -391,7 +391,7 @@
    (global-set-key (kbd "s-3") (kbd "C-x 3"))
    (global-set-key (kbd "s-0") (kbd "C-x 0"))
    (global-set-key (kbd "s-w") (kbd "C-x 0"))
-   (global-set-key (kbd "s-n") (kbd "C-x 2"))
+   (global-set-key (kbd "s-t") (kbd "C-x 3"))
    #+END_SRC
 
    Smarter open-line by [[http://emacsredux.com/blog/2013/03/26/smarter-open-line/][bbatsov]]. Once again, I'm taking advantage of CMD and using it to quickly insert new lines above or below the current line, with correct indentation and stuff.
