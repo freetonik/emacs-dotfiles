@@ -117,10 +117,14 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 
 Install Spacemacs themes.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package spacemacs-theme
   :defer t
   :init (load-theme 'spacemacs-light t))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(load-theme 'tsdh-light)
 #+END_SRC
 
 I'm trying out Inconsolata as my code font. Also, remove the cruft and make the initial size bigger.
@@ -148,10 +152,14 @@ Wrap lines always.
 (global-visual-line-mode 1)
 #+END_SRC
 
-And show line numbers.
+And show line numbers. The built-in linum mode has serious performance drawbacks, so let's use an alternative.
 
 #+BEGIN_SRC emacs-lisp
-(global-linum-mode 1)
+(require 'nlinum)
+(use-package nlinum
+  :ensure t
+  :config
+    (global-nlinum-mode 1))
 #+END_SRC
 
 Show full path in the title bar.
@@ -165,8 +173,14 @@ Never use tabs, use spaces instead.
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
 (setq tab-width 2)
-#+END_SRC
 
+(setq js-indent-level 2)
+(setq css-indent-offset 2)
+(setq-default c-basic-offset 2)
+(setq c-basic-offset 2)
+(setq-default tab-width 2)
+(setq-default c-basic-indent 2)
+#+END_SRC
 ** Sane defaults
 
 I don't care about auto save and backup files.
@@ -180,6 +194,12 @@ y and n are enough.
 
 #+BEGIN_SRC emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+Enable =a= to move into a folder in Dired. This is better than default =Enter=, because =a= doesn't create additional buffers (actually, it kills the buffer and creates a new one).
+
+#+BEGIN_SRC emacs-lisp
+(put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 
 Don't show the startup message or screen, show keystrokes right away, don't show the message in the scratch buffer, org-mode by default, sentences end with a single space, wrap lines, disable the scroll bar, answer y or n when quitting Emacs, hide the scroll bar, unset Cmd-p (I never ever want to print), and delete text when typing over selection.
@@ -252,11 +272,10 @@ Pass system shell environment to Emacs. This is important primarily for shell in
 
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
-  :ensure t
-  :commands exec-path-from-shell-initialize
-  :config
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize)))
+  :ensure t)
+
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 #+END_SRC
 
 Expand-region is great, it allows to gradually expand selection inside words, sentences, etc. =C-'= is bound to Org's =cycle through agenda files=, which I don't really use, so I unbind it here before assigning global shortcut for expansion.
@@ -363,6 +382,58 @@ Spellchecking requires an external command to be available. Install =aspell= on 
 (setq ispell-program-name "aspell")
 #+END_SRC
 
+=Move-text= allows moving lines around with meta-up/down.
+
+#+BEGIN_SRC emacs-lisp
+(use-package move-text
+  :ensure t
+  :config
+  (move-text-default-bindings))
+#+END_SRC
+
+*** Blogging with hugo
+
+Install =ox-hugo= and enable auto export.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ox-hugo
+  :ensure t
+  :after ox)
+
+(use-package ox-hugo-auto-export)
+#+END_SRC
+
+Org Capture template to quickly create posts and generate slugs.
+
+#+BEGIN_SRC emacs-lisp
+;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
+(require 'org)
+(with-eval-after-load 'org-capture
+  (defun org-hugo-new-subtree-post-capture-template ()
+    "Returns `org-capture' template string for new Hugo post.
+See `org-capture-templates' for more information."
+    (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
+           (fname (org-hugo-slug title)))
+      (mapconcat #'identity
+                 `(
+                   ,(concat "* TODO " title)
+                   ":PROPERTIES:"
+                   ,(concat ":EXPORT_FILE_NAME: " fname)
+                   ":END:"
+                   "%?\n")          ;Place the cursor here finally
+                 "\n")))
+
+  (add-to-list 'org-capture-templates
+               '("h"                ;`org-capture' binding + h
+                 "Hugo post"
+                 entry
+                 ;; It is assumed that below file is present in `org-directory'
+                 ;; and that it has a "Blog" heading. It can even be a
+                 ;; symlink pointing to the actual location of all-posts.org!
+                 (file+olp "rakhim.org" "Blog")
+                 (function org-hugo-new-subtree-post-capture-template))))
+#+END_SRC
+
 *** Packages for programming
 
 Here are all the packages needed for programming languages and formats.
@@ -437,6 +508,14 @@ Delete trailing spaces and add new line in the end of a file on save.
 
 * Org
 
+Visually indent sections. This looks better for smaller files.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :config
+  (setq org-startup-indented t))
+#+END_SRC
+
 Store all my org files in =~/org=.
 
 #+BEGIN_SRC emacs-lisp
@@ -453,12 +532,6 @@ Allow shift selection with arrows. This will not interfere with some built-in sh
 
 #+BEGIN_SRC emacs-lisp
 (setq org-support-shift-select t)
-#+END_SRC
-
-Visually indent sections. This looks better for smaller files.
-
-#+BEGIN_SRC emacs-lisp
-(org-indent-mode 1)
 #+END_SRC
 
 While writing this configuration file in Org mode, I have to write code blocks all the time. Org has templates, so doing =<s TAB= creates a source code block. Here I create a custom template for emacs-lisp specifically. So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
@@ -511,4 +584,10 @@ I like to put one empty line between headers. By default, Org-mode doesn't show 
 
 #+BEGIN_SRC emacs-lisp
 (setq org-cycle-separator-lines 1)
+#+END_SRC
+
+Add closed date when todo goes to DONE state.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-log-done 'time)
 #+END_SRC
