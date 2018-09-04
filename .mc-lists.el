@@ -5,6 +5,7 @@
       '(
         helm-M-x
         org-beginning-of-line
+        org-ctrl-c-ctrl-c
         org-end-of-line
         org-return
         org-self-insert-command

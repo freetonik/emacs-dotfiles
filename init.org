@@ -116,7 +116,7 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-frame-font "Inconsolata LGC 15")
+(set-face-attribute 'default nil :font "Inconsolata LGC 15")
 (setq initial-frame-alist '((top . 150) (left . 300) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
@@ -153,15 +153,18 @@ Clean, simple mode line. Thanks [[https://www.johnhaman.org/blog/2018/01/20/a-cl
 
 #+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
-	      (list
-	       mode-line-modified
-	       " "
-	       "%l"
-	       " "
-	       mode-line-buffer-identification
-	       " "
-	       '(vc-mode vc-mode)
-	       ))
+  (list
+    mode-line-modified
+    " "
+    "%l"
+    " ("
+    mode-line-percent-position
+    ")"
+    " "
+    mode-line-buffer-identification
+    " "
+    '(vc-mode vc-mode)
+    ))
 
 (set-face-attribute 'mode-line nil :background "LavenderBlush2")
 (set-face-attribute 'mode-line-inactive nil :background "grey93")
@@ -225,16 +228,6 @@ Disable blinking cursor.
 
 #+BEGIN_SRC emacs-lisp
 (blink-cursor-mode 0)
-#+END_SRC
-
-Nyan mode is essential.
-
-#+BEGIN_SRC emacs-lisp
-(use-package nyan-mode
-  :ensure t
-  :commands nyan-mode
-  :config
-  (nyan-mode))
 #+END_SRC
 
 ** Sane defaults
@@ -573,8 +566,7 @@ It's time for Magit!
 (use-package neotree
   :ensure t
   :config
-  (global-set-key (kbd "s-k") 'neotree-toggle)
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+  (global-set-key (kbd "s-k") 'neotree-toggle))
 #+END_SRC
 
 ** OS integration
@@ -588,6 +580,17 @@ Pass system shell environment to Emacs. This is important primarily for shell in
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
+#+END_SRC
+
+A nice little real terminal in a popup.
+
+#+BEGIN_SRC emacs-lisp
+(use-package shell-pop
+  :ensure t
+  :config
+  (custom-set-variables
+   '(shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
+   '(shell-pop-universal-key "s-=")))
 #+END_SRC
 
 ** Spellchecking
