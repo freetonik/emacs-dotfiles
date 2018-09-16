@@ -29,10 +29,6 @@ mv dot-emacs ~/.emacs.d
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
 
-* Notes
-
-- Often you need to =require= a package before using =use-package= to get rid of the warning =functions might not be defined at runtime=. I do it only for those packages that generate said warnings.
-
 * Configurations
 
 ** Use package
@@ -61,6 +57,15 @@ Install use-package.
   (package-install 'use-package))
 
 (eval-when-compile (require 'use-package))
+
+(setq use-package-always-ensure t)
+#+END_SRC
+
+Delight allows to rename modes in the mode line, while diminish allows to hide them completely.
+
+#+BEGIN_SRC emacs-lisp
+(use-package delight)
+(use-package diminish)
 #+END_SRC
 
 ** Meta
@@ -105,6 +110,13 @@ tangled, and the tangled file is compiled."
 (add-hook 'after-save-hook 'tangle-init)
 #+END_SRC
 
+This helps get rid of =functions might not be defined at runtime= warnings. See https://github.com/jwiegley/use-package/issues/590
+
+#+BEGIN_SRC emacs-lisp
+(eval-when-compile
+  (setq use-package-expand-minimally byte-compile-current-file))
+#+END_SRC
+
 ** Visuals
 
 I've tried many 3rd party themes, but keep coming back to the default light theme.
@@ -117,19 +129,18 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil :font "Inconsolata LGC 15")
-(setq initial-frame-alist '((top . 150) (left . 300) (width . 125) (height . 45)))
+(setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
 
-Show parens with nice bg and fg colors, highlight parens without delay.
+Show parens and other pairs.
 
 #+BEGIN_SRC emacs-lisp
-(require 'paren)
-(setq show-paren-delay 0)
-(show-paren-mode 1)
-(set-face-background 'show-paren-match "PeachPuff2")
-(set-face-foreground 'show-paren-match "maroon")
-(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+(use-package smartparens
+  :config
+  (require 'smartparens-config)
+  (smartparens-global-mode t)
+  (show-smartparens-global-mode t))
 #+END_SRC
 
 Wrap lines always.
@@ -149,33 +160,38 @@ Disable line numbers for now.
     (global-nlinum-mode 1))
 #+END_SRC
 
-Clean, simple mode line. Thanks [[https://www.johnhaman.org/blog/2018/01/20/a-clean-emacs-modeline/][John Haman]].
+Nice and simple mode line.
 
 #+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
-  (list
+  '("%e"
+    ;; mode-line-front-space
+    ;; mode-line-mule-info
+    ;; mode-line-client
     mode-line-modified
+    mode-line-remote
+    ;; mode-line-frame-identification
     " "
-    "%l"
+    "%l:%c"
     " ("
     mode-line-percent-position
-    ")"
-    " "
+    ") "
     mode-line-buffer-identification
-    " "
-    '(vc-mode vc-mode)
-    ))
+    (vc-mode vc-mode)
+    "  "
+    mode-line-modes
+    mode-line-misc-info
+    mode-line-end-spaces))
 
-(set-face-attribute 'mode-line nil :background "LavenderBlush2")
+(set-face-attribute 'mode-line nil :background "SlateGray1")
+;; (set-face-attribute 'mode-line nil :foreground "white")
 (set-face-attribute 'mode-line-inactive nil :background "grey93")
 #+END_SRC
 
 Show vi-like tilde in the fringe on empty lines.
 
 #+BEGIN_SRC emacs-lisp
-(require 'vi-tilde-fringe)
 (use-package vi-tilde-fringe
-  :ensure t
   :config
   (global-vi-tilde-fringe-mode 1))
 #+END_SRC
@@ -200,25 +216,10 @@ Never use tabs, use spaces instead.
 (setq-default c-basic-indent 2)
 #+END_SRC
 
-Beacon is a light that follows your cursor around so you don't lose it!
-
-#+BEGIN_SRC emacs-lisp
-(require 'beacon)
-(use-package beacon
-  :ensure t
-  :config
-  (beacon-mode 1)
-  (setq beacon-size 5)
-  (setq beacon-color "MediumPurple1")
-  )
-#+END_SRC
-
 Which key is great for learning Emacs, it shows a nice table of possible commands.
 
 #+BEGIN_SRC emacs-lisp
-(require 'which-key)
 (use-package which-key
-  :ensure t
   :config
   (which-key-mode)
   (setq which-key-idle-delay 0.5))
@@ -230,6 +231,16 @@ Disable blinking cursor.
 (blink-cursor-mode 0)
 #+END_SRC
 
+Fine-tuning the looks of helm buffers.
+
+#+BEGIN_SRC emacs-lisp
+(custom-set-faces
+ '(helm-M-x-key ((t (:foreground "orange2" :underline t :weight semi-bold))))
+ '(helm-selection ((t (:background "wheat1" :distant-foreground "black"))))
+ '(helm-source-header ((t (:foreground "black" :weight semi-bold))))
+ '(helm-visible-mark ((t (:background "dark blue")))))
+#+END_SRC
+
 ** Sane defaults
 
 I don't care about auto save and backup files.
@@ -239,30 +250,29 @@ I don't care about auto save and backup files.
 (setq make-backup-files nil)
 #+END_SRC
 
-y and n are enough.
+Revert (update) buffers automatically when underlying files are changed externally.
 
 #+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
+(global-auto-revert-mode t)
 #+END_SRC
 
-Enable =a= to move into a folder in Dired. This is better than default =Enter=, because =a= doesn't create additional buffers (actually, it kills the buffer and creates a new one).
-
-#+BEGIN_SRC emacs-lisp
-(put 'dired-find-alternate-file 'disabled nil)
-#+END_SRC
-
-Don't show the startup message or screen, show keystrokes right away, don't show the message in the scratch buffer, org-mode by default, sentences end with a single space, wrap lines, disable the scroll bar, answer y or n when quitting Emacs, hide the scroll bar, unset Cmd-p (I never ever want to print), and delete text when typing over selection.
+Some basic things.
 
 #+BEGIN_SRC emacs-lisp
 (setq
-  inhibit-startup-message t
-  inhibit-startup-screen t
-  echo-keystrokes 0.1
-  initial-scratch-message nil
-  initial-major-mode 'org-mode
-  sentence-end-double-space nil
-  confirm-kill-emacs 'y-or-n-p)
+ inhibit-startup-message t         ; Don't show the startup message
+ inhibit-startup-screen t          ; or screen
+ cursor-in-non-selected-windows t  ; Hide the cursor in inactive windows
 
+ echo-keystrokes 0.1               ; Show keystrokes right away, don't show the message in the scratch buffe
+ initial-scratch-message nil       ; Empty scratch buffer
+ initial-major-mode 'org-mode      ; org mode by default
+ sentence-end-double-space nil     ; Sentences should end in one space, come on!
+ confirm-kill-emacs 'y-or-n-p      ; y and n instead of yes and no when quitting
+ help-window-select t              ; select help window so it's easy to quit it with 'q'
+)
+
+(fset 'yes-or-no-p 'y-or-n-p)      ; y and n instead of yes and no everywhere else
 (visual-line-mode 1)
 (scroll-bar-mode -1)
 (delete-selection-mode 1)
@@ -274,35 +284,33 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 
 #+BEGIN_SRC emacs-lisp
 (use-package simpleclip
-  :ensure t
-  :commands
-  (simpleclip-mode)
   :config
   (simpleclip-mode 1))
 #+END_SRC
 
-+I'm still not sure which way to go with the keys on macOS... The only truly comfortable CTRL position in the left command, but this will breaks muscle memory for some useful, but not-Emacsy things like CMD+c/v/x/z, CMD+s and CMD+a.+
-
-+I'll try this setup for now.+
+Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
 
 #+BEGIN_SRC emacs-lisp
-;; (setq mac-command-modifier 'control)
-;; (setq mac-right-command-modifier 'control)
-;; (setq mac-option-modifier 'meta)
-;; (setq mac-control-modifier 'super)
+(setq mac-right-command-modifier 'super)
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'super)
 #+END_SRC
 
-The section above is no longer relevant: I decided to get back to the default keymap configuration and take advantage of the hyper key which is bound to Cmd by default. Caps Lock is now Control on the OS level (in macOS it's done via Preferences), and right command is also control (with the help of Karabiner Elements). Now I can use Cmd+C/V/X/Z/S, and it's also used for helm and projectile things. See other =s-bla= bindings later in this config.
-
-Right alt (option) can be used to enter symbols like em dashes =—=.
+Right Alt (option) can be used to enter symbols like em dashes =—=.
 
 #+BEGIN_SRC emacs-lisp
 (setq mac-right-option-modifier 'nil)
 #+END_SRC
 
+Esc behaves like =C-g=: it's the "get me out of here" key.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<escape>") (kbd "C-g"))
+#+END_SRC
+
 ** Navigation and editing
 
-Kill line with =s-Backspace=, which is =Cmd+Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard.
+Kill line with =s-Backspace=, which is =Cmd+Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =M+Backspace.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-<backspace>") 'kill-whole-line)
@@ -316,8 +324,40 @@ Use =super= (which is =Cmd=) for movement and selection just like in macOS.
 (global-set-key (kbd "s-<left>") (kbd "M-m"))
 (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
 
-(global-set-key (kbd "s-<up>") (kbd "M-v"))
-(global-set-key (kbd "s-<down>") (kbd "C-v"))
+(global-set-key (kbd "s-<up>") 'beginning-of-buffer)
+(global-set-key (kbd "s-<down>") 'end-of-buffer)
+#+END_SRC
+
+Basic things you should expect from macOS.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-a") 'mark-whole-buffer)       ;; select all
+(global-set-key (kbd "s-s") 'save-buffer)             ;; save
+(global-set-key (kbd "s-S") 'write-file)              ;; save as
+(global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
+
+(global-set-key (kbd "s-z") 'undo)
+#+END_SRC
+
+Go back to previous mark (position) within buffer and go back (forward?).
+
+#+BEGIN_SRC emacs-lisp
+(defun my-pop-local-mark-ring ()
+  (interactive)
+  (set-mark-command t))
+
+(defun unpop-to-mark-command ()
+  "Unpop off mark ring. Does nothing if mark ring is empty."
+  (interactive)
+      (when mark-ring
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
+        (when (null (mark t)) (ding))
+        (setq mark-ring (nbutlast mark-ring))
+        (goto-char (marker-position (car (last mark-ring))))))
+
+(global-set-key (kbd "s-,") 'my-pop-local-mark-ring)
+(global-set-key (kbd "s-.") 'unpop-to-mark-command)
 #+END_SRC
 
 Go to other windows easily with one keystroke =s-something= instead of =C-x something=.
@@ -327,25 +367,24 @@ Go to other windows easily with one keystroke =s-something= instead of =C-x some
 (global-set-key (kbd "s-1") (kbd "C-x 1"))
 (global-set-key (kbd "s-2") (kbd "C-x 2"))
 (global-set-key (kbd "s-3") (kbd "C-x 3"))
-(global-set-key (kbd "s-3") (kbd "C-x 3"))
 (global-set-key (kbd "s-0") (kbd "C-x 0"))
-(global-set-key (kbd "s-w") (kbd "C-x 0"))
-(global-set-key (kbd "s-t") (kbd "C-x 3"))
+
+(global-set-key (kbd "s-w") (kbd "C-x 0")) ;; just like close tab in a web browser
 #+END_SRC
 
-Expand-region it allows to gradually expand selection inside words, sentences, etc. =C-'= is bound to Org's =cycle through agenda files=, which I don't really use, so I unbind it here before assigning global shortcut for expansion.
+Expand-region allows to gradually expand selection inside words, sentences, etc. =C-'= is bound to Org's =cycle through agenda files=, which I don't really use, so I unbind it here before assigning global shortcut for expansion.
 
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
-  :ensure t)
+  :config
+  (global-set-key (kbd "s-'") 'er/expand-region)
+  (global-set-key (kbd "s-S-'") 'er/contract-region))
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
 
 #+BEGIN_SRC emacs-lisp
-(require 'move-text)
 (use-package move-text
-  :ensure t
   :config
   (move-text-default-bindings))
 #+END_SRC
@@ -404,7 +443,6 @@ Provide nice visual feedback for replace.
 
 #+BEGIN_SRC emacs-lisp
 (use-package visual-regexp
-  :ensure t
   :config
   (define-key global-map (kbd "s-r") 'vr/replace))
 #+END_SRC
@@ -420,16 +458,38 @@ Multiple cusors are a must. Make <return> insert a newline; multiple-cursors-mod
 
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
-  :ensure t)
-
-(global-set-key (kbd "s-d") 'mc/mark-next-like-this)
-(define-key mc/keymap (kbd "<return>") nil)
+  :config
+  (global-set-key (kbd "s-d") 'mc/mark-next-like-this)
+  (global-set-key (kbd "M-s-D") 'mc/edit-beginnings-of-lines)
+  (global-set-key (kbd "s-D") 'mc/mark-all-dwim)
+  (define-key mc/keymap (kbd "<return>") nil))
 #+END_SRC
 
 Comment lines.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-/") 'comment-line)
+#+END_SRC
+
+** Dired
+
+Enable =a= to move into a folder in Dired. This is better than default =Enter=, because =a= doesn't create additional buffers (actually, it kills the buffer and creates a new one).
+
+#+BEGIN_SRC emacs-lisp
+(put 'dired-find-alternate-file 'disabled nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package dired
+  :ensure nil
+  :delight dired-mode "Dired"
+  :custom
+  (dired-auto-revert-buffer t)
+  (dired-dwim-target t)
+  (dired-hide-details-hide-symlink-targets nil)
+  (dired-listing-switches "-alh")
+  (dired-ls-F-marks-symlinks nil)
+  (dired-recursive-copies 'always))
 #+END_SRC
 
 ** Windows
@@ -441,32 +501,38 @@ I'm still not happy with the way new windows are spawned. For now, at least, let
 (setq split-width-threshold nil)
 #+END_SRC
 
-Shackle defines the way new windows are spawned and re-used. Here I set compilation, help and messages windows to always appear below all other windows (not splitting the current window).
++Shackle defines the way new windows are spawned and re-used. Here I set compilation, help and messages windows to always appear below all other windows (not splitting the current window).+
 
-#+BEGIN_SRC emacs-lisp
-(require 'shackle)
+For now, I disabled shackle. There are few annoyances with it:
+- for some reason, with Shackle enabled, the order of buffers is reversed when I do =C-x <left>= (=previous-buffer= command);
+- Shackle cannot control some windows, generated by Magit, but with Shackle enabled, commit msg window is not selected by default and I have to switch to it manually.
+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package shackle
-  :ensure t
   :config
   (shackle-mode)
   (setq shackle-rules
-    '((compilation-mode     :noselect t :align below :size 0.25)
+    '((compilation-mode     :select t :align below :size 0.25)
+      ("magit"                :noselect t :align below :size 0.25)
       (messages-buffer-mode :noselect t :align below :size 0.25)
       ("*Backtrace*"        :noselect t :align below :size 0.25)
+      ("*Help*"             :select t   :align below :size 0.25)
       ("*Warnings*"         :noselect t :align below :size 0.25)
       ("*helm M-x*"         :noselect t :align below :size 0.2)
       ("*helm occur*"       :noselect t :align below :size 0.2)
+      ("Helm Swoop*"        :noselect t :align below :size 0.8)
       (neotree-mode                     :align left)
       (help-mode            :select t   :align below :size 0.25))
 
     shackle-default-rule '(:select t)))
+
+(setq helm-swoop-split-window-function 'display-buffer)
 #+END_SRC
 
 Move between windows with Control-Command-Arrow.
 
 #+BEGIN_SRC emacs-lisp
 (use-package windmove
-  :ensure t
   :config
   (global-set-key (kbd "<C-s-left>")  'windmove-left)
   (global-set-key (kbd "<C-s-right>") 'windmove-right)
@@ -489,16 +555,29 @@ Nicer scrolling behaviour.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 #+END_SRC
 
-** Helm
+** Projectile
+
+Install Projectile.
+
+#+BEGIN_SRC emacs-lisp
+(require 'projectile)
+(use-package projectile
+  :config
+  (define-key projectile-mode-map (kbd "C-s-p") 'projectile-command-map)
+  (projectile-mode +1)
+  )
+#+END_SRC
+
+** [Disabled for now] Helm
 
 Helm is one of the three main packages that make Emacs truly great for me (the other two are Org and Projectile (okay, ox-hugo is fantastic too, but 4 sounds less important than 3)).
 
-Install Helm and set some keybindings. Note that I use =helm-occur= to search current buffer.
+Install Helm and set some keybindings. Note that I use =helm-swoop= to search current buffer.
 
-#+BEGIN_SRC emacs-lisp
-(require 'helm)
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package helm-swoop)
+
 (use-package helm
-  :ensure t
   :config
   (require 'helm-config)
   (helm-mode 1)
@@ -508,45 +587,85 @@ Install Helm and set some keybindings. Note that I use =helm-occur= to search cu
   (setq helm-M-x-fuzzy-match t)
   (setq helm-buffers-fuzzy-matching t)
   (setq helm-recentf-fuzzy-match t)
-  (setq helm-buffers-fuzzy-matching t)
   (setq helm-apropos-fuzzy-match t)
+  (setq helm-split-window-inside-p t)
   (global-set-key (kbd "M-y") 'helm-show-kill-ring)
   (global-set-key (kbd "s-b") 'helm-mini)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (global-set-key (kbd "s-f") 'helm-occur))
+  (global-set-key (kbd "s-f") 'helm-swoop))
+
+(setq helm-swoop-pre-input-function
+      (lambda () ""))
+#+END_SRC
+
+** Ivy, Swiper and Counsel
+
+#+BEGIN_SRC emacs-lisp
+(use-package ivy
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+
+  (setq ivy-re-builders-alist
+      '((swiper . ivy--regex-plus)
+        (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper
+
+  (global-set-key (kbd "s-b") 'ivy-switch-buffer))
+
+(use-package swiper
+  :config
+  (global-set-key "\C-s" 'swiper)
+  (global-set-key (kbd "s-f") 'swiper))
+
+(use-package counsel
+  :config
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "s-S-p") 'counsel-M-x)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file))
+
+(use-package smex)
+(use-package flx)
+#+END_SRC
+
+Ivy-rich make Ivy a bit more friendly by adding information to ivy buffers, e.g. description of commands in =M-x=, meta info about buffers in =ivy-switch-buffer=, etc.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ivy-rich
+  :config
+  (ivy-rich-mode 1)
+  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”)
+#+END_SRC
+
+** Counsel integration for Projectile
+
+#+BEGIN_SRC emacs-lisp
+(use-package counsel-projectile
+  :config
+  (counsel-projectile-mode 1)
+  (global-set-key (kbd "s-F") 'counsel-projectile-ag)
+  (global-set-key (kbd "s-p") 'counsel-projectile))
+#+END_SRC
+
+** [Disabled for now] Helm integration for Projectile
+
+Make Helm play nice with Projectile.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package helm-projectile
+  :config
+  (helm-projectile-on))
 #+END_SRC
 
 Ag is great for fast project-wide searching. Note that =ag-helm= is only an interface. The actual Silversearcher must be installed on the OS level. See [[https://github.com/ggreer/the_silver_searcher][https://github.com/ggreer/the_silver_searcher]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package helm-ag
-  :ensure t
   :config
   (global-set-key (kbd "s-F") 'helm-projectile-ag))
-#+END_SRC
 
-** Projectile
-
-Install Projectile.
-
-#+BEGIN_SRC emacs-lisp
-(require 'projectile)
-(use-package projectile
-  :ensure t
-  :config
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  (projectile-mode +1)
-  )
-#+END_SRC
-
-And make Helm play nice with Projectile.
-
-#+BEGIN_SRC emacs-lisp
-(require 'helm-projectile)
-(use-package helm-projectile
-  :ensure t
-  :config
-  (helm-projectile-on))
+(global-set-key (kbd "s-p") 'helm-projectile-find-file)
 #+END_SRC
 
 ** Magit
@@ -557,16 +676,23 @@ It's time for Magit!
 (use-package magit
   :ensure t
   :config
-  (global-set-key (kbd "s-m") 'magit-status))
+  (global-set-key (kbd "s-g") 'magit-status))
 #+END_SRC
 
 ** NeoTree
 
 #+BEGIN_SRC emacs-lisp
 (use-package neotree
-  :ensure t
   :config
-  (global-set-key (kbd "s-k") 'neotree-toggle))
+  (setq neo-window-width 32
+        neo-create-file-auto-open t
+        neo-banner-message nil
+        neo-show-updir-line nil
+        neo-mode-line-type 'neotree
+        neo-smart-open t
+        neo-show-hidden-files t
+        neo-auto-indent-point t)
+   (global-set-key (kbd "s-B") 'neotree-toggle))
 #+END_SRC
 
 ** OS integration
@@ -586,7 +712,6 @@ A nice little real terminal in a popup.
 
 #+BEGIN_SRC emacs-lisp
 (use-package shell-pop
-  :ensure t
   :config
   (custom-set-variables
    '(shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
@@ -595,10 +720,55 @@ A nice little real terminal in a popup.
 
 ** Spellchecking
 
-Spellchecking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=.
+Spellchecking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 
 #+BEGIN_SRC emacs-lisp
 (setq ispell-program-name "aspell")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; (use-package flyspell-correct)
+;; (use-package flyspell-correct-ivy)
+#+END_SRC
+
+Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'text-mode-hook 'flyspell-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+#+END_SRC
+
+Enable right mouse click on macOS to see the list of suggestions.
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "flyspell"
+  '(progn
+     (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
+     (define-key flyspell-mouse-map [mouse-3] #'undefined)))
+#+END_SRC
+
+Spellcheck current word.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-]") 'ispell-word)
+;;(define-key flyspell-mode-map (kbd "s-]") 'flyspell-correct-previous-word-generic)
+#+END_SRC
+
+- TODO alt-shift-backspace kill forward word
+- cmd < > with shift to go buff prev next
+
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+
+
+
+** Thesaurus
+
+#+BEGIN_SRC emacs-lisp
+(use-package powerthesaurus
+  :config
+  (global-set-key (kbd "s-}") 'powerthesaurus-lookup-word-dwim))
 #+END_SRC
 
 ** Auto completion
@@ -608,7 +778,17 @@ Spellchecking requires an external command to be available. Install =aspell= on 
 (use-package company
   :ensure t
   :config
-  (company-mode 1))
+  (setq company-idle-delay 0.1)
+  (setq company-global-modes '(not org-mode))
+  (setq company-minimum-prefix-length 1)
+  (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+
+** Hydra
+
+#+BEGIN_SRC emacs-lisp
+(use-package hydra)
+(use-package ivy-hydra)
 #+END_SRC
 
 ** Packages for programming
@@ -657,8 +837,7 @@ While writing this configuration file in Org mode, I have to write code blocks a
   '(progn
     (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
     (define-key org-mode-map (kbd "C-'") nil)
-    (global-set-key "\C-ca" 'org-agenda)
-    (global-set-key (kbd "s-'") 'er/expand-region)))
+    (global-set-key "\C-ca" 'org-agenda)))
 #+END_SRC
 
 And inside those code blocks indentation should be correct depending on the source language used and have code highlighting.
@@ -701,14 +880,21 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 (add-hook 'after-save-hook 'org-mode-export-links)
 #+END_SRC
 
-
 Quickly open todo and config files with Esc-Esc-letter.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/org/main.org")))
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
 (global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/org/links.org")))
+(global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/org/rakhim.org")))
 #+END_SRC
+
+Org capture.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-.") 'org-capture)
+#+END_SRC
+
 
 I like to put one empty line between headers. By default, Org-mode doesn't show those lines when collapsing.
 
@@ -722,6 +908,7 @@ Add closed date when todo goes to DONE state.
 (setq org-log-done 'time)
 #+END_SRC
 
+
 ** Blogging with hugo
 
 Install =ox-hugo= and enable auto export.
@@ -732,10 +919,12 @@ Install =ox-hugo= and enable auto export.
   :ensure t
   :after ox)
 
-(use-package ox-hugo-auto-export)
+(require 'ox-hugo-auto-export)
 #+END_SRC
 
 Org Capture template to quickly create posts and generate slugs.
+
+bsdofsof
 
 #+BEGIN_SRC emacs-lisp
 ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
