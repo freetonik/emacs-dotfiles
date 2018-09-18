@@ -4,16 +4,26 @@
 (setq mc/cmds-to-run-for-all
       '(
         helm-M-x
+        helm-projectile-find-file
+        kill-region
         org-beginning-of-line
         org-ctrl-c-ctrl-c
         org-end-of-line
+        org-metaleft
+        org-metaright
         org-return
         org-self-insert-command
+        org-shiftleft
         org-shiftmetaleft
+        org-shiftright
         org-shiftup
+        org-yank
+        simpleclip-cut
         simpleclip-paste
+        yank-rectangle
         ))
 
 (setq mc/cmds-to-run-once
       '(
+        mac-mwheel-scroll
         ))

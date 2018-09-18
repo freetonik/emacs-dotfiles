@@ -12,3 +12,7 @@ url
 /init.tex
 /projectile-bookmarks.eld
 /projectile.cache
+smex-items
+tmp
+request
+.mc-lists.el
