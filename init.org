@@ -61,13 +61,6 @@ Install use-package.
 (setq use-package-always-ensure t)
 #+END_SRC
 
-Delight allows to rename modes in the mode line, while diminish allows to hide them completely.
-
-#+BEGIN_SRC emacs-lisp
-(use-package delight)
-(use-package diminish)
-#+END_SRC
-
 ** Meta
 
 When this configuration is loaded for the first time, the =init.el= is the file that is loaded. It looks like this:
@@ -119,10 +112,26 @@ This helps get rid of =functions might not be defined at runtime= warnings. See 
 
 ** Visuals
 
-I've tried many 3rd party themes, but keep coming back to the default light theme.
++I've tried many 3rd party themes, but keep coming back to the default light theme.+ Let's try Spacemacs theme and modeline, as long as it's possible to remove extra backgrounds from everywhere...
 
 #+BEGIN_SRC emacs-lisp
-(load-theme 'tsdh-light)
+(use-package spacemacs-theme
+  :defer t
+  :init
+  (setq spacemacs-theme-comment-bg nil)
+  (setq spacemacs-theme-org-highlight nil)
+  (setq spacemacs-theme-org-height nil)
+  (custom-set-variables '(spacemacs-theme-custom-colors
+                          '((cblk-bg . nil)
+                            (cblk-ln-bg . nil)
+                            (cursor . "#ff0000")
+                            )))
+  (load-theme 'spacemacs-light t))
+
+(use-package spaceline
+  :config
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
 #+END_SRC
 
 Inconsolata font, remove the cruft and make the initial size bigger.
@@ -137,7 +146,6 @@ Show parens and other pairs.
 
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
-  :diminish
   :config
   (require 'smartparens-config)
   (smartparens-global-mode t)
@@ -161,7 +169,7 @@ Disable line numbers for now.
 
 Nice and simple mode line.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq-default mode-line-format
   '("%e"
     ;; mode-line-front-space
@@ -239,7 +247,6 @@ Disable blinking cursor.
  '(helm-source-header ((t (:foreground "black" :weight semi-bold))))
  '(helm-visible-mark ((t (:background "dark blue")))))
 #+END_SRC
-
 ** Sane defaults
 
 I don't care about auto save and backup files.
@@ -299,7 +306,6 @@ Right Alt (option) can be used to enter symbols like em dashes =—=.
 #+BEGIN_SRC emacs-lisp
 (setq mac-right-option-modifier 'nil)
 #+END_SRC
-
 ** Navigation and editing
 
 Kill line with =s-Backspace=, which is =Cmd+Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =M+Backspace. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
@@ -336,7 +342,6 @@ Let' try Undo tree.
 
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
-  :diminish undo-tree-mode
   :init
   (progn
     (global-undo-tree-mode)
@@ -515,7 +520,6 @@ Enable =a= to move into a folder in Dired. This is better than default =Enter=, 
 #+BEGIN_SRC emacs-lisp
 (use-package dired
   :ensure nil
-  :delight dired-mode "Dired"
   :custom
   (dired-auto-revert-buffer t)
   (dired-dwim-target t)
@@ -639,13 +643,12 @@ Install Helm and set some keybindings. Note that I use =helm-swoop= to search cu
 
 #+BEGIN_SRC emacs-lisp
 (use-package ivy
-  :diminish
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
   (setq enable-recursive-minibuffers t)
-
+  (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
       '((swiper . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper
@@ -676,7 +679,7 @@ Ivy-rich make Ivy a bit more friendly by adding information to ivy buffers, e.g.
 (use-package ivy-rich
   :config
   (ivy-rich-mode 1)
-  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”)
+  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
 #+END_SRC
 
 ** Counsel integration for Projectile
@@ -721,16 +724,16 @@ It's time for Magit!
   (global-set-key (kbd "s-g") 'magit-status))
 #+END_SRC
 
+And show changes in the gutter (fringe).
+
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter
-  :diminish
   :config
   (global-git-gutter-mode 't)
   (set-face-background 'git-gutter:modified 'nil) ;; background color
   (set-face-foreground 'git-gutter:added "green4")
   (set-face-foreground 'git-gutter:deleted "red"))
 #+END_SRC
-
 ** NeoTree
 
 #+BEGIN_SRC emacs-lisp
@@ -739,16 +742,14 @@ It's time for Magit!
   (setq neo-window-width 32
         neo-create-file-auto-open t
         neo-banner-message nil
-        neo-show-updir-line nil
         neo-mode-line-type 'neotree
         neo-smart-open t
         neo-show-hidden-files t
         neo-mode-line-type 'none
         neo-auto-indent-point t)
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
   (global-set-key (kbd "s-B") 'neotree-toggle))
 #+END_SRC
-
 ** OS integration
 
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
@@ -780,11 +781,6 @@ Spellchecking requires an external command to be available. Install =aspell= on 
 (setq ispell-program-name "aspell")
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(use-package flyspell-correct)
-(use-package flyspell-correct-popup)
-#+END_SRC
-
 Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX.
 
 #+BEGIN_SRC emacs-lisp
@@ -792,20 +788,10 @@ Enable spellcheck on the fly for all text modes. This includes org, latex and La
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
-Enable right mouse click on macOS to see the list of suggestions.
-
-#+BEGIN_SRC emacs-lisp
-(eval-after-load "flyspell"
-  '(progn
-     (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
-     (define-key flyspell-mouse-map [mouse-3] #'undefined)))
-#+END_SRC
-
 Spellcheck current word.
 
 #+BEGIN_SRC emacs-lisp
-;; (global-set-key (kbd "s-]") 'ispell-word)
-(define-key flyspell-mode-map (kbd "s-\\") 'flyspell-correct-previous-word-generic)
+(global-set-key (kbd "s-]") 'ispell-word)
 #+END_SRC
 
 ** Thesaurus
@@ -829,21 +815,16 @@ Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=.
   (add-hook 'after-init-hook 'global-company-mode))
 #+END_SRC
 
-** Hydra
-
-#+BEGIN_SRC emacs-lisp
-(use-package hydra)
-(use-package ivy-hydra)
-#+END_SRC
-
 ** Packages for programming
 
 Here are all the packages needed for programming languages and formats.
 
-Yaml stuff.
-
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
+(use-package markdown-mode)
+(use-package haml-mode)
+(use-package clojure-mode)
+(use-package cider)
 #+END_SRC
 
 Web mode.
@@ -855,11 +836,6 @@ Web mode.
   (setq web-mode-markup-indent-offset 2))
 #+END_SRC
 
-Markdown.
-
-#+BEGIN_SRC emacs-lisp
-(use-package markdown-mode)
-#+END_SRC
 
 * Org
 
@@ -967,7 +943,6 @@ Add closed date when todo goes to DONE state.
 #+END_SRC
 
 ** Blogging with hugo
-
 Install =ox-hugo= and enable auto export.
 
 #+BEGIN_SRC emacs-lisp
@@ -982,6 +957,7 @@ Org Capture template to quickly create posts and generate slugs.
 #+BEGIN_SRC emacs-lisp
 ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
 (require 'org)
+(require 'ox-hugo)
 ;; define variable to get rid of 'reference to free variable' warnings
 (defvar org-capture-templates nil)
 (with-eval-after-load 'org-capture
