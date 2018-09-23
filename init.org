@@ -110,34 +110,36 @@ This helps get rid of =functions might not be defined at runtime= warnings. See 
   (setq use-package-expand-minimally byte-compile-current-file))
 #+END_SRC
 
-** Visuals
-
-+I've tried many 3rd party themes, but keep coming back to the default light theme.+ Let's try Spacemacs theme and modeline, as long as it's possible to remove extra backgrounds from everywhere...
+Store custom-file separately, don't freak out when it's not found.
 
 #+BEGIN_SRC emacs-lisp
-(use-package spacemacs-theme
-  :defer t
-  :init
-  (setq spacemacs-theme-comment-bg nil)
-  (setq spacemacs-theme-org-highlight nil)
-  (setq spacemacs-theme-org-height nil)
-  (custom-set-variables '(spacemacs-theme-custom-colors
-                          '((cblk-bg . nil)
-                            (cblk-ln-bg . nil)
-                            (cursor . "#ff0000")
-                            )))
-  (load-theme 'spacemacs-light t))
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
+#+END_SRC
 
-(use-package spaceline
+** Visuals
+
+#+BEGIN_SRC emacs-lisp
+(when (memq window-system '(mac ns))
+  (add-to-list 'default-frame-alist '(ns-appearance . light)) ;; {light, dark}
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+#+END_SRC
+
++I've tried many 3rd party themes, but keep coming back to the default light theme. Let's try Spacemacs theme and modeline, as long as it's possible to remove extra backgrounds from everywhere...+
+
+#+BEGIN_SRC emacs-lisp
+(load-theme 'tsdh-light)
+
+(use-package rich-minority
   :config
-  (require 'spaceline-config)
-  (spaceline-spacemacs-theme))
+  (rich-minority-mode 1)
+  (setf rm-blacklist ""))
 #+END_SRC
 
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 15")
+(set-face-attribute 'default nil :font "Inconsolata LGC 14")
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
