@@ -2,6 +2,7 @@
 #+AUTHOR: Rakhim Davletkaliyev
 #+BABEL: :cache yes
 #+PROPERTY: header-args :tangle yes
+#+STARTUP: showall
 
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
@@ -139,18 +140,30 @@ Store custom-file separately, don't freak out when it's not found.
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 14")
+(set-face-attribute 'default nil :font "Inconsolata 16")
+(setq-default line-spacing 4)
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+;; (require 'paren)
+;; (setq show-paren-delay 0)
+;; (show-paren-mode 1)
+;; (set-face-background 'show-paren-match "PeachPuff2")
+;; (set-face-foreground 'show-paren-match "maroon")
+;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+#+END_SRC
+
 Show parens and other pairs.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package smartparens
   :config
   (require 'smartparens-config)
   (smartparens-global-mode t)
+  (setq sp-show-pair-delay 0)
+
   (show-smartparens-global-mode t))
 #+END_SRC
 
@@ -160,40 +173,11 @@ Wrap lines always.
 (global-visual-line-mode 1)
 #+END_SRC
 
-+And show line numbers. The built-in linum mode has serious performance drawbacks, so let's use an alternative.+
-Disable line numbers for now.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package nlinum
-  :config
-    (global-nlinum-mode 1))
-#+END_SRC
-
 Nice and simple mode line.
 
-#+BEGIN_SRC emacs-lisp :tangle no
-(setq-default mode-line-format
-  '("%e"
-    ;; mode-line-front-space
-    ;; mode-line-mule-info
-    ;; mode-line-client
-    mode-line-modified
-    mode-line-remote
-    ;; mode-line-frame-identification
-    " "
-    "%l:%c"
-    " ("
-    mode-line-percent-position
-    ") "
-    mode-line-buffer-identification
-    (vc-mode vc-mode)
-    "  "
-    mode-line-modes
-    mode-line-misc-info
-    mode-line-end-spaces))
-
-(set-face-attribute 'mode-line nil :background "SlateGray1")
-;; (set-face-attribute 'mode-line nil :foreground "white")
+#+BEGIN_SRC emacs-lisp
+(setq column-number-mode t) ;; show columns in addition to rows in mode line
+(set-face-attribute 'mode-line nil :background "NavajoWhite")
 (set-face-attribute 'mode-line-inactive nil :background "grey93")
 #+END_SRC
 
@@ -254,8 +238,9 @@ Disable blinking cursor.
 I don't care about auto save and backup files.
 
 #+BEGIN_SRC emacs-lisp
-(setq auto-save-default nil)
-(setq make-backup-files nil)
+(setq make-backup-files nil) ; stop creating backup~ files
+(setq auto-save-default nil) ; stop creating #autosave# files
+(setq create-lockfiles nil)  ; stop creating .# files
 #+END_SRC
 
 Revert (update) buffers automatically when underlying files are changed externally.
@@ -284,7 +269,7 @@ Some basic things.
 (scroll-bar-mode -1)
 (delete-selection-mode 1)
 (global-unset-key (kbd "s-p"))
-(global-hl-line-mode 1)
+(global-hl-line-mode nil)
 #+END_SRC
 
 I want Emacs kill ring and system clipboard to be independent. Simpleclip is the solution to that.
@@ -347,6 +332,7 @@ Let' try Undo tree.
   :init
   (progn
     (global-undo-tree-mode)
+    (setq undo-tree-auto-save-history nil)
     (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/tmp/undo"))
           undo-tree-auto-save-history t
           undo-tree-visualizer-timestamps t
@@ -387,13 +373,25 @@ Since =Cmd+,= and =Cmd+.= move you back in forward in the current buffer, the sa
 Go to other windows easily with one keystroke =s-something= instead of =C-x something=.
 
 #+BEGIN_SRC emacs-lisp
+(defun vsplit-last-buffer ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+
+(defun hsplit-last-buffer ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+
 (global-set-key (kbd "s-o") (kbd "C-x o"))
-(global-set-key (kbd "s-1") (kbd "C-x 1"))
-(global-set-key (kbd "s-2") (kbd "C-x 2"))
-(global-set-key (kbd "s-3") (kbd "C-x 3"))
-(global-set-key (kbd "s-0") (kbd "C-x 0"))
 
 (global-set-key (kbd "s-w") (kbd "C-x 0")) ;; just like close tab in a web browser
+(global-set-key (kbd "s-W") (kbd "C-x 1")) ;; close others with shift
+
+(global-set-key (kbd "s-T") 'vsplit-last-buffer)
+(global-set-key (kbd "s-t") 'hsplit-last-buffer)
 #+END_SRC
 
 Expand-region allows to gradually expand selection inside words, sentences, etc. =C-'= is bound to Org's =cycle through agenda files=, which I don't really use, so I unbind it here before assigning global shortcut for expansion.
@@ -401,8 +399,8 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
   :config
-  (global-set-key (kbd "s-'") 'er/expand-region)
-  (global-set-key (kbd "s-S-'") 'er/contract-region))
+  (global-set-key (kbd "s-'") 'er/expand-region))
+  ;; (global-set-key (kbd "s-"") 'er/contract-region))
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
@@ -499,6 +497,7 @@ Multiple cusors are a must. Make <return> insert a newline; multiple-cursors-mod
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
   :config
+  (setq mc/always-run-for-all 1)
   (global-set-key (kbd "s-d") 'mc/mark-next-like-this)
   (global-set-key (kbd "M-s-d") 'mc/edit-beginnings-of-lines)
   (global-set-key (kbd "s-D") 'mc/mark-all-dwim)
@@ -573,14 +572,18 @@ Move between windows with Control-Command-Arrow and with =Cmd= just like in iTer
 #+BEGIN_SRC emacs-lisp
 (use-package windmove
   :config
-  (global-set-key (kbd "<C-s-left>")  'windmove-left)
-  (global-set-key (kbd "s-[")  'windmove-left)
-  (global-set-key (kbd "<C-s-right>") 'windmove-right)
-  (global-set-key (kbd "s-]")  'windmove-right)
-  (global-set-key (kbd "<C-s-up>")    'windmove-up)
-  (global-set-key (kbd "s-{")  'windmove-up)
-  (global-set-key (kbd "<C-s-down>")  'windmove-down)
-  (global-set-key (kbd "s-}")  'windmove-down))
+  (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
+  (global-set-key (kbd "s-]")  'windmove-right)        ;; Cmd+] go to right window
+  (global-set-key (kbd "s-{")  'windmove-up)           ;; Cmd+Shift+[ go to upper window
+  (global-set-key (kbd "<C-s-down>")  'windmove-down))  ;; Ctrl+Cmd+down go to down window
+#+END_SRC
+
+Enable winner mode to quickly restore window configurations
+
+#+BEGIN_SRC emacs-lisp
+(winner-mode 1)
+(global-set-key (kbd "C-s-[") 'winner-undo)
+(global-set-key (kbd "C-s-]") 'winner-redo)
 #+END_SRC
 
 ** Scrolling
@@ -603,7 +606,6 @@ Nicer scrolling behaviour.
 Install Projectile.
 
 #+BEGIN_SRC emacs-lisp
-(require 'projectile)
 (use-package projectile
   :config
   (define-key projectile-mode-map (kbd "C-s-p") 'projectile-command-map)
@@ -757,9 +759,7 @@ And show changes in the gutter (fringe).
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
 
 #+BEGIN_SRC emacs-lisp
-(require 'exec-path-from-shell)
-(use-package exec-path-from-shell
-  :ensure t)
+(use-package exec-path-from-shell)
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
@@ -768,11 +768,7 @@ Pass system shell environment to Emacs. This is important primarily for shell in
 A nice little real terminal in a popup.
 
 #+BEGIN_SRC emacs-lisp
-(use-package shell-pop
-  :config
-  (custom-set-variables
-   '(shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
-   '(shell-pop-universal-key "s-=")))
+(use-package shell-pop)
 #+END_SRC
 
 ** Spellchecking
@@ -793,7 +789,7 @@ Enable spellcheck on the fly for all text modes. This includes org, latex and La
 Spellcheck current word.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "s-]") 'ispell-word)
+(global-set-key (kbd "s-\\") 'ispell-word)
 #+END_SRC
 
 ** Thesaurus
@@ -806,13 +802,21 @@ Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=.
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim))
 #+END_SRC
 
+Word definition search
+
+#+BEGIN_SRC emacs-lisp
+(use-package define-word
+  :config
+  (global-set-key (kbd "M-\\") 'define-word-at-point))
+#+END_SRC
+
 ** Auto completion
 
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :config
   (setq company-idle-delay 0.1)
-  (setq company-global-modes '(not org-mode))
+  (setq company-global-modes '(not org-mode markdown-mode))
   (setq company-minimum-prefix-length 1)
   (add-hook 'after-init-hook 'global-company-mode))
 #+END_SRC
@@ -838,6 +842,22 @@ Web mode.
   (setq web-mode-markup-indent-offset 2))
 #+END_SRC
 
+** Frames
+
+#+BEGIN_SRC emacs-lisp
+;; (set-frame-name "EDIT")
+;; (make-frame '((name . "ORG")))
+
+;; (progn
+;; (make-frame '((name . "TERM")))
+;;   (select-frame-by-name "EDIT")
+;;   (multi-term))
+;; (make-frame '((name . "ORG")))
+
+;; (global-set-key (kbd "s-1") (lambda () (interactive) (select-frame-by-name "EDIT")))
+;; (global-set-key (kbd "s-2") (lambda () (interactive) (select-frame-by-name "TERM")))
+;; (global-set-key (kbd "s-3") (lambda () (interactive) (select-frame-by-name "ORG")))
+#+END_SRC
 
 * Org
 
@@ -883,13 +903,6 @@ And inside those code blocks indentation should be correct depending on the sour
 (setq org-src-tab-acts-natively t)
 (setq org-src-preserve-indentation t)
 (setq org-src-fontify-natively t)
-#+END_SRC
-
-I often need to export from Org to Markdown, this enables the markdown exporter backend.
-
-#+BEGIN_SRC emacs-lisp
-(custom-set-variables
-  '(org-export-backends (quote (ascii html icalendar latex md odt))))
 #+END_SRC
 
 When Emacs starts, I want to see my Main org file instead of the scratch buffer.
