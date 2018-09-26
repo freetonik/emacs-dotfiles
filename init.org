@@ -2,7 +2,7 @@
 #+AUTHOR: Rakhim Davletkaliyev
 #+BABEL: :cache yes
 #+PROPERTY: header-args :tangle yes
-#+STARTUP: showall
+#+STARTUP: overview
 
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
@@ -60,6 +60,22 @@ Install use-package.
 (eval-when-compile (require 'use-package))
 
 (setq use-package-always-ensure t)
+#+END_SRC
+
+** Modifier keys
+
+Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
+
+#+BEGIN_SRC emacs-lisp
+(setq mac-right-command-modifier 'super)
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+#+END_SRC
+
+Right Alt (option) can be used to enter symbols like em dashes =—=.
+
+#+BEGIN_SRC emacs-lisp
+(setq mac-right-option-modifier 'nil)
 #+END_SRC
 
 ** Meta
@@ -126,22 +142,22 @@ Store custom-file separately, don't freak out when it's not found.
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 #+END_SRC
 
-+I've tried many 3rd party themes, but keep coming back to the default light theme. Let's try Spacemacs theme and modeline, as long as it's possible to remove extra backgrounds from everywhere...+
+I've tried many 3rd party themes, but keep coming back to the default light theme.
 
 #+BEGIN_SRC emacs-lisp
 (load-theme 'tsdh-light)
 
-(use-package rich-minority
-  :config
-  (rich-minority-mode 1)
-  (setf rm-blacklist ""))
+;; (use-package rich-minority
+;;   :config
+;;   (rich-minority-mode 1)
+;;   (setf rm-blacklist ""))
 #+END_SRC
 
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata 16")
-(setq-default line-spacing 4)
+(set-face-attribute 'default nil :font "Inconsolata 18")
+(setq-default line-spacing 1)
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
@@ -150,21 +166,25 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 ;; (require 'paren)
 ;; (setq show-paren-delay 0)
 ;; (show-paren-mode 1)
-;; (set-face-background 'show-paren-match "PeachPuff2")
-;; (set-face-foreground 'show-paren-match "maroon")
-;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+(set-face-background 'show-paren-match "PeachPuff2")
+(set-face-foreground 'show-paren-match "maroon")
+(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 #+END_SRC
 
 Show parens and other pairs.
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :config
   (require 'smartparens-config)
   (smartparens-global-mode t)
+  (show-smartparens-global-mode t)
   (setq sp-show-pair-delay 0)
 
-  (show-smartparens-global-mode t))
+  ;; no '' pair in emacs-lisp-mode
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
+)
 #+END_SRC
 
 Wrap lines always.
@@ -253,7 +273,7 @@ Some basic things.
  initial-major-mode 'org-mode      ; org mode by default
  sentence-end-double-space nil     ; Sentences should end in one space, come on!
  confirm-kill-emacs 'y-or-n-p      ; y and n instead of yes and no when quitting
- help-window-select t              ; select help window so it's easy to quit it with 'q'
+ ;; help-window-select t              ; select help window so it's easy to quit it with 'q'
 )
 
 (fset 'yes-or-no-p 'y-or-n-p)      ; y and n instead of yes and no everywhere else
@@ -271,19 +291,6 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
   (simpleclip-mode 1))
 #+END_SRC
 
-Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
-
-#+BEGIN_SRC emacs-lisp
-(setq mac-right-command-modifier 'super)
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'super)
-#+END_SRC
-
-Right Alt (option) can be used to enter symbols like em dashes =—=.
-
-#+BEGIN_SRC emacs-lisp
-(setq mac-right-option-modifier 'nil)
-#+END_SRC
 ** Navigation and editing
 
 Kill line with =s-Backspace=, which is =Cmd+Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =M+Backspace. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
@@ -325,9 +332,7 @@ Let' try Undo tree.
     (global-undo-tree-mode)
     (setq undo-tree-auto-save-history nil)
     (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/tmp/undo"))
-          undo-tree-auto-save-history t
-          undo-tree-visualizer-timestamps t
-          undo-tree-visualizer-diff t)))
+          undo-tree-auto-save-history nil)))
 
 (global-set-key (kbd "s-z") 'undo-tree-undo)
 (global-set-key (kbd "s-Z") 'undo-tree-redo)
@@ -391,7 +396,6 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
 (use-package expand-region
   :config
   (global-set-key (kbd "s-'") 'er/expand-region))
-  ;; (global-set-key (kbd "s-"") 'er/contract-region))
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
@@ -448,17 +452,17 @@ Join lines whether you're in a region or not.
         (while (< (point) end)
           (join-line 1)))))
 
-;; (global-set-key (kbd "s-j") 'smart-join-line)
-(global-set-key (kbd "s-J") 'smart-join-line)
+(global-set-key (kbd "s-j") 'smart-join-line)
+;; (global-set-key (kbd "s-J") 'smart-join-line)
 #+END_SRC
 
 Move around with =Cmd+i/j/k/l=.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "s-i") 'previous-line)
-(global-set-key (kbd "s-k") 'next-line)
-(global-set-key (kbd "s-j") 'left-char)
-(global-set-key (kbd "s-l") 'right-char)
+;; (global-set-key (kbd "s-i") 'previous-line)
+;; (global-set-key (kbd "s-k") 'next-line)
+;; (global-set-key (kbd "s-j") 'left-char)
+;; (global-set-key (kbd "s-l") 'right-char)
 #+END_SRC
 
 Upcase word and region using the same keys.
@@ -526,8 +530,8 @@ Enable =a= to move into a folder in Dired. This is better than default =Enter=, 
 I'm still not happy with the way new windows are spawned. For now, at least, let's make it so that new automatic windows are always created on the bottom, not on the side.
 
 #+BEGIN_SRC emacs-lisp
-(setq split-height-threshold 0)
-(setq split-width-threshold nil)
+;; (setq split-height-threshold 0)
+;; (setq split-width-threshold nil)
 #+END_SRC
 
 Move between windows with Control-Command-Arrow and with =Cmd= just like in iTerm.
@@ -538,7 +542,7 @@ Move between windows with Control-Command-Arrow and with =Cmd= just like in iTer
   (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
   (global-set-key (kbd "s-]")  'windmove-right)        ;; Cmd+] go to right window
   (global-set-key (kbd "s-{")  'windmove-up)           ;; Cmd+Shift+[ go to upper window
-  (global-set-key (kbd "<C-s-down>")  'windmove-down))  ;; Ctrl+Cmd+down go to down window
+  (global-set-key (kbd "<s-}>")  'windmove-down))      ;; Ctrl+Shift+[ go to down window
 #+END_SRC
 
 Enable winner mode to quickly restore window configurations
@@ -549,9 +553,58 @@ Enable winner mode to quickly restore window configurations
 (global-set-key (kbd "C-s-]") 'winner-redo)
 #+END_SRC
 
+Let's try Shackle one more time.
+
+#+BEGIN_SRC emacs-lisp
+(use-package shackle
+  :init
+  (setq shackle-default-alignment 'below
+        shackle-default-size 0.4
+        shackle-rules '((help-mode           :align below :select t)
+                        (helpful-mode        :align below)
+                        (dired-mode          :ignore t)
+
+                        (compilation-mode    :select t   :size 0.25)
+                        ("*compilation*"     :select nil :size 0.25)
+                        ("*ag search*"       :select nil :size 0.25)
+                        ("*Flycheck errors*" :select nil :size 0.25)
+                        ("*Warnings*"        :select nil :size 0.25)
+                        ("*Error*"           :select nil :size 0.25)
+
+                       http://localhost:1313/1/01/for-google-you-re-neither-a-user-nor-a-product-dot-you-re-data-point-dot/images/google_inbox.jpg ("*Org Links*"       :select nil   :size 0.2)
+
+                        (" *undo-tree*"                   :align right  :size 0.3)
+                        (neotree-mode                     :align left)
+                        (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
+                        (magit-log-mode                   :same t                  :inhibit-window-quit t)
+                        (magit-commit-mode                :ignore t)
+                        (magit-diff-mode     :select nil  :align left   :size 0.5)
+                        (git-commit-mode                  :same t)
+                        (vc-annotate-mode                 :same t)
+                        ("^\\*git-gutter.+\\*$" :regexp t :size 15 :noselect t)
+                        ))
+  :config
+  (shackle-mode 1))
+  ;; (defun my/shackle-defaults (plist)
+  ;;   "Ensure popups are always aligned and selected by default. Eliminates the need
+  ;;  for :align t on every rule."
+  ;;   (when plist
+  ;;     (unless (or (plist-member plist :align)
+  ;;                 (plist-member plist :same)
+  ;;                 (plist-member plist :frame))
+  ;;       (plist-put plist :align t))
+  ;;     (unless (or (plist-member plist :select)
+  ;;                 (plist-member plist :noselect))
+  ;;       (plist-put plist :select t)))
+  ;;   plist)
+  ;; (advice-add #'shackle--match :filter-return #'my/shackle-defaults)
+
+  ;; (add-hook 'my/after-init-hook 'shackle-mode))
+#+END_SRC
+
 ** Scrolling
 
-Nicer scrolling behaviour.
+Nicer scrolling behavior.
 
 #+BEGIN_SRC emacs-lisp
 (setq scroll-margin 10
@@ -571,9 +624,8 @@ Install Projectile.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :config
-  (define-key projectile-mode-map (kbd "C-s-p") 'projectile-command-map)
-  (projectile-mode +1)
-  )
+  (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
+  (projectile-mode +1))
 #+END_SRC
 
 ** Ivy, Swiper and Counsel
@@ -602,7 +654,6 @@ Install Projectile.
 (use-package counsel
   :config
   (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "s-P") 'counsel-M-x)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file))
 
 (use-package smex)
@@ -651,9 +702,10 @@ And show changes in the gutter (fringe).
   (set-face-foreground 'git-gutter:added "green4")
   (set-face-foreground 'git-gutter:deleted "red"))
 #+END_SRC
+
 ** NeoTree
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package neotree
   :config
   (setq neo-window-width 32
@@ -667,6 +719,7 @@ And show changes in the gutter (fringe).
   (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
   (global-set-key (kbd "s-B") 'neotree-toggle))
 #+END_SRC
+
 ** OS integration
 
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
@@ -821,7 +874,7 @@ And inside those code blocks indentation should be correct depending on the sour
 When Emacs starts, I want to see my Main org file instead of the scratch buffer.
 
 #+BEGIN_SRC emacs-lisp
-(find-file "~/org/main.org")
+;; (find-file "~/org/main.org")
 #+END_SRC
 
 State changes for todos and also notes should go into a Logbook drawer:

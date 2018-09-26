@@ -18,6 +18,12 @@
 
 (setq use-package-always-ensure t)
 
+(setq mac-right-command-modifier 'super)
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+
+(setq mac-right-option-modifier 'nil)
+
 ;;; -*- lexical-binding: t -*-
 
 (defun tangle-init ()
@@ -44,22 +50,34 @@ tangled, and the tangled file is compiled."
 
 (load-theme 'tsdh-light)
 
-(use-package rich-minority
-  :config
-  (rich-minority-mode 1)
-  (setf rm-blacklist ""))
+;; (use-package rich-minority
+;;   :config
+;;   (rich-minority-mode 1)
+;;   (setf rm-blacklist ""))
 
-(set-face-attribute 'default nil :font "Inconsolata 16")
-(setq-default line-spacing 4)
+(set-face-attribute 'default nil :font "Inconsolata 18")
+(setq-default line-spacing 1)
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 
 ;; (require 'paren)
 ;; (setq show-paren-delay 0)
 ;; (show-paren-mode 1)
-;; (set-face-background 'show-paren-match "PeachPuff2")
-;; (set-face-foreground 'show-paren-match "maroon")
-;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+(set-face-background 'show-paren-match "PeachPuff2")
+(set-face-foreground 'show-paren-match "maroon")
+(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+
+(use-package smartparens
+  :config
+  (require 'smartparens-config)
+  (smartparens-global-mode t)
+  (show-smartparens-global-mode t)
+  (setq sp-show-pair-delay 0)
+
+  ;; no '' pair in emacs-lisp-mode
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
+)
 
 (global-visual-line-mode 1)
 
@@ -106,7 +124,7 @@ tangled, and the tangled file is compiled."
  initial-major-mode 'org-mode      ; org mode by default
  sentence-end-double-space nil     ; Sentences should end in one space, come on!
  confirm-kill-emacs 'y-or-n-p      ; y and n instead of yes and no when quitting
- help-window-select t              ; select help window so it's easy to quit it with 'q'
+ ;; help-window-select t              ; select help window so it's easy to quit it with 'q'
 )
 
 (fset 'yes-or-no-p 'y-or-n-p)      ; y and n instead of yes and no everywhere else
@@ -118,12 +136,6 @@ tangled, and the tangled file is compiled."
 (use-package simpleclip
   :config
   (simpleclip-mode 1))
-
-(setq mac-right-command-modifier 'super)
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'super)
-
-(setq mac-right-option-modifier 'nil)
 
 (global-set-key (kbd "s-<backspace>") 'kill-whole-line)
 (global-set-key (kbd "M-S-<backspace>") 'kill-word)
@@ -149,9 +161,7 @@ tangled, and the tangled file is compiled."
     (global-undo-tree-mode)
     (setq undo-tree-auto-save-history nil)
     (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/tmp/undo"))
-          undo-tree-auto-save-history t
-          undo-tree-visualizer-timestamps t
-          undo-tree-visualizer-diff t)))
+          undo-tree-auto-save-history nil)))
 
 (global-set-key (kbd "s-z") 'undo-tree-undo)
 (global-set-key (kbd "s-Z") 'undo-tree-redo)
@@ -199,7 +209,6 @@ tangled, and the tangled file is compiled."
 (use-package expand-region
   :config
   (global-set-key (kbd "s-'") 'er/expand-region))
-  ;; (global-set-key (kbd "s-"") 'er/contract-region))
 
 (use-package move-text
   :config
@@ -244,13 +253,13 @@ tangled, and the tangled file is compiled."
         (while (< (point) end)
           (join-line 1)))))
 
-;; (global-set-key (kbd "s-j") 'smart-join-line)
-(global-set-key (kbd "s-J") 'smart-join-line)
+(global-set-key (kbd "s-j") 'smart-join-line)
+;; (global-set-key (kbd "s-J") 'smart-join-line)
 
-(global-set-key (kbd "s-i") 'previous-line)
-(global-set-key (kbd "s-k") 'next-line)
-(global-set-key (kbd "s-j") 'left-char)
-(global-set-key (kbd "s-l") 'right-char)
+;; (global-set-key (kbd "s-i") 'previous-line)
+;; (global-set-key (kbd "s-k") 'next-line)
+;; (global-set-key (kbd "s-j") 'left-char)
+;; (global-set-key (kbd "s-l") 'right-char)
 
 (global-set-key (kbd "M-u") 'upcase-dwim)
 (global-set-key (kbd "M-l") 'downcase-dwim)
@@ -284,19 +293,64 @@ tangled, and the tangled file is compiled."
   (dired-ls-F-marks-symlinks nil)
   (dired-recursive-copies 'always))
 
-(setq split-height-threshold 0)
-(setq split-width-threshold nil)
+;; (setq split-height-threshold 0)
+;; (setq split-width-threshold nil)
 
 (use-package windmove
   :config
   (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
   (global-set-key (kbd "s-]")  'windmove-right)        ;; Cmd+] go to right window
   (global-set-key (kbd "s-{")  'windmove-up)           ;; Cmd+Shift+[ go to upper window
-  (global-set-key (kbd "<C-s-down>")  'windmove-down))  ;; Ctrl+Cmd+down go to down window
+  (global-set-key (kbd "<s-}>")  'windmove-down))      ;; Ctrl+Shift+[ go to down window
 
 (winner-mode 1)
 (global-set-key (kbd "C-s-[") 'winner-undo)
 (global-set-key (kbd "C-s-]") 'winner-redo)
+
+(use-package shackle
+  :init
+  (setq shackle-default-alignment 'below
+        shackle-default-size 0.4
+        shackle-rules '((help-mode           :align below :select t)
+                        (helpful-mode        :align below)
+                        (dired-mode          :ignore t)
+
+                        (compilation-mode    :select t   :size 0.25)
+                        ("*compilation*"     :select nil :size 0.25)
+                        ("*ag search*"       :select nil :size 0.25)
+                        ("*Flycheck errors*" :select nil :size 0.25)
+                        ("*Warnings*"        :select nil :size 0.25)
+                        ("*Error*"           :select nil :size 0.25)
+
+                       http://localhost:1313/1/01/for-google-you-re-neither-a-user-nor-a-product-dot-you-re-data-point-dot/images/google_inbox.jpg ("*Org Links*"       :select nil   :size 0.2)
+
+                        (" *undo-tree*"                   :align right  :size 0.3)
+                        (neotree-mode                     :align left)
+                        (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
+                        (magit-log-mode                   :same t                  :inhibit-window-quit t)
+                        (magit-commit-mode                :ignore t)
+                        (magit-diff-mode     :select nil  :align left   :size 0.5)
+                        (git-commit-mode                  :same t)
+                        (vc-annotate-mode                 :same t)
+                        ("^\\*git-gutter.+\\*$" :regexp t :size 15 :noselect t)
+                        ))
+  :config
+  (shackle-mode 1))
+  ;; (defun my/shackle-defaults (plist)
+  ;;   "Ensure popups are always aligned and selected by default. Eliminates the need
+  ;;  for :align t on every rule."
+  ;;   (when plist
+  ;;     (unless (or (plist-member plist :align)
+  ;;                 (plist-member plist :same)
+  ;;                 (plist-member plist :frame))
+  ;;       (plist-put plist :align t))
+  ;;     (unless (or (plist-member plist :select)
+  ;;                 (plist-member plist :noselect))
+  ;;       (plist-put plist :select t)))
+  ;;   plist)
+  ;; (advice-add #'shackle--match :filter-return #'my/shackle-defaults)
+
+  ;; (add-hook 'my/after-init-hook 'shackle-mode))
 
 (setq scroll-margin 10
    scroll-step 1
@@ -309,9 +363,8 @@ tangled, and the tangled file is compiled."
 
 (use-package projectile
   :config
-  (define-key projectile-mode-map (kbd "C-s-p") 'projectile-command-map)
-  (projectile-mode +1)
-  )
+  (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
+  (projectile-mode +1))
 
 (use-package ivy
   :config
@@ -336,7 +389,6 @@ tangled, and the tangled file is compiled."
 (use-package counsel
   :config
   (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "s-P") 'counsel-M-x)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file))
 
 (use-package smex)
@@ -366,19 +418,6 @@ tangled, and the tangled file is compiled."
   (set-face-background 'git-gutter:modified 'nil) ;; background color
   (set-face-foreground 'git-gutter:added "green4")
   (set-face-foreground 'git-gutter:deleted "red"))
-
-(use-package neotree
-  :config
-  (setq neo-window-width 32
-        neo-create-file-auto-open t
-        neo-banner-message nil
-        neo-mode-line-type 'neotree
-        neo-smart-open t
-        neo-show-hidden-files t
-        neo-mode-line-type 'none
-        neo-auto-indent-point t)
-  (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
-  (global-set-key (kbd "s-B") 'neotree-toggle))
 
 (use-package exec-path-from-shell)
 
@@ -453,7 +492,7 @@ tangled, and the tangled file is compiled."
 (setq org-src-preserve-indentation t)
 (setq org-src-fontify-natively t)
 
-(find-file "~/org/main.org")
+;; (find-file "~/org/main.org")
 
 (setq org-log-into-drawer t)
 
