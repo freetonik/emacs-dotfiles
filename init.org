@@ -571,7 +571,7 @@ Let's try Shackle one more time.
                         ("*Warnings*"        :select nil :size 0.25)
                         ("*Error*"           :select nil :size 0.25)
 
-                       http://localhost:1313/1/01/for-google-you-re-neither-a-user-nor-a-product-dot-you-re-data-point-dot/images/google_inbox.jpg ("*Org Links*"       :select nil   :size 0.2)
+                        ("*Org Links*"       :select nil   :size 0.2)
 
                         (" *undo-tree*"                   :align right  :size 0.3)
                         (neotree-mode                     :align left)
