@@ -6,7 +6,7 @@
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(package-selected-packages
    (quote
-    (shackle neotree rainbow-blocks corral terraform-mode multi-term define-word yaml-mode which-key web-mode visual-regexp vi-tilde-fringe use-package undo-tree spacemacs-theme spaceline smex smartparens simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit ivy-rich haml-mode git-gutter flx expand-region exec-path-from-shell dumb-jump counsel-projectile company cider avy)))
+    (super-save emmet-mode shackle neotree rainbow-blocks corral terraform-mode multi-term define-word yaml-mode which-key web-mode visual-regexp vi-tilde-fringe use-package undo-tree spacemacs-theme spaceline smex smartparens simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit ivy-rich haml-mode git-gutter flx expand-region exec-path-from-shell dumb-jump counsel-projectile company cider avy)))
  '(shell-pop-shell-type
    (quote
     ("ansi-term" "*ansi-term*"

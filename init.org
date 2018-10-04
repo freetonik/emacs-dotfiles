@@ -156,8 +156,7 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata 18")
-(setq-default line-spacing 1)
+(set-face-attribute 'default nil :font "Inconsolata LGC 15")
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
@@ -166,8 +165,8 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 ;; (require 'paren)
 ;; (setq show-paren-delay 0)
 ;; (show-paren-mode 1)
-(set-face-background 'show-paren-match "PeachPuff2")
-(set-face-foreground 'show-paren-match "maroon")
+(set-face-background 'show-paren-match "grey84")
+;; (set-face-foreground 'show-paren-match nil)
 (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 #+END_SRC
 
@@ -808,6 +807,19 @@ Web mode.
   (setq web-mode-markup-indent-offset 2))
 #+END_SRC
 
+Emmet.
+
+#+BEGIN_SRC emacs-lisp
+(use-package emmet-mode
+  :commands emmet-mode
+  :init
+  (setq emmet-indentation 2)
+  (setq emmet-move-cursor-between-quotes t)
+  :config
+  (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
+  (add-hook 'css-mode-hook  'emmet-mode)) ;; enable Emmet's css abbreviation.
+#+END_SRC
+
 ** Frames
 
 #+BEGIN_SRC emacs-lisp
@@ -823,6 +835,14 @@ Web mode.
 ;; (global-set-key (kbd "s-1") (lambda () (interactive) (select-frame-by-name "EDIT")))
 ;; (global-set-key (kbd "s-2") (lambda () (interactive) (select-frame-by-name "TERM")))
 ;; (global-set-key (kbd "s-3") (lambda () (interactive) (select-frame-by-name "ORG")))
+#+END_SRC
+
+** Super Save
+
+#+BEGIN_SRC emacs-lisp
+(use-package super-save
+  :config
+  (super-save-mode +1))
 #+END_SRC
 
 * Org
@@ -874,7 +894,7 @@ And inside those code blocks indentation should be correct depending on the sour
 When Emacs starts, I want to see my Main org file instead of the scratch buffer.
 
 #+BEGIN_SRC emacs-lisp
-;; (find-file "~/org/main.org")
+(find-file "~/org/main.org")
 #+END_SRC
 
 State changes for todos and also notes should go into a Logbook drawer:
@@ -923,6 +943,50 @@ Add closed date when todo goes to DONE state.
 (setq org-log-done 'time)
 #+END_SRC
 
+Not sure about this... I want to retain Shift-Alt movement and selection everywhere, but in Org mode these bindings are important built ins, and I don't know if there is a viable alternative.
+
+Consider switching meta-left/right to =C-c C-,= and =C-c C-.=. These are used to promote and demote subtrees.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(add-hook 'org-mode-hook
+          (lambda()
+            (progn
+              (local-unset-key (kbd "M-<right>"))  ;; promoting
+              (local-unset-key (kbd "M-<left>"))   ;; and demoting subtrees still work in headers
+
+              (local-unset-key (kbd "S-<right>"))
+              (local-unset-key (kbd "S-<left>"))
+
+              (local-unset-key (kbd "M-S-<right>"))
+              (local-unset-key (kbd "M-S-<left>")) ;; select by word
+
+              (local-set-key (kbd "C-c C-,") 'org-metaleft)
+              (local-set-key (kbd "C-c C-.") 'org-metaright)
+
+              )
+            ))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "<S-left>") nil)
+(define-key org-mode-map (kbd "<S-right>") nil)
+
+(define-key org-mode-map (kbd "<M-left>") nil)
+(define-key org-mode-map (kbd "<M-right>") nil)
+
+(define-key org-mode-map (kbd "<M-S-left>") nil)
+(define-key org-mode-map (kbd "<M-S-right>") nil)
+
+(define-key org-mode-map (kbd "C-c C-,") 'org-metaleft)
+(define-key org-mode-map (kbd "C-c C-.") 'org-metaright)
+#+END_SRC
+
+Enable speed keys to manage headings without arrows.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-use-speed-commands t)
+#+END_SRC
+
 ** Blogging with hugo
 Install =ox-hugo= and enable auto export.
 
@@ -937,7 +1001,6 @@ Org Capture template to quickly create posts and generate slugs.
 
 #+BEGIN_SRC emacs-lisp
 ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
-(require 'org)
 (require 'ox-hugo)
 ;; define variable to get rid of 'reference to free variable' warnings
 (defvar org-capture-templates nil)
