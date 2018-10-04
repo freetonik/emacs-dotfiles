@@ -319,22 +319,7 @@ Basic things you should expect from macOS.
 (global-set-key (kbd "s-S") 'write-file)              ;; save as
 (global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
 
-;; (global-set-key (kbd "s-z") 'undo)
-#+END_SRC
-
-Let' try Undo tree.
-
-#+BEGIN_SRC emacs-lisp
-(use-package undo-tree
-  :init
-  (progn
-    (global-undo-tree-mode)
-    (setq undo-tree-auto-save-history nil)
-    (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/tmp/undo"))
-          undo-tree-auto-save-history nil)))
-
-(global-set-key (kbd "s-z") 'undo-tree-undo)
-(global-set-key (kbd "s-Z") 'undo-tree-redo)
+(global-set-key (kbd "s-z") 'undo)
 #+END_SRC
 
 Go back to previous mark (position) within buffer and go back (forward?).
@@ -572,7 +557,6 @@ Let's try Shackle one more time.
 
                         ("*Org Links*"       :select nil   :size 0.2)
 
-                        (" *undo-tree*"                   :align right  :size 0.3)
                         (neotree-mode                     :align left)
                         (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
                         (magit-log-mode                   :same t                  :inhibit-window-quit t)
