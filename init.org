@@ -991,7 +991,7 @@ Org Capture template to quickly create posts and generate slugs.
 (defvar org-capture-templates nil)
 (with-eval-after-load 'org-capture
   (defun org-hugo-new-subtree-post-capture-template ()
-    "Returns `org-capture' template string for new Hugo post.
+    "Returns `org-capture' template string for new blog post.
 See `org-capture-templates' for more information."
     (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
            (fname (org-hugo-slug title)))
@@ -1004,10 +1004,36 @@ See `org-capture-templates' for more information."
                    "%?\n")          ;Place the cursor here finally
                  "\n")))
 
+  (defun org-hugo-new-subtree-post-capture-template-comic ()
+    "Returns `org-capture' template string for new comic post.
+See `org-capture-templates' for more information."
+    (let* ((title (read-from-minibuffer "Comic Title: ")) ;Prompt to enter the post title
+           (fname (read-from-minibuffer "Image Filename: "))
+           (cnumber (number-to-string (length (org-map-entries nil nil '("/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org"))))))
+
+      (mapconcat #'identity
+                 `(
+                   ,(concat "* TODO " title)
+                   ":PROPERTIES:"
+                   ,(concat ":EXPORT_FILE_NAME: " fname)
+                   ,(concat ":EXPORT_HUGO_SLUG: " cnumber)
+                   ":END:"
+                   "%?\n")          ;Place the cursor here finally
+                 "\n")))
+
   (add-to-list 'org-capture-templates
-               '("h"
-                 "Hugo post at rakhim.org"
+               '("p"
+                 "Blog post at rakhim.org"
                  entry
                  (file+olp "rakhim.org" "Blog")
-                 (function org-hugo-new-subtree-post-capture-template))))
+                 (function org-hugo-new-subtree-post-capture-template)))
+  (add-to-list 'org-capture-templates
+               '("c"
+                 "New comic at rakhim.org"
+                 entry
+                 (file+olp "/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org" "Comics")
+                 (function org-hugo-new-subtree-post-capture-template-comic)))
+  )
+
+
 #+END_SRC
