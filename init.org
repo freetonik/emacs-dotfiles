@@ -6,7 +6,6 @@
 
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
-
 * Installing
 I think it'll be better not to clone and use this config as is, but rather build your own config using mine as a starting point. But if you really want to try it, then follow these steps:
 
@@ -29,7 +28,6 @@ mv dot-emacs ~/.emacs.d
 #+END_SRC
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
-
 * Configurations
 
 ** Use package
@@ -146,17 +144,13 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 
 #+BEGIN_SRC emacs-lisp
 (load-theme 'tsdh-light)
-
-;; (use-package rich-minority
-;;   :config
-;;   (rich-minority-mode 1)
-;;   (setf rm-blacklist ""))
 #+END_SRC
 
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 15")
+(set-face-attribute 'default nil :font "Inconsolata LGC 14")
+(setq-default line-spacing 0)
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
 #+END_SRC
@@ -183,6 +177,9 @@ Show parens and other pairs.
   ;; no '' pair in emacs-lisp-mode
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
+  (define-key smartparens-mode-map (kbd "C-<right>") 'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-<left>") 'sp-forward-barf-sexp)
+
 )
 #+END_SRC
 
@@ -197,7 +194,7 @@ Nice and simple mode line.
 #+BEGIN_SRC emacs-lisp
 (setq column-number-mode t) ;; show columns in addition to rows in mode line
 (set-face-attribute 'mode-line nil :background "NavajoWhite")
-(set-face-attribute 'mode-line-inactive nil :background "grey93")
+(set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
 #+END_SRC
 
 Show vi-like tilde in the fringe on empty lines.
@@ -288,6 +285,46 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 (use-package simpleclip
   :config
   (simpleclip-mode 1))
+#+END_SRC
+
+** Scrolling
+
+Nicer scrolling behavior.
+
+#+BEGIN_SRC emacs-lisp
+(setq scroll-margin 10
+   scroll-step 1
+   next-line-add-newlines nil
+   scroll-conservatively 10000
+   scroll-preserve-screen-position 1)
+
+(setq mouse-wheel-follow-mouse 't)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+#+END_SRC
+
+** Super Save
+
+#+BEGIN_SRC emacs-lisp
+(use-package super-save
+  :config
+  (super-save-mode +1))
+#+END_SRC
+
+** OS integration
+
+Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell)
+
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+#+END_SRC
+
+A nice little real terminal in a popup.
+
+#+BEGIN_SRC emacs-lisp
+(use-package shell-pop)
 #+END_SRC
 
 ** Navigation and editing
@@ -585,21 +622,6 @@ Let's try Shackle one more time.
   ;; (add-hook 'my/after-init-hook 'shackle-mode))
 #+END_SRC
 
-** Scrolling
-
-Nicer scrolling behavior.
-
-#+BEGIN_SRC emacs-lisp
-(setq scroll-margin 10
-   scroll-step 1
-   next-line-add-newlines nil
-   scroll-conservatively 10000
-   scroll-preserve-screen-position 1)
-
-(setq mouse-wheel-follow-mouse 't)
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-#+END_SRC
-
 ** Projectile
 
 Install Projectile.
@@ -688,7 +710,7 @@ And show changes in the gutter (fringe).
 
 ** NeoTree
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package neotree
   :config
   (setq neo-window-width 32
@@ -701,23 +723,6 @@ And show changes in the gutter (fringe).
         neo-auto-indent-point t)
   (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
   (global-set-key (kbd "s-B") 'neotree-toggle))
-#+END_SRC
-
-** OS integration
-
-Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
-
-#+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell)
-
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-#+END_SRC
-
-A nice little real terminal in a popup.
-
-#+BEGIN_SRC emacs-lisp
-(use-package shell-pop)
 #+END_SRC
 
 ** Spellchecking
@@ -822,13 +827,6 @@ Emmet.
 ;; (global-set-key (kbd "s-3") (lambda () (interactive) (select-frame-by-name "ORG")))
 #+END_SRC
 
-** Super Save
-
-#+BEGIN_SRC emacs-lisp
-(use-package super-save
-  :config
-  (super-save-mode +1))
-#+END_SRC
 
 * Org
 
@@ -840,16 +838,24 @@ Visually indent sections. This looks better for smaller files.
   (setq org-startup-indented t))
 #+END_SRC
 
-Store all my org files in =~/org=.
+Store all my org files in =~/Dropbox/Knowledgebase/org=.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-directory "~/org")
+(setq org-directory "~/Dropbox/Knowledgebase/org")
 #+END_SRC
 
 And all of those files should be in included agenda.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("~/org"))
+(setq org-agenda-files '("~/Dropbox/Knowledgebase/org"))
+#+END_SRC
+
+Refile targets should include files and down to 9 levels into them.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                 (org-agenda-files :maxlevel . 9))))
+
 #+END_SRC
 
 Allow shift selection with arrows. This will not interfere with some built-in shift+arrow functionality in Org.
@@ -879,7 +885,7 @@ And inside those code blocks indentation should be correct depending on the sour
 When Emacs starts, I want to see my Main org file instead of the scratch buffer.
 
 #+BEGIN_SRC emacs-lisp
-(find-file "~/org/main.org")
+(find-file "~/Dropbox/Knowledgebase/org/main.org")
 #+END_SRC
 
 State changes for todos and also notes should go into a Logbook drawer:
@@ -893,7 +899,7 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 #+BEGIN_SRC emacs-lisp
 (defun org-mode-export-links ()
   "Export links document to HTML automatically when 'links.org' is changed"
-  (when (equal (buffer-file-name) "/Users/rakhim/org/links.org")
+  (when (equal (buffer-file-name) "/Users/rakhim/Dropbox/Knowledgebase/org/links.org")
     (progn
       (org-html-export-to-html)
       (message "HTML exported"))))
@@ -904,10 +910,11 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 Quickly open todo and config files.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/org/main.org")))
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
-(global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/org/links.org")))
-(global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/org/rakhim.org")))
+(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/Dropbox/Knowledgebase/org/main.org")))
+(global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/Dropbox/Knowledgebase/org/links.org")))
+(global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
+(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-ag nil "~/Dropbox/Knowledgebase/org")))
 #+END_SRC
 
 Org capture.
@@ -915,8 +922,6 @@ Org capture.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c c") 'org-capture)
 #+END_SRC
-
-I like to put one empty line between headers. By default, Org-mode doesn't show those lines when collapsing.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-cycle-separator-lines 1)
@@ -947,18 +952,16 @@ Consider switching meta-left/right to =C-c C-,= and =C-c C-.=. These are used to
 
               (local-set-key (kbd "C-c C-,") 'org-metaleft)
               (local-set-key (kbd "C-c C-.") 'org-metaright)
-
-              )
-            ))
+              )))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
+;; no shift or alt with arrows
 (define-key org-mode-map (kbd "<S-left>") nil)
 (define-key org-mode-map (kbd "<S-right>") nil)
-
 (define-key org-mode-map (kbd "<M-left>") nil)
 (define-key org-mode-map (kbd "<M-right>") nil)
-
+;; no shift-alt with arrows
 (define-key org-mode-map (kbd "<M-S-left>") nil)
 (define-key org-mode-map (kbd "<M-S-right>") nil)
 
@@ -970,6 +973,30 @@ Enable speed keys to manage headings without arrows.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-use-speed-commands t)
+#+END_SRC
+
+** Capture templates
+
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+      (quote (
+               ;; (("t"
+               ;;   "TODO"
+               ;;   entry
+               ;;   (file+olp "inbox.org" "Tasks")
+               ;;   "* TODO %?\n%U\n%a\n")
+
+               ("n"
+                 "Note"
+                 entry
+                 (file+olp "main.org" "Notes Inbox")
+                 "* %?\n%U\n%a\n")
+               ("j"
+                 "Journal"
+                 entry
+                 (file+datetree "journal.org")
+                 "* %U\n%?"))
+               ))
 #+END_SRC
 
 ** Blogging with hugo
@@ -1022,18 +1049,15 @@ See `org-capture-templates' for more information."
                  "\n")))
 
   (add-to-list 'org-capture-templates
-               '("p"
+               '("b"
                  "Blog post at rakhim.org"
                  entry
-                 (file+olp "rakhim.org" "Blog")
+                 (file+olp "/Users/rakhim/code/rakhim.org/content-org/blog.org" "Blog")
                  (function org-hugo-new-subtree-post-capture-template)))
   (add-to-list 'org-capture-templates
                '("c"
-                 "New comic at rakhim.org"
+                 "Comic at rakhim.org"
                  entry
                  (file+olp "/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org" "Comics")
-                 (function org-hugo-new-subtree-post-capture-template-comic)))
-  )
-
-
+                 (function org-hugo-new-subtree-post-capture-template-comic))))
 #+END_SRC
