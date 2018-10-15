@@ -125,13 +125,6 @@ This helps get rid of =functions might not be defined at runtime= warnings. See 
   (setq use-package-expand-minimally byte-compile-current-file))
 #+END_SRC
 
-Store custom-file separately, don't freak out when it's not found.
-
-#+BEGIN_SRC emacs-lisp
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
-#+END_SRC
-
 ** Visuals
 
 #+BEGIN_SRC emacs-lisp
@@ -630,7 +623,8 @@ Install Projectile.
 (use-package projectile
   :config
   (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
-  (projectile-mode +1))
+  (projectile-mode +1)
+  (setq projectile-project-search-path '("~/code/")))
 #+END_SRC
 
 ** Ivy, Swiper and Counsel
@@ -659,6 +653,7 @@ Install Projectile.
 (use-package counsel
   :config
   (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "s-y") 'counsel-yank-pop)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file))
 
 (use-package smex)
@@ -1060,4 +1055,13 @@ See `org-capture-templates' for more information."
                  entry
                  (file+olp "/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org" "Comics")
                  (function org-hugo-new-subtree-post-capture-template-comic))))
+#+END_SRC
+
+* Customizations
+
+Store custom-file separately, don't freak out when it's not found.
+
+#+BEGIN_SRC emacs-lisp
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
 #+END_SRC
