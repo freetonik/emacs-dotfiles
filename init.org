@@ -6,6 +6,7 @@
 
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
+
 * Installing
 I think it'll be better not to clone and use this config as is, but rather build your own config using mine as a starting point. But if you really want to try it, then follow these steps:
 
@@ -28,6 +29,7 @@ mv dot-emacs ~/.emacs.d
 #+END_SRC
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
+
 * Configurations
 
 ** Use package
@@ -60,20 +62,27 @@ Install use-package.
 (setq use-package-always-ensure t)
 #+END_SRC
 
+** Manually installed packages
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(load "edit-indirect")
+#+END_SRC
+
 ** Modifier keys
 
 Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
 
 #+BEGIN_SRC emacs-lisp
-(setq mac-right-command-modifier 'super)
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'super)
+;;(setq mac-right-command-modifier 'super)
+;;(setq mac-left-option-modifier 'meta)
+;;(setq mac-command-modifier 'super)
 #+END_SRC
 
 Right Alt (option) can be used to enter symbols like em dashes =—=.
 
 #+BEGIN_SRC emacs-lisp
-(setq mac-right-option-modifier 'nil)
+;; (setq mac-right-option-modifier 'nil)
 #+END_SRC
 
 ** Meta
@@ -142,7 +151,7 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 14")
+(set-face-attribute 'default nil :font "Inconsolata LGC 13")
 (setq-default line-spacing 0)
 (setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
 (tool-bar-mode -1)
@@ -627,9 +636,44 @@ Install Projectile.
   (setq projectile-project-search-path '("~/code/")))
 #+END_SRC
 
-** Ivy, Swiper and Counsel
+
+** Helm again
 
 #+BEGIN_SRC emacs-lisp
+(use-package helm-swoop)
+(use-package helm
+  :config
+  (require 'helm-config)
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  (setq helm-follow-mode-persistent t)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (setq helm-M-x-fuzzy-match t)
+  (setq helm-buffers-fuzzy-matching t)
+  (setq helm-recentf-fuzzy-match t)
+  (setq helm-apropos-fuzzy-match t)
+  (setq helm-split-window-inside-p t)
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "s-b") 'helm-mini)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (global-set-key (kbd "s-f") 'helm-swoop))
+(setq helm-swoop-pre-input-function
+      (lambda () ""))
+
+(use-package helm-projectile
+  :config
+  (helm-projectile-on))
+
+(use-package helm-ag
+  :config
+  (global-set-key (kbd "s-F") 'helm-projectile-ag))
+(global-set-key (kbd "s-p") 'helm-projectile-find-file)
+#+END_SRC
+
+
+** Ivy, Swiper and Counsel
+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ivy
   :config
   (ivy-mode 1)
@@ -663,7 +707,7 @@ Install Projectile.
 
 Ivy-rich make Ivy a bit more friendly by adding information to ivy buffers, e.g. description of commands in =M-x=, meta info about buffers in =ivy-switch-buffer=, etc.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ivy-rich
   :config
   (ivy-rich-mode 1)
@@ -672,7 +716,7 @@ Ivy-rich make Ivy a bit more friendly by adding information to ivy buffers, e.g.
 
 ** Counsel integration for Projectile
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package counsel-projectile
   :config
   (counsel-projectile-mode 1)
@@ -805,7 +849,13 @@ Emmet.
   (add-hook 'css-mode-hook  'emmet-mode)) ;; enable Emmet's css abbreviation.
 #+END_SRC
 
-** Frames
+** Frames, windows, buffers
+
+#+BEGIN_SRC emacs-lisp
+(defun close-all-buffers ()
+  (interactive)
+  (mapc 'kill-buffer (buffer-list)))
+#+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 ;; (set-frame-name "EDIT")
@@ -994,6 +1044,10 @@ Enable speed keys to manage headings without arrows.
                ))
 #+END_SRC
 
+** LaTeX templates
+
+
+
 ** Blogging with hugo
 Install =ox-hugo= and enable auto export.
 
@@ -1001,7 +1055,7 @@ Install =ox-hugo= and enable auto export.
 (use-package ox-hugo
   :after ox)
 
-(require 'ox-hugo-auto-export)
+(use-package ox-hugo-auto-export :ensure nil :after ox-hugo)
 #+END_SRC
 
 Org Capture template to quickly create posts and generate slugs.
