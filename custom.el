@@ -32,6 +32,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(helm-M-x-key ((t (:foreground "orange2" :underline t :weight semi-bold))))
+ '(helm-ff-dotted-directory ((t (:foreground "gray65"))))
  '(helm-selection ((t (:background "wheat1" :distant-foreground "black"))))
  '(helm-source-header ((t (:foreground "black" :weight semi-bold))))
  '(helm-visible-mark ((t (:background "dark blue"))))
