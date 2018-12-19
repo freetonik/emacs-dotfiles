@@ -405,8 +405,6 @@ Go to other windows easily with one keystroke =s-something= instead of =C-x some
   (other-window 1 nil)
   (switch-to-next-buffer))
 
-(global-set-key (kbd "s-o") (kbd "C-x o"))
-
 (global-set-key (kbd "s-w") (kbd "C-x 0")) ;; just like close tab in a web browser
 (global-set-key (kbd "s-W") (kbd "C-x 1")) ;; close others with shift
 
@@ -561,6 +559,8 @@ I'm still not happy with the way new windows are spawned. For now, at least, let
 Move between windows with Control-Command-Arrow and with =Cmd= just like in iTerm.
 
 #+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-o") (kbd "C-x o"))
+
 (use-package windmove
   :config
   (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
@@ -1117,6 +1117,23 @@ See `org-capture-templates' for more information."
                  entry
                  (file+olp "/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org" "Comics")
                  (function org-hugo-new-subtree-post-capture-template-comic))))
+#+END_SRC
+
+** Slim HTML export
+
+slimhtml is an emacs org mode export backend. It is a set of transcoders for common org elements which outputs minimal HTML.
+
+#+BEGIN_SRC emacs-lisp
+(use-package htmlize)
+(use-package ox-slimhtml)
+
+(defun org-html-export-as-slimhtml
+(&optional async subtreep visible-only body-only ext-plist)
+  (interactive)
+  (org-export-to-buffer 'slimhtml "*slimhtml*"
+    async subtreep visible-only body-only ext-plist (lambda () (html-mode))))
+
+(global-set-key (kbd "s-O") (lambda () (interactive) (org-html-export-as-slimhtml nil nil nil t)))
 #+END_SRC
 
 * Customizations
