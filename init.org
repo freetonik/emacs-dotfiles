@@ -409,7 +409,9 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
   :config
-  (global-set-key (kbd "s-'") 'er/expand-region))
+  (global-set-key (kbd "s-'") 'er/expand-region)
+  (global-set-key (kbd "s-\"") 'er/contract-region))
+;; "
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
@@ -819,11 +821,24 @@ Here are all the packages needed for programming languages and formats.
 (use-package yaml-mode)
 (use-package markdown-mode)
 (use-package haml-mode)
-(use-package clojure-mode)
-(use-package cider)
 (use-package dumb-jump
   :config
   (dumb-jump-mode))
+#+END_SRC
+
+Clojure.
+
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode)
+(use-package cider)
+
+(use-package clj-refactor)
+(defun my-clojure-mode-hook ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+    (cljr-add-keybindings-with-prefix "C-c C-m"))
+(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 #+END_SRC
 
 Web mode.
@@ -1126,6 +1141,16 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
     async subtreep visible-only body-only ext-plist (lambda () (html-mode))))
 
 (global-set-key (kbd "s-O") (lambda () (interactive) (org-html-export-as-slimhtml nil nil nil t)))
+
+(global-set-key (kbd "s-O") (lambda ()
+                              (interactive)
+                              (org-html-export-as-slimhtml nil nil nil t)
+                              (mark-whole-buffer)
+                              (simpleclip-copy (point-min) (point-max))
+                              (delete-window)))
+
+
+;; (org-export-to-buffer 'slimhtml "*slimhtml*")
 #+END_SRC
 
 * Customizations
