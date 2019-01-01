@@ -305,14 +305,6 @@ Nicer scrolling behavior.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 #+END_SRC
 
-** Super Save
-
-#+BEGIN_SRC emacs-lisp
-(use-package super-save
-  :config
-  (super-save-mode +1))
-#+END_SRC
-
 ** OS integration
 
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
