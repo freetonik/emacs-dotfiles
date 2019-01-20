@@ -626,6 +626,7 @@ Install Projectile.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :config
+  (setq projectile-enable-caching t)
   (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
   (projectile-mode +1)
   (setq projectile-project-search-path '("~/code/")))
@@ -662,10 +663,9 @@ Install Projectile.
 
 (use-package helm-ag
   :config
-  ;; (global-set-key (kbd "s-F") 'helm-projectile-ag)
-)
+  (global-set-key (kbd "s-F") 'helm-projectile-ag))
 
-;; (global-set-key (kbd "s-p") 'helm-projectile-find-file)
+(global-set-key (kbd "s-p") 'helm-projectile-find-file)
 #+END_SRC
 
 
