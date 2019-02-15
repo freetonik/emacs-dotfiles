@@ -1052,9 +1052,13 @@ Enable speed keys to manage headings without arrows.
                ))
 #+END_SRC
 
-** LaTeX templates
 
 
+** Pandoc exporter
+
+#+BEGIN_SRC emacs-lisp
+(use-package ox-pandoc)
+#+END_SRC
 
 ** Blogging with hugo
 Install =ox-hugo= and enable auto export.
