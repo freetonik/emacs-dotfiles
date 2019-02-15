@@ -143,6 +143,10 @@ This helps get rid of =functions might not be defined at runtime= warnings. See 
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-mode t)
+#+END_SRC
+
 I've tried many 3rd party themes, but keep coming back to the default light theme.
 
 #+BEGIN_SRC emacs-lisp
