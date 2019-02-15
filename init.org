@@ -623,11 +623,11 @@ Let's try Shackle one more time.
   ;; (add-hook 'my/after-init-hook 'shackle-mode))
 #+END_SRC
 
-** Projectile
+** Projectile (disabled)
 
 Install Projectile.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package projectile
   :config
   (setq projectile-enable-caching t)
@@ -700,7 +700,9 @@ Install Projectile.
   :config
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "s-y") 'counsel-yank-pop)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file))
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "s-F") 'counsel-ag)
+  (global-set-key (kbd "s-p") 'counsel-git))
 
 (use-package smex)
 (use-package flx)
@@ -716,9 +718,9 @@ Ivy-rich make Ivy a bit more friendly by adding information to ivy buffers, e.g.
   (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
 #+END_SRC
 
-** Counsel integration for Projectile
+** Counsel integration for Projectile (disabled)
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package counsel-projectile
   :config
   (counsel-projectile-mode 1)
