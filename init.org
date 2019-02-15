@@ -901,16 +901,16 @@ Visually indent sections. This looks better for smaller files.
   (setq org-startup-indented t))
 #+END_SRC
 
-Store all my org files in =~/Dropbox/Knowledgebase/org=.
+Store all my org files in =~/Google Drive/Knowledgebase/org=.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-directory "~/Dropbox/Knowledgebase/org")
+(setq org-directory "~/Google Drive/Knowledgebase/org")
 #+END_SRC
 
 And all of those files should be in included agenda.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("~/Dropbox/Knowledgebase/org"))
+(setq org-agenda-files '("~/Google Drive/Knowledgebase/org"))
 #+END_SRC
 
 Refile targets should include files and down to 9 levels into them.
@@ -956,7 +956,7 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 #+BEGIN_SRC emacs-lisp
 (defun org-mode-export-links ()
   "Export links document to HTML automatically when 'links.org' is changed"
-  (when (equal (buffer-file-name) "/Users/rakhim/Dropbox/Knowledgebase/org/links.org")
+  (when (equal (buffer-file-name) "/Users/rakhim/Google Drive/Knowledgebase/org/links.org")
     (progn
       (org-html-export-to-html)
       (message "HTML exported"))))
@@ -968,10 +968,10 @@ Quickly open todo and config files.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
-(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/Dropbox/Knowledgebase/org/main.org")))
-(global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/Dropbox/Knowledgebase/org/links.org")))
+(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/main.org")))
+(global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/links.org")))
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
-(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-ag nil "~/Dropbox/Knowledgebase/org")))
+(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-ag nil "~/Google Drive/Knowledgebase/org")))
 #+END_SRC
 
 Org capture.
