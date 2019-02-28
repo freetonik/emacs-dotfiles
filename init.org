@@ -623,6 +623,12 @@ Let's try Shackle one more time.
   ;; (add-hook 'my/after-init-hook 'shackle-mode))
 #+END_SRC
 
+** Edit indirect
+
+#+BEGIN_SRC emacs-lisp
+(use-package edit-indirect)
+#+END_SRC
+
 ** Projectile (disabled)
 
 Install Projectile.
