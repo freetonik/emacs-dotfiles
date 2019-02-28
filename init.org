@@ -824,7 +824,12 @@ Here are all the packages needed for programming languages and formats.
 
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
-(use-package markdown-mode)
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "pandoc"))
 (use-package haml-mode)
 (use-package dumb-jump
   :config
