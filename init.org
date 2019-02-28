@@ -62,9 +62,9 @@ Install use-package.
 (setq use-package-always-ensure t)
 #+END_SRC
 
-** Manually installed packages
+** Manually installed packages (temporarily disabled)
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (load "edit-indirect")
 #+END_SRC
@@ -1148,7 +1148,7 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
   (org-export-to-buffer 'slimhtml "*slimhtml*"
     async subtreep visible-only body-only ext-plist (lambda () (html-mode))))
 
-(global-set-key (kbd "s-O") (lambda () (interactive) (org-html-export-as-slimhtml nil nil nil t)))
+;; (global-set-key (kbd "s-O") (lambda () (interactive) (org-html-export-as-slimhtml nil nil nil t)))
 
 (global-set-key (kbd "s-O") (lambda ()
                               (interactive)
@@ -1156,7 +1156,6 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
                               (mark-whole-buffer)
                               (simpleclip-copy (point-min) (point-max))
                               (delete-window)))
-
 
 ;; (org-export-to-buffer 'slimhtml "*slimhtml*")
 #+END_SRC
