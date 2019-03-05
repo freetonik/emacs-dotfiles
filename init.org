@@ -184,10 +184,9 @@ Show parens and other pairs.
   ;; no '' pair in emacs-lisp-mode
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
+  (sp-local-tag 'markdown-mode "s" "```scheme" "```")
   (define-key smartparens-mode-map (kbd "C-<right>") 'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-<left>") 'sp-forward-barf-sexp)
-
-)
+  (define-key smartparens-mode-map (kbd "C-<left>") 'sp-forward-barf-sexp))
 #+END_SRC
 
 Wrap lines always.
