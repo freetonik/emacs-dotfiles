@@ -19,7 +19,7 @@
  '(org-export-backends (quote (ascii html latex md hugo slimhtml)))
  '(package-selected-packages
    (quote
-    (edit-indirect ox-pandoc helm-ag helm slim-mode rainbow-delimiters clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree corral terraform-mode multi-term define-word yaml-mode which-key web-mode visual-regexp vi-tilde-fringe use-package undo-tree spacemacs-theme spaceline smex smartparens simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit ivy-rich haml-mode git-gutter flx expand-region exec-path-from-shell dumb-jump company cider avy)))
+    (edit-indirect ox-pandoc helm-ag helm slim-mode rainbow-delimiters clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree corral terraform-mode multi-term define-word yaml-mode which-key web-mode visual-regexp vi-tilde-fringe use-package spacemacs-theme spaceline smex smartparens simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit ivy-rich haml-mode git-gutter flx expand-region exec-path-from-shell dumb-jump company cider avy)))
  '(shell-pop-shell-type
    (quote
     ("ansi-term" "*ansi-term*"
@@ -37,6 +37,7 @@
  '(helm-selection ((t (:background "wheat1" :distant-foreground "black"))))
  '(helm-source-header ((t (:foreground "black" :weight semi-bold))))
  '(helm-visible-mark ((t (:background "dark blue"))))
+ '(line-number-current-line ((t (:inherit default :background "navajo white"))))
  '(markdown-inline-code-face ((t (:foreground "dark red"))))
  '(rainbow-delimiters-depth-2-face ((t (:inherit rainbow-delimiters-base-face :foreground "red"))))
  '(rainbow-delimiters-depth-3-face ((t (:inherit rainbow-delimiters-base-face :foreground "medium blue"))))

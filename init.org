@@ -144,7 +144,7 @@ This helps get rid of =functions might not be defined at runtime= warnings. See 
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-mode t)
+(global-display-line-numbers-mode)
 #+END_SRC
 
 I've tried many 3rd party themes, but keep coming back to the default light theme.
@@ -282,7 +282,7 @@ Some basic things.
 (scroll-bar-mode -1)
 (delete-selection-mode 1)
 (global-unset-key (kbd "s-p"))
-(global-hl-line-mode nil)
+(global-hl-line-mode 0)
 #+END_SRC
 
 I want Emacs kill ring and system clipboard to be independent. Simpleclip is the solution to that.
