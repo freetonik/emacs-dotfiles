@@ -823,18 +823,41 @@ Word definition search
   (add-hook 'after-init-hook 'global-company-mode))
 #+END_SRC
 
-** Packages for programming
+** Markdown
 
-Here are all the packages needed for programming languages and formats.
+While I prefer Org, I still need to be able to work with Markdown efficiently. Here's a good package and "Cmd-O" to copy raw HTML to clipboard.
 
 #+BEGIN_SRC emacs-lisp
-(use-package yaml-mode)
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "pandoc"))
+
+(eval-after-load 'markdown-mode
+  `(define-key markdown-mode-map (kbd "C-s-<down>") 'markdown-narrow-to-subtree))
+
+(eval-after-load 'markdown-mode
+  `(define-key markdown-mode-map (kbd "C-s-<up>") 'widen))
+
+(eval-after-load 'markdown-mode
+  `(define-key markdown-mode-map (kbd "s-O") (lambda ()
+                                               (interactive)
+                                               (markdown-kill-ring-save)
+                                               (let ((oldbuf (current-buffer)))
+                                                 (save-current-buffer
+                                                   (set-buffer "*markdown-output*")
+                                                   (mark-whole-buffer)
+                                                   (simpleclip-copy (point-min) (point-max)))))))
+
+#+END_SRC
+** Packages for programming
+
+Here are all the packages needed for programming languages and formats.
+
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode)
 (use-package haml-mode)
 (use-package dumb-jump
   :config
@@ -1024,6 +1047,12 @@ Consider switching meta-left/right to =C-c C-,= and =C-c C-.=. These are used to
               )))
 #+END_SRC
 
+
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
+(define-key org-mode-map (kbd "C-s-<up>") 'widen)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 ;; no shift or alt with arrows
 (define-key org-mode-map (kbd "<S-left>") nil)
@@ -1155,13 +1184,13 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
 
 ;; (global-set-key (kbd "s-O") (lambda () (interactive) (org-html-export-as-slimhtml nil nil nil t)))
 
-(global-set-key (kbd "s-O") (lambda ()
-                              (interactive)
-                              (org-html-export-as-slimhtml nil nil nil t)
-                              (mark-whole-buffer)
-                              (simpleclip-copy (point-min) (point-max))
-                              (delete-window)))
-
+(eval-after-load 'org
+  `(define-key org-mode-map (kbd "s-O") (lambda ()
+                                          (interactive)
+                                          (org-html-export-as-slimhtml nil nil nil t)
+                                          (mark-whole-buffer)
+                                          (simpleclip-copy (point-min) (point-max))
+                                          (delete-window))))
 ;; (org-export-to-buffer 'slimhtml "*slimhtml*")
 #+END_SRC
 
@@ -1173,3 +1202,16 @@ Store custom-file separately, don't freak out when it's not found.
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 #+END_SRC
+
+* ToDo
+
+#+BEGIN_QUOTE
+(setq magit-repository-directories '(("\~/code" . 2)))
+
+; bind this to a key
+(defun fg/magit-status-with-prefix-arg ()
+  "Call `magit-status` with a prefix."
+  (interactive)
+  (let ((current-prefix-arg '(4)))
+    (call-interactively #'magit-status)))
+#+END_QUOTE
