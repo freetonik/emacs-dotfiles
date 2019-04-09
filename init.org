@@ -758,6 +758,20 @@ And show changes in the gutter (fringe).
   (set-face-foreground 'git-gutter:deleted "red"))
 #+END_SRC
 
+Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast listener fritzgrabo).
+
+#+BEGIN_SRC emacs-lisp
+(setq magit-repository-directories '(("\~/code" . 4)))
+
+(defun magit-status-with-prefix-arg ()
+  "Call `magit-status` with a prefix."
+  (interactive)
+  (let ((current-prefix-arg '(4)))
+    (call-interactively #'magit-status)))
+
+(global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
+#+END_SRC
+
 ** NeoTree
 
 #+BEGIN_SRC emacs-lisp
@@ -1206,14 +1220,3 @@ Store custom-file separately, don't freak out when it's not found.
 #+END_SRC
 
 * ToDo
-
-#+BEGIN_QUOTE
-(setq magit-repository-directories '(("\~/code" . 2)))
-
-; bind this to a key
-(defun fg/magit-status-with-prefix-arg ()
-  "Call `magit-status` with a prefix."
-  (interactive)
-  (let ((current-prefix-arg '(4)))
-    (call-interactively #'magit-status)))
-#+END_QUOTE
