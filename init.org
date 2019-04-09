@@ -709,6 +709,8 @@ Install Projectile.
   (global-set-key (kbd "s-F") 'counsel-ag)
   (global-set-key (kbd "s-p") 'counsel-git))
 
+(setq counsel-git-cmd "git ls-files --full-name --exclude-standard --others --cached --")
+
 (use-package smex)
 (use-package flx)
 (use-package avy)
