@@ -7,7 +7,14 @@
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
 
-* Installing
+* Installing Emacs
+
+#+BEGIN_SRC sh :tangle no
+brew tap railwaycat/emacsmacport
+brew cask install emacs-mac
+#+END_SRC
+
+* Installing config
 I think it'll be better not to clone and use this config as is, but rather build your own config using mine as a starting point. But if you really want to try it, then follow these steps:
 
 Clone the repo:
@@ -29,8 +36,59 @@ mv dot-emacs ~/.emacs.d
 #+END_SRC
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
-
 * Configurations
+
+** Meta
+
+When this configuration is loaded for the first time, the =init.el= is the file that is loaded. It looks like this:
+
+#+BEGIN_SRC emacs-lisp :tangle no
+;; This file replaces itself with the actual configuration at first run.
+
+;; We can't tangle without org!
+(require 'org)
+;; Open the configuration
+(find-file (concat user-emacs-directory "init.org"))
+;; tangle it
+(org-babel-tangle)
+;; load it
+(load-file (concat user-emacs-directory "init.el"))
+;; finally byte-compile it
+(byte-compile-file (concat user-emacs-directory "init.el"))
+#+END_SRC
+
+Lexical scoping for the init-file is needed, it can be specified in the header. This is the first line of the actual configuration:
+
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t -*-
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold 100000000)
+#+END_SRC
+
+Tangle and compile this file on save automatically:
+
+#+BEGIN_SRC emacs-lisp
+(defun tangle-init ()
+  "If the current buffer is 'init.org' the code-blocks are
+tangled, and the tangled file is compiled."
+  (when (equal (buffer-file-name)
+               (expand-file-name (concat user-emacs-directory "init.org")))
+    ;; Avoid running hooks when tangling.
+    (let ((prog-mode-hook nil))
+      (org-babel-tangle)
+      (byte-compile-file (concat user-emacs-directory "init.el")))))
+
+(add-hook 'after-save-hook 'tangle-init)
+#+END_SRC
+
+This helps get rid of =functions might not be defined at runtime= warnings. See https://github.com/jwiegley/use-package/issues/590
+
+#+BEGIN_SRC emacs-lisp
+(eval-when-compile
+  (setq use-package-expand-minimally byte-compile-current-file))
+#+END_SRC
 
 ** Use package
 
@@ -62,13 +120,6 @@ Install use-package.
 (setq use-package-always-ensure t)
 #+END_SRC
 
-** Manually installed packages (temporarily disabled)
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "edit-indirect")
-#+END_SRC
-
 ** Modifier keys
 
 Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
@@ -82,70 +133,11 @@ Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
 
 Right Alt (option) can be used to enter symbols like em dashes =—=.
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (setq mac-right-option-modifier 'nil)
 #+END_SRC
 
-** Meta
-
-When this configuration is loaded for the first time, the =init.el= is the file that is loaded. It looks like this:
-
-#+BEGIN_SRC emacs-lisp :tangle no
-;; This file replaces itself with the actual configuration at first run.
-
-;; We can't tangle without org!
-(require 'org)
-;; Open the configuration
-(find-file (concat user-emacs-directory "init.org"))
-;; tangle it
-(org-babel-tangle)
-;; load it
-(load-file (concat user-emacs-directory "init.el"))
-;; finally byte-compile it
-(byte-compile-file (concat user-emacs-directory "init.el"))
-#+END_SRC
-
-Lexical scoping for the init-file is needed, it can be specified in the
-header. This is the first line of the actual configuration:
-
-#+BEGIN_SRC emacs-lisp
-;;; -*- lexical-binding: t -*-
-#+END_SRC
-
-Tangle and compile this file on save automatically:
-
-#+BEGIN_SRC emacs-lisp
-(defun tangle-init ()
-  "If the current buffer is 'init.org' the code-blocks are
-tangled, and the tangled file is compiled."
-  (when (equal (buffer-file-name)
-               (expand-file-name (concat user-emacs-directory "init.org")))
-    ;; Avoid running hooks when tangling.
-    (let ((prog-mode-hook nil))
-      (org-babel-tangle)
-      (byte-compile-file (concat user-emacs-directory "init.el")))))
-
-(add-hook 'after-save-hook 'tangle-init)
-#+END_SRC
-
-This helps get rid of =functions might not be defined at runtime= warnings. See https://github.com/jwiegley/use-package/issues/590
-
-#+BEGIN_SRC emacs-lisp
-(eval-when-compile
-  (setq use-package-expand-minimally byte-compile-current-file))
-#+END_SRC
-
 ** Visuals
-
-#+BEGIN_SRC emacs-lisp
-(when (memq window-system '(mac ns))
-  (add-to-list 'default-frame-alist '(ns-appearance . light)) ;; {light, dark}
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(global-display-line-numbers-mode)
-#+END_SRC
 
 I've tried many 3rd party themes, but keep coming back to the default light theme.
 
@@ -158,16 +150,12 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil :font "Inconsolata LGC 13")
 (setq-default line-spacing 0)
-(setq initial-frame-alist '((top . 10) (left . 10) (width . 125) (height . 45)))
+(setq initial-frame-alist '((width . 135) (height . 55)))
 (tool-bar-mode -1)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-;; (require 'paren)
-;; (setq show-paren-delay 0)
-;; (show-paren-mode 1)
 (set-face-background 'show-paren-match "grey84")
-;; (set-face-foreground 'show-paren-match nil)
 (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 #+END_SRC
 
@@ -192,7 +180,8 @@ Show parens and other pairs.
 Wrap lines always.
 
 #+BEGIN_SRC emacs-lisp
-(global-visual-line-mode 1)
+;; (global-visual-line-mode 1)
+(setq org-startup-truncated nil)
 #+END_SRC
 
 Nice and simple mode line.
@@ -201,14 +190,6 @@ Nice and simple mode line.
 (setq column-number-mode t) ;; show columns in addition to rows in mode line
 (set-face-attribute 'mode-line nil :background "NavajoWhite")
 (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
-#+END_SRC
-
-Show vi-like tilde in the fringe on empty lines.
-
-#+BEGIN_SRC emacs-lisp
-(use-package vi-tilde-fringe
-  :config
-  (global-vi-tilde-fringe-mode 1))
 #+END_SRC
 
 Show full path in the title bar.
@@ -222,7 +203,6 @@ Never use tabs, use spaces instead.
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
 (setq tab-width 2)
-
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
 (setq-default c-basic-offset 2)
@@ -233,7 +213,7 @@ Never use tabs, use spaces instead.
 
 Which key is great for learning Emacs, it shows a nice table of possible commands.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package which-key
   :config
   (which-key-mode)
@@ -270,19 +250,16 @@ Some basic things.
  inhibit-startup-screen t          ; or screen
  cursor-in-non-selected-windows t  ; Hide the cursor in inactive windows
 
- echo-keystrokes 0.1               ; Show keystrokes right away, don't show the message in the scratch buffe
+ echo-keystrokes 0.1               ; Show keystrokes right away, don't show the message in the scratch buffer
  initial-scratch-message nil       ; Empty scratch buffer
- initial-major-mode 'org-mode      ; org mode by default
  sentence-end-double-space nil     ; Sentences should end in one space, come on!
  confirm-kill-emacs 'y-or-n-p      ; y and n instead of yes and no when quitting
- ;; help-window-select t              ; select help window so it's easy to quit it with 'q'
 )
 
 (fset 'yes-or-no-p 'y-or-n-p)      ; y and n instead of yes and no everywhere else
 (scroll-bar-mode -1)
 (delete-selection-mode 1)
 (global-unset-key (kbd "s-p"))
-(global-hl-line-mode 0)
 #+END_SRC
 
 I want Emacs kill ring and system clipboard to be independent. Simpleclip is the solution to that.
@@ -291,21 +268,6 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 (use-package simpleclip
   :config
   (simpleclip-mode 1))
-#+END_SRC
-
-** Scrolling
-
-Nicer scrolling behavior.
-
-#+BEGIN_SRC emacs-lisp
-(setq scroll-margin 10
-   scroll-step 1
-   next-line-add-newlines nil
-   scroll-conservatively 10000
-   scroll-preserve-screen-position 1)
-
-(setq mouse-wheel-follow-mouse 't)
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 #+END_SRC
 
 ** OS integration
@@ -327,7 +289,7 @@ A nice little real terminal in a popup.
 
 ** Navigation and editing
 
-Kill line with =s-Backspace=, which is =Cmd+Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =M+Backspace. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
+Kill line with =s-Backspace=, which is =Cmd-Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =Alt-Backspace=. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-<backspace>") 'kill-whole-line)
@@ -337,13 +299,18 @@ Kill line with =s-Backspace=, which is =Cmd+Backspace= by default. Note that tha
 Use =super= (which is =Cmd=) for movement and selection just like in macOS.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "s-<right>") (kbd "C-e"))
-(global-set-key (kbd "S-s-<right>") (kbd "C-S-e"))
-(global-set-key (kbd "s-<left>") (kbd "M-m"))
-(global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
+;; (global-set-key (kbd "s-<right>") (kbd "C-e"))
+(global-set-key (kbd "s-<right>") 'end-of-visual-line)
+;; (global-set-key (kbd "S-s-<right>") (kbd "C-S-e"))
+
+;; (global-set-key (kbd "s-<left>") (kbd "M-m"))
+(global-set-key (kbd "s-<left>") 'beginning-of-visual-line)
+;; (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
 
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
 (global-set-key (kbd "s-<down>") 'end-of-buffer)
+
+(global-set-key (kbd "s-l") 'goto-line)
 #+END_SRC
 
 Basic things you should expect from macOS.
@@ -355,6 +322,14 @@ Basic things you should expect from macOS.
 (global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
 
 (global-set-key (kbd "s-z") 'undo)
+#+END_SRC
+
+Avy for fast navigation.
+
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :config
+  (global-set-key (kbd "s-;") 'avy-goto-char))
 #+END_SRC
 
 Go back to previous mark (position) within buffer and go back (forward?).
@@ -475,15 +450,6 @@ Join lines whether you're in a region or not.
 ;; (global-set-key (kbd "s-J") 'smart-join-line)
 #+END_SRC
 
-Move around with =Cmd+i/j/k/l=.
-
-#+BEGIN_SRC emacs-lisp
-;; (global-set-key (kbd "s-i") 'previous-line)
-;; (global-set-key (kbd "s-k") 'next-line)
-;; (global-set-key (kbd "s-j") 'left-char)
-;; (global-set-key (kbd "s-l") 'right-char)
-#+END_SRC
-
 Upcase word and region using the same keys.
 
 #+Begin_SRC emacs-lisp
@@ -524,26 +490,6 @@ Comment lines.
 (global-set-key (kbd "s-/") 'comment-line)
 #+END_SRC
 
-** Dired
-
-Enable =a= to move into a folder in Dired. This is better than default =Enter=, because =a= doesn't create additional buffers (actually, it kills the buffer and creates a new one).
-
-#+BEGIN_SRC emacs-lisp
-(put 'dired-find-alternate-file 'disabled nil)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(use-package dired
-  :ensure nil
-  :custom
-  (dired-auto-revert-buffer t)
-  (dired-dwim-target t)
-  (dired-hide-details-hide-symlink-targets nil)
-  (dired-listing-switches "-alh")
-  (dired-ls-F-marks-symlinks nil)
-  (dired-recursive-copies 'always))
-#+END_SRC
-
 ** Windows
 
 I'm still not happy with the way new windows are spawned. For now, at least, let's make it so that new automatic windows are always created on the bottom, not on the side.
@@ -574,7 +520,7 @@ Enable winner mode to quickly restore window configurations
 (global-set-key (kbd "C-s-]") 'winner-redo)
 #+END_SRC
 
-Let's try Shackle one more time.
+Shackle to make sure all windows are nicely positioned.
 
 #+BEGIN_SRC emacs-lisp
 (use-package shackle
@@ -584,16 +530,13 @@ Let's try Shackle one more time.
         shackle-rules '((help-mode           :align below :select t)
                         (helpful-mode        :align below)
                         (dired-mode          :ignore t)
-
                         (compilation-mode    :select t   :size 0.25)
                         ("*compilation*"     :select nil :size 0.25)
                         ("*ag search*"       :select nil :size 0.25)
                         ("*Flycheck errors*" :select nil :size 0.25)
                         ("*Warnings*"        :select nil :size 0.25)
                         ("*Error*"           :select nil :size 0.25)
-
                         ("*Org Links*"       :select nil   :size 0.2)
-
                         (neotree-mode                     :align left)
                         (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
                         (magit-log-mode                   :same t                  :inhibit-window-quit t)
@@ -605,77 +548,15 @@ Let's try Shackle one more time.
                         ))
   :config
   (shackle-mode 1))
-  ;; (defun my/shackle-defaults (plist)
-  ;;   "Ensure popups are always aligned and selected by default. Eliminates the need
-  ;;  for :align t on every rule."
-  ;;   (when plist
-  ;;     (unless (or (plist-member plist :align)
-  ;;                 (plist-member plist :same)
-  ;;                 (plist-member plist :frame))
-  ;;       (plist-put plist :align t))
-  ;;     (unless (or (plist-member plist :select)
-  ;;                 (plist-member plist :noselect))
-  ;;       (plist-put plist :select t)))
-  ;;   plist)
-  ;; (advice-add #'shackle--match :filter-return #'my/shackle-defaults)
-
-  ;; (add-hook 'my/after-init-hook 'shackle-mode))
 #+END_SRC
 
 ** Edit indirect
 
+Select any region and edit it in another buffer.
+
 #+BEGIN_SRC emacs-lisp
 (use-package edit-indirect)
 #+END_SRC
-
-** Projectile (disabled)
-
-Install Projectile.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package projectile
-  :config
-  (setq projectile-enable-caching t)
-  (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
-  (projectile-mode +1))
-#+END_SRC
-
-
-** Helm (disabled)
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package helm-swoop)
-(use-package helm
-  :config
-  (require 'helm-config)
-  (helm-mode 1)
-  (helm-autoresize-mode 1)
-  (setq helm-follow-mode-persistent t)
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (setq helm-M-x-fuzzy-match t)
-  (setq helm-buffers-fuzzy-matching t)
-  (setq helm-recentf-fuzzy-match t)
-  (setq helm-apropos-fuzzy-match t)
-  (setq helm-split-window-inside-p t)
-  ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  ;; (global-set-key (kbd "s-b") 'helm-mini)
-  ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  ;; (global-set-key (kbd "s-f") 'helm-swoop)
-  )
-(setq helm-swoop-pre-input-function
-      (lambda () ""))
-
-(use-package helm-projectile
-  :config
-  (helm-projectile-on))
-
-(use-package helm-ag
-  :config
-  (global-set-key (kbd "s-F") 'helm-projectile-ag))
-
-(global-set-key (kbd "s-p") 'helm-projectile-find-file)
-#+END_SRC
-
 
 ** Ivy, Swiper and Counsel
 
@@ -689,16 +570,13 @@ Install Projectile.
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
       '((swiper . ivy--regex-plus)
-        (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper
+        (counsel-ag . ivy--regex-plus)
+        (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
 
-  (global-set-key (kbd "s-b") 'ivy-switch-buffer)
-  ;; (global-set-key (kbd "M-s-b") 'ivy-resume)
-  )
+  (global-set-key (kbd "s-b") 'ivy-switch-buffer))
 
 (use-package swiper
   :config
-  ;; (global-set-key "\C-s" 'swiper)
-  ;; (global-set-key "\C-r" 'swiper)
   (global-set-key (kbd "s-f") 'swiper))
 
 (use-package counsel
@@ -709,33 +587,13 @@ Install Projectile.
   (global-set-key (kbd "s-F") 'counsel-ag)
   (global-set-key (kbd "s-p") 'counsel-git))
 
+;; When using git ls (via counsel-git), include unstaged files
 (setq counsel-git-cmd "git ls-files --full-name --exclude-standard --others --cached --")
 
 (use-package smex)
 (use-package flx)
-(use-package avy)
 #+END_SRC
 
-Ivy-rich make Ivy a bit more friendly by adding information to ivy buffers, e.g. description of commands in =M-x=, meta info about buffers in =ivy-switch-buffer=, etc.
-
-#+BEGIN_SRC emacs-lisp
-(use-package ivy-rich
-  :config
-  (ivy-rich-mode 1)
-  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
-#+END_SRC
-
-** Counsel integration for Projectile (disabled)
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package counsel-projectile
-  :config
-  (counsel-projectile-mode 1)
-  (global-set-key (kbd "s-F") 'counsel-projectile-ag)
-  (global-set-key (kbd "s-p") 'counsel-projectile))
-
-(setq projectile-completion-system 'ivy)
-#+END_SRC
 
 ** Git
 
@@ -747,21 +605,10 @@ It's time for Magit!
   (global-set-key (kbd "s-g") 'magit-status))
 #+END_SRC
 
-And show changes in the gutter (fringe).
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode 't)
-  (set-face-background 'git-gutter:modified 'nil) ;; background color
-  (set-face-foreground 'git-gutter:added "green4")
-  (set-face-foreground 'git-gutter:deleted "red"))
-#+END_SRC
-
 Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast listener fritzgrabo).
 
 #+BEGIN_SRC emacs-lisp
-(setq magit-repository-directories '(("\~/code" . 4)))
+(setq magit-repository-directories '(("\~/code" . 4) ("\~/Google Drive/Codexpanse/Course materials" . 3)))
 
 (defun magit-status-with-prefix-arg ()
   "Call `magit-status` with a prefix."
@@ -820,7 +667,7 @@ Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=.
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim))
 #+END_SRC
 
-Word definition search
+Word definition search.
 
 #+BEGIN_SRC emacs-lisp
 (use-package define-word
@@ -857,6 +704,7 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
 (eval-after-load 'markdown-mode
   `(define-key markdown-mode-map (kbd "C-s-<up>") 'widen))
 
+(require 'markdown-mode)
 (eval-after-load 'markdown-mode
   `(define-key markdown-mode-map (kbd "s-O") (lambda ()
                                                (interactive)
@@ -864,7 +712,7 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
                                                (let ((oldbuf (current-buffer)))
                                                  (save-current-buffer
                                                    (set-buffer "*markdown-output*")
-                                                   (mark-whole-buffer)
+                                                   (with-no-warnings (mark-whole-buffer))
                                                    (simpleclip-copy (point-min) (point-max)))))))
 
 #+END_SRC
@@ -915,6 +763,7 @@ Emmet.
   :config
   (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
   (add-hook 'web-mode-hook  'emmet-mode)
+  (add-hook 'html-mode-hook  'emmet-mode)
   (add-hook 'css-mode-hook  'emmet-mode)) ;; enable Emmet's css abbreviation.
 #+END_SRC
 
@@ -924,21 +773,6 @@ Emmet.
 (defun close-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-;; (set-frame-name "EDIT")
-;; (make-frame '((name . "ORG")))
-
-;; (progn
-;; (make-frame '((name . "TERM")))
-;;   (select-frame-by-name "EDIT")
-;;   (multi-term))
-;; (make-frame '((name . "ORG")))
-
-;; (global-set-key (kbd "s-1") (lambda () (interactive) (select-frame-by-name "EDIT")))
-;; (global-set-key (kbd "s-2") (lambda () (interactive) (select-frame-by-name "TERM")))
-;; (global-set-key (kbd "s-3") (lambda () (interactive) (select-frame-by-name "ORG")))
 #+END_SRC
 
 
@@ -1020,6 +854,7 @@ Quickly open todo and config files.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
 (global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/main.org")))
+(global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/journal.org")))
 (global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/links.org")))
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
 (global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-ag nil "~/Google Drive/Knowledgebase/org")))
@@ -1127,8 +962,6 @@ Install =ox-hugo= and enable auto export.
 #+BEGIN_SRC emacs-lisp
 (use-package ox-hugo
   :after ox)
-
-(use-package ox-hugo-auto-export :ensure nil :after ox-hugo)
 #+END_SRC
 
 Org Capture template to quickly create posts and generate slugs.
@@ -1204,7 +1037,7 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
   `(define-key org-mode-map (kbd "s-O") (lambda ()
                                           (interactive)
                                           (org-html-export-as-slimhtml nil nil nil t)
-                                          (mark-whole-buffer)
+                                          (with-no-warnings (mark-whole-buffer))
                                           (simpleclip-copy (point-min) (point-max))
                                           (delete-window))))
 ;; (org-export-to-buffer 'slimhtml "*slimhtml*")
@@ -1219,4 +1052,153 @@ Store custom-file separately, don't freak out when it's not found.
 (load custom-file 'noerror)
 #+END_SRC
 
-* ToDo
+* Useful, unused snippets
+
+Here are some snippets of elisp and config that aren't currently used, but I don't want to lose them in git history. None of these are tangled.
+
+** Manually installed packages
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(load "edit-indirect")
+#+END_SRC
+
+** Parens
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(require 'paren)
+(setq show-paren-delay 0)
+(show-paren-mode 1)
+(set-face-foreground 'show-paren-match nil)
+#+END_SRC
+
+** Move around with =Cmd+i/j/k/l=
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(global-set-key (kbd "s-i") 'previous-line)
+(global-set-key (kbd "s-k") 'next-line)
+(global-set-key (kbd "s-j") 'left-char)
+(global-set-key (kbd "s-l") 'right-char)
+#+END_SRC
+
+** And show changes in the gutter (fringe)
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode 't)
+  (set-face-background 'git-gutter:modified 'nil) ;; background color
+  (set-face-foreground 'git-gutter:added "green4")
+  (set-face-foreground 'git-gutter:deleted "red"))
+#+END_SRC
+
+** Projectile (disabled)
+
+Install Projectile.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package projectile
+  :config
+  (setq projectile-enable-caching t)
+  (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
+  (projectile-mode +1))
+#+END_SRC
+
+** Helm (disabled)
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package helm-swoop)
+(use-package helm
+  :config
+  (require 'helm-config)
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  (setq helm-follow-mode-persistent t)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (setq helm-M-x-fuzzy-match t)
+  (setq helm-buffers-fuzzy-matching t)
+  (setq helm-recentf-fuzzy-match t)
+  (setq helm-apropos-fuzzy-match t)
+  (setq helm-split-window-inside-p t)
+  ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  ;; (global-set-key (kbd "s-b") 'helm-mini)
+  ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  ;; (global-set-key (kbd "s-f") 'helm-swoop)
+  )
+(setq helm-swoop-pre-input-function
+      (lambda () ""))
+
+(use-package helm-projectile
+  :config
+  (helm-projectile-on))
+
+(use-package helm-ag
+  :config
+  (global-set-key (kbd "s-F") 'helm-projectile-ag))
+
+(global-set-key (kbd "s-p") 'helm-projectile-find-file)
+#+END_SRC
+
+** Counsel integration for Projectile (disabled)
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package counsel-projectile
+  :config
+  (counsel-projectile-mode 1)
+  (global-set-key (kbd "s-F") 'counsel-projectile-ag)
+  (global-set-key (kbd "s-p") 'counsel-projectile))
+
+(setq projectile-completion-system 'ivy)
+#+END_SRC
+
+** Frames
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(set-frame-name "EDIT")
+(make-frame '((name . "ORG")))
+
+(progn
+(make-frame '((name . "TERM")))
+  (select-frame-by-name "EDIT")
+  (multi-term))
+(make-frame '((name . "ORG")))
+
+(global-set-key (kbd "s-1") (lambda () (interactive) (select-frame-by-name "EDIT")))
+(global-set-key (kbd "s-2") (lambda () (interactive) (select-frame-by-name "TERM")))
+(global-set-key (kbd "s-3") (lambda () (interactive) (select-frame-by-name "ORG")))
+#+END_SRC
+
+** Ivy-rich
+
+Ivy-rich makes Ivy a bit more friendly by adding information to ivy buffers, e.g. description of commands in =M-x=, meta info about buffers in =ivy-switch-buffer=, etc.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package ivy-rich
+  :config
+  (ivy-rich-mode 1)
+  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
+#+END_SRC
+
+** Fringe indicator
+
+#+BEGIN_SRC emacs-lisp
+
+(defface my-custom-curly-face-2
+  '((t (:foreground "lightgray")))
+  "Face for fringe curly bitmaps."
+  :group 'basic-faces)
+
+(set-fringe-bitmap-face 'right-arrow 'my-custom-curly-face-2)
+
+
+(setq-default fringe-indicator-alist '((truncation left-arrow right-arrow)
+ (continuation nil right-arrow)
+ (overlay-arrow . right-triangle)
+ (up . up-arrow)
+ (down . down-arrow)
+ (top top-left-angle top-right-angle)
+ (bottom bottom-left-angle bottom-right-angle top-right-angle top-left-angle)
+ (top-bottom left-bracket right-bracket top-right-angle top-left-angle)
+ (empty-line . empty-line)
+ (unknown . question-mark)))
+#+END_SRC
