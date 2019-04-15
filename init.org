@@ -36,6 +36,7 @@ mv dot-emacs ~/.emacs.d
 #+END_SRC
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
+
 * Configurations
 
 ** Meta
@@ -307,9 +308,9 @@ Use =super= (which is =Cmd=) for movement and selection just like in macOS.
 (global-set-key (kbd "s-<right>") 'end-of-visual-line)
 ;; (global-set-key (kbd "S-s-<right>") (kbd "C-S-e"))
 
-;; (global-set-key (kbd "s-<left>") (kbd "M-m"))
-(global-set-key (kbd "s-<left>") 'beginning-of-visual-line)
-;; (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
+(global-set-key (kbd "s-<left>") (kbd "M-m"))
+;; (global-set-key (kbd "s-<left>") 'beginning-of-visual-line)
+(global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
 
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
 (global-set-key (kbd "s-<down>") 'end-of-buffer)
