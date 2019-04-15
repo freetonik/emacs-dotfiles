@@ -577,7 +577,7 @@ Select any region and edit it in another buffer.
 
 (use-package swiper
   :config
-  (global-set-key (kbd "s-f") 'swiper))
+  (global-set-key (kbd "s-f") 'swiper-isearch))
 
 (use-package counsel
   :config
