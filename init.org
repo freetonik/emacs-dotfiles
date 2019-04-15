@@ -721,6 +721,7 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
                                                    (simpleclip-copy (point-min) (point-max)))))))
 
 #+END_SRC
+
 ** Packages for programming
 
 Here are all the packages needed for programming languages and formats.
