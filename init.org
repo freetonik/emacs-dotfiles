@@ -236,6 +236,10 @@ I don't care about auto save and backup files.
 (setq create-lockfiles nil)  ; stop creating .# files
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(global-visual-line-mode t)
+#+END_SRC
+
 Revert (update) buffers automatically when underlying files are changed externally.
 
 #+BEGIN_SRC emacs-lisp
