@@ -850,7 +850,15 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
       (org-html-export-to-html)
       (message "HTML exported"))))
 
+(defun org-mode-export-journal ()
+  "Export links document to HTML automatically when 'journal.org' is changed"
+  (when (equal (buffer-file-name) "/Users/rakhim/Google Drive/Knowledgebase/org/journal.org")
+    (progn
+      (org-html-export-to-html)
+      (message "HTML exported"))))
+
 (add-hook 'after-save-hook 'org-mode-export-links)
+(add-hook 'after-save-hook 'org-mode-export-journal)
 #+END_SRC
 
 Quickly open todo and config files.
