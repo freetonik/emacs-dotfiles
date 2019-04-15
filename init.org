@@ -574,6 +574,7 @@ Select any region and edit it in another buffer.
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
       '((swiper . ivy--regex-plus)
+        (swiper-isearch . ivy--regex-plus)
         (counsel-ag . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
 
