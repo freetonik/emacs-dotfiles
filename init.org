@@ -149,7 +149,8 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 13")
+;; (set-face-attribute 'default nil :font "Inconsolata LGC 13")
+(setq default-frame-alist '((font . "Inconsolata LGC 13")))
 (setq-default line-spacing 0)
 (setq initial-frame-alist '((width . 135) (height . 55)))
 (tool-bar-mode -1)
@@ -776,6 +777,12 @@ Emmet.
 
 ** Frames, windows, buffers
 
+Always open files in the same frame, even when double-clicked from Finder.
+
+#+BEGIN_SRC emacs-lisp
+(setq ns-pop-up-frames nil)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (defun close-all-buffers ()
   (interactive)
@@ -1065,6 +1072,14 @@ Store custom-file separately, don't freak out when it's not found.
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
+#+END_SRC
+
+* Server
+
+Start an Emacs server. This way, I can use emacsclient from the terminal.
+
+#+BEGIN_SRC emacs-lisp
+(server-start)
 #+END_SRC
 
 * Useful, unused snippets
