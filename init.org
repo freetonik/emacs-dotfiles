@@ -23,23 +23,35 @@ I think it'll be better not to clone and use this config as is, but rather build
 
 Clone the repo:
 
-#+BEGIN_SRC
+#+BEGIN_SRC :tangle no
 git clone https://github.com/freetonik/emacs-dotfiles
 #+END_SRC
 
 Make a backup of your old =.emacs.d=:
 
-#+BEGIN_SRC
+#+BEGIN_SRC :tangle no
 mv ~/.emacs.d ~/.emacs.d-bak
 #+END_SRC
 
 Rename cloned directory:
 
-#+BEGIN_SRC
+#+BEGIN_SRC :tangle no
 mv dot-emacs ~/.emacs.d
 #+END_SRC
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
+
+There is no reason to track the =init.el= that is generated; by running the following command =git= will not bother tracking it:
+
+#+BEGIN_SRC sh :tangle no
+git update-index --assume-unchanged init.el
+#+END_SRC
+
+If one wishes to make changes to the repo-version of =init.el= start tracking again with:
+
+#+BEGIN_SRC sh :tangle no
+git update-index --no-assume-unchanged init.el
+#+END_SRC
 
 * Configurations
 
