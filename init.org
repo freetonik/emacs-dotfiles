@@ -9,6 +9,24 @@ Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setu
 
 * Installing Emacs
 
+This config works best with this [[https://emacsformacosx.com/][https://emacsformacosx.com/]].
+
+To enable easy emacsclient, create =~/bin/ec=:
+
+#+BEGIN_SRC sh :tangle no
+#!/bin/bash
+EMACSCLIENT=/Applications/Emacs.app/Contents/MacOS/bin/emacsclient
+
+$EMACSCLIENT --no-wait --eval "(if (> (length (frame-list)) 1) 't)" | grep t
+if [ "$?" -eq "1" ]; then
+$EMACSCLIENT --create-frame --no-wait --alternate-editor="" "$@" ; open -a emacs
+else
+$EMACSCLIENT --no-wait --alternate-editor="" "$@" > /dev/null 2>&1; open -a emacs
+fi
+#+END_SRC
+
+Alternative build:
+
 #+BEGIN_SRC sh :tangle no
 brew tap railwaycat/emacsmacport
 brew cask install emacs-mac
