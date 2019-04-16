@@ -13,6 +13,7 @@
  '(dired-listing-switches "-alh")
  '(dired-ls-F-marks-symlinks nil)
  '(dired-recursive-copies (quote always))
+ '(markdown-fontify-code-blocks-natively t)
  '(org-agenda-files
    (quote
     ("~/.emacs.d/init.org" "/Users/rakhim/org/hexlet_podcast.org" "/Users/rakhim/org/life.org" "/Users/rakhim/org/links.org" "/Users/rakhim/org/main.org" "/Users/rakhim/org/metasalt.org" "/Users/rakhim/org/rakhim.org")))
@@ -28,7 +29,8 @@
        (ansi-term shell-pop-term-shell)))))
  '(shell-pop-universal-key "s-=")
  '(vc-follow-symlinks t)
- '(word-wrap t))
+ '(word-wrap t)
+ '(yascroll:delay-to-hide nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -40,6 +42,7 @@
  '(helm-source-header ((t (:foreground "black" :weight semi-bold))))
  '(helm-visible-mark ((t (:background "dark blue"))))
  '(line-number-current-line ((t (:inherit default :background "navajo white"))))
+ '(markdown-code-face ((t nil)))
  '(markdown-inline-code-face ((t (:foreground "dark red"))))
  '(rainbow-delimiters-depth-2-face ((t (:inherit rainbow-delimiters-base-face :foreground "red"))))
  '(rainbow-delimiters-depth-3-face ((t (:inherit rainbow-delimiters-base-face :foreground "medium blue"))))

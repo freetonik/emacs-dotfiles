@@ -153,8 +153,8 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-;; (set-face-attribute 'default nil :font "Inconsolata LGC 13")
-(setq default-frame-alist '((font . "Inconsolata LGC 13")))
+(set-face-attribute 'default nil :font "Inconsolata LGC 14")
+;; (setq default-frame-alist '((font . "Inconsolata LGC 14")))
 (setq-default line-spacing 0)
 (setq initial-frame-alist '((width . 135) (height . 55)))
 (tool-bar-mode -1)
@@ -194,8 +194,8 @@ Nice and simple mode line.
 
 #+BEGIN_SRC emacs-lisp
 (setq column-number-mode t) ;; show columns in addition to rows in mode line
-(set-face-attribute 'mode-line nil :background "NavajoWhite")
-(set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+;; (set-face-attribute 'mode-line nil :background "NavajoWhite")
+;; (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
 #+END_SRC
 
 Show full path in the title bar.
@@ -864,15 +864,15 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
       (org-html-export-to-html)
       (message "HTML exported"))))
 
-(defun org-mode-export-journal ()
-  "Export links document to HTML automatically when 'journal.org' is changed"
-  (when (equal (buffer-file-name) "/Users/rakhim/Google Drive/Knowledgebase/org/journal.org")
-    (progn
-      (org-html-export-to-html)
-      (message "HTML exported"))))
+;; (defun org-mode-export-journal ()
+;;   "Export links document to HTML automatically when 'journal.org' is changed"
+;;   (when (equal (buffer-file-name) "/Users/rakhim/Google Drive/Knowledgebase/org/journal.org")
+;;     (progn
+;;       (org-html-export-to-html)
+;;       (message "HTML exported"))))
 
 (add-hook 'after-save-hook 'org-mode-export-links)
-(add-hook 'after-save-hook 'org-mode-export-journal)
+;; (add-hook 'after-save-hook 'org-mode-export-journal)
 #+END_SRC
 
 Quickly open todo and config files.
