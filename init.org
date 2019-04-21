@@ -80,10 +80,6 @@ Lexical scoping for the init-file is needed, it can be specified in the header. 
 ;;; -*- lexical-binding: t -*-
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(setq gc-cons-threshold 100000000)
-#+END_SRC
-
 Tangle and compile this file on save automatically:
 
 #+BEGIN_SRC emacs-lisp
