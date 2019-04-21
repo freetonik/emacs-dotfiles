@@ -7,14 +7,14 @@
  '(custom-safe-themes
    (quote
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
- '(markdown-fontify-code-blocks-natively t)
+ '(markdown-fontify-code-blocks-natively nil)
  '(org-agenda-files
    (quote
-    ("~/.emacs.d/init.org" "/Users/rakhim/org/hexlet_podcast.org" "/Users/rakhim/org/life.org" "/Users/rakhim/org/links.org" "/Users/rakhim/org/main.org" "/Users/rakhim/org/metasalt.org" "/Users/rakhim/org/rakhim.org")))
+    ("~/Google Drive/Knowledgebase/org/journal.org" "~/.emacs.d/init.org" "/Users/rakhim/Google Drive/Knowledgebase/org/archive.org" "/Users/rakhim/Google Drive/Knowledgebase/org/links.org" "/Users/rakhim/Google Drive/Knowledgebase/org/main.org")))
  '(org-export-backends (quote (ascii html latex md hugo slimhtml)))
  '(package-selected-packages
    (quote
-    (avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree corral define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex smartparens simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
+    (avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
  '(pop-up-frames nil)
  '(shell-pop-shell-type
    (quote
