@@ -7,7 +7,9 @@
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
 
-* Installing Emacs
+* Installing
+
+** Emacs
 
 This config works best with this [[https://emacsformacosx.com/][https://emacsformacosx.com/]].
 
@@ -18,7 +20,17 @@ brew tap railwaycat/emacsmacport
 brew cask install emacs-mac
 #+END_SRC
 
-* Installing config
+** Dependencies
+
+Few utils needed.
+
+#+BEGIN_SRC sh :tangle no
+brew install ripgrep
+brew cask install mactex
+#+END_SRC
+
+** Config
+
 I think it'll be better not to clone and use this config as is, but rather build your own config using mine as a starting point. But if you really want to try it, then follow these steps:
 
 Clone the repo:
