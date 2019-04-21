@@ -27,6 +27,7 @@ Few utils needed.
 #+BEGIN_SRC sh :tangle no
 brew install ripgrep
 brew cask install mactex
+brew install aspell
 #+END_SRC
 
 ** Config
@@ -180,38 +181,12 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 (tool-bar-mode -1)
 #+END_SRC
 
+Matching parenthesis appearance.
+
 #+BEGIN_SRC emacs-lisp
 (set-face-background 'show-paren-match "grey84")
 (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
-#+END_SRC
-
-Show parens and other pairs.
-
-#+BEGIN_SRC emacs-lisp
-(use-package paredit
-  :init
-  (progn
-    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-    (add-hook 'clojure-mode-hook 'paredit-mode)
-    (add-hook 'clojurescript-mode-hook 'paredit-mode)
-    (add-hook 'clojurec-mode-hook 'paredit-mode)
-    (add-hook 'cider-repl-mode-hook 'paredit-mode)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package smartparens
-  :config
-  ;; (require 'smartparens-config)
-  (smartparens-global-mode t)
-  (show-smartparens-global-mode t)
-  (setq sp-show-pair-delay 0)
-
-  ;; no '' pair in emacs-lisp-mode
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-  ;; (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
-  ;; (sp-local-tag 'markdown-mode "s" "```scheme" "```")
-  (define-key smartparens-mode-map (kbd "C-s-<right>") 'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-s-<left>") 'sp-forward-barf-sexp))
+(show-paren-mode)
 #+END_SRC
 
 Wrap lines always.
@@ -225,8 +200,6 @@ Nice and simple mode line.
 
 #+BEGIN_SRC emacs-lisp
 (setq column-number-mode t) ;; show columns in addition to rows in mode line
-;; (set-face-attribute 'mode-line nil :background "NavajoWhite")
-;; (set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
 #+END_SRC
 
 Show full path in the title bar.
@@ -248,19 +221,16 @@ Never use tabs, use spaces instead.
 (setq-default c-basic-indent 2)
 #+END_SRC
 
-Which key is great for learning Emacs, it shows a nice table of possible commands.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package which-key
-  :config
-  (which-key-mode)
-  (setq which-key-idle-delay 0.5))
-#+END_SRC
-
 Disable blinking cursor.
 
 #+BEGIN_SRC emacs-lisp
 (blink-cursor-mode 0)
+#+END_SRC
+
+Visual lines.
+
+#+BEGIN_SRC emacs-lisp
+(global-visual-line-mode t)
 #+END_SRC
 
 ** Sane defaults
@@ -271,10 +241,6 @@ I don't care about auto save and backup files.
 (setq make-backup-files nil) ; stop creating backup~ files
 (setq auto-save-default nil) ; stop creating #autosave# files
 (setq create-lockfiles nil)  ; stop creating .# files
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(global-visual-line-mode t)
 #+END_SRC
 
 Revert (update) buffers automatically when underlying files are changed externally.
@@ -330,7 +296,7 @@ A nice little real terminal in a popup.
 
 ** Navigation and editing
 
-Kill line with =s-Backspace=, which is =Cmd-Backspace= by default. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =Alt-Backspace=. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
+Kill line with =s-Backspace=, which is =Cmd-Backspace=. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =Alt-Backspace=. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-<backspace>") 'kill-whole-line)
@@ -340,12 +306,8 @@ Kill line with =s-Backspace=, which is =Cmd-Backspace= by default. Note that tha
 Use =super= (which is =Cmd=) for movement and selection just like in macOS.
 
 #+BEGIN_SRC emacs-lisp
-;; (global-set-key (kbd "s-<right>") (kbd "C-e"))
 (global-set-key (kbd "s-<right>") 'end-of-visual-line)
-;; (global-set-key (kbd "S-s-<right>") (kbd "C-S-e"))
-
 (global-set-key (kbd "s-<left>") (kbd "M-m"))
-;; (global-set-key (kbd "s-<left>") 'beginning-of-visual-line)
 (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
 
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
@@ -361,8 +323,7 @@ Basic things you should expect from macOS.
 (global-set-key (kbd "s-s") 'save-buffer)             ;; save
 (global-set-key (kbd "s-S") 'write-file)              ;; save as
 (global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
-
-(global-set-key (kbd "s-z") 'undo)
+(global-set-key (kbd "s-z") 'undo)                    ;; undo
 #+END_SRC
 
 Avy for fast navigation.
@@ -430,7 +391,6 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
   :config
   (global-set-key (kbd "s-'") 'er/expand-region)
   (global-set-key (kbd "s-\"") 'er/contract-region))
-;; "
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
@@ -488,7 +448,6 @@ Join lines whether you're in a region or not.
           (join-line 1)))))
 
 (global-set-key (kbd "s-j") 'smart-join-line)
-;; (global-set-key (kbd "s-J") 'smart-join-line)
 #+END_SRC
 
 Upcase word and region using the same keys.
@@ -520,7 +479,6 @@ Multiple cusors are a must. Make <return> insert a newline; multiple-cursors-mod
   :config
   (setq mc/always-run-for-all 1)
   (global-set-key (kbd "s-d") 'mc/mark-next-like-this)
-  (global-set-key (kbd "M-s-d") 'mc/edit-beginnings-of-lines)
   (global-set-key (kbd "s-D") 'mc/mark-all-dwim)
   (define-key mc/keymap (kbd "<return>") nil))
 #+END_SRC
@@ -557,8 +515,6 @@ Enable winner mode to quickly restore window configurations
 
 #+BEGIN_SRC emacs-lisp
 (winner-mode 1)
-(global-set-key (kbd "C-s-[") 'winner-undo)
-(global-set-key (kbd "C-s-]") 'winner-redo)
 #+END_SRC
 
 Shackle to make sure all windows are nicely positioned.
@@ -570,7 +526,6 @@ Shackle to make sure all windows are nicely positioned.
         shackle-default-size 0.4
         shackle-rules '((help-mode           :align below :select t)
                         (helpful-mode        :align below)
-                        (dired-mode          :ignore t)
                         (compilation-mode    :select t   :size 0.25)
                         ("*compilation*"     :select nil :size 0.25)
                         ("*ag search*"       :select nil :size 0.25)
@@ -578,7 +533,6 @@ Shackle to make sure all windows are nicely positioned.
                         ("*Warnings*"        :select nil :size 0.25)
                         ("*Error*"           :select nil :size 0.25)
                         ("*Org Links*"       :select nil   :size 0.2)
-                        (neotree-mode                     :align left)
                         (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
                         (magit-log-mode                   :same t                  :inhibit-window-quit t)
                         (magit-commit-mode                :ignore t)
@@ -637,7 +591,6 @@ Select any region and edit it in another buffer.
 (use-package flx)
 #+END_SRC
 
-
 ** Git
 
 It's time for Magit!
@@ -662,26 +615,9 @@ Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast liste
 (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
 #+END_SRC
 
-** NeoTree
+** Spell checking
 
-#+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :config
-  (setq neo-window-width 32
-        neo-create-file-auto-open t
-        neo-banner-message nil
-        neo-mode-line-type 'neotree
-        neo-smart-open t
-        neo-show-hidden-files t
-        neo-mode-line-type 'none
-        neo-auto-indent-point t)
-  (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
-  (global-set-key (kbd "s-B") 'neotree-toggle))
-#+END_SRC
-
-** Spellchecking
-
-Spellchecking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
+Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 
 #+BEGIN_SRC emacs-lisp
 (setq ispell-program-name "aspell")
@@ -691,7 +627,6 @@ Enable spellcheck on the fly for all text modes. This includes org, latex and La
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'text-mode-hook 'flyspell-mode)
-;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
 Spellcheck current word.
@@ -757,7 +692,6 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
                                                    (set-buffer "*markdown-output*")
                                                    (with-no-warnings (mark-whole-buffer))
                                                    (simpleclip-copy (point-min) (point-max)))))))
-
 #+END_SRC
 
 ** Packages for programming
@@ -766,10 +700,22 @@ Here are all the packages needed for programming languages and formats.
 
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
-(use-package haml-mode)
 (use-package dumb-jump
   :config
   (dumb-jump-mode))
+#+END_SRC
+
+LISP.
+
+#+BEGIN_SRC emacs-lisp
+(use-package paredit
+  :init
+  (progn
+    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+    (add-hook 'clojure-mode-hook 'paredit-mode)
+    (add-hook 'clojurescript-mode-hook 'paredit-mode)
+    (add-hook 'clojurec-mode-hook 'paredit-mode)
+    (add-hook 'cider-repl-mode-hook 'paredit-mode)))
 #+END_SRC
 
 Clojure.
@@ -819,12 +765,13 @@ Always open files in the same frame, even when double-clicked from Finder.
 (setq ns-pop-up-frames nil)
 #+END_SRC
 
+Handy killall command.
+
 #+BEGIN_SRC emacs-lisp
-(defun close-all-buffers ()
+(defun kill-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 #+END_SRC
-
 
 * Org
 
@@ -896,26 +843,17 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
       (org-html-export-to-html)
       (message "HTML exported"))))
 
-;; (defun org-mode-export-journal ()
-;;   "Export links document to HTML automatically when 'journal.org' is changed"
-;;   (when (equal (buffer-file-name) "/Users/rakhim/Google Drive/Knowledgebase/org/journal.org")
-;;     (progn
-;;       (org-html-export-to-html)
-;;       (message "HTML exported"))))
-
 (add-hook 'after-save-hook 'org-mode-export-links)
-;; (add-hook 'after-save-hook 'org-mode-export-journal)
 #+END_SRC
 
 Quickly open todo and config files.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
-(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/main.org")))
 (global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/journal.org")))
 (global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/links.org")))
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
-(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-ag nil "~/Google Drive/Knowledgebase/org")))
+(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil "~/Google Drive/Knowledgebase/org")))
 #+END_SRC
 
 Org capture.
@@ -938,30 +876,6 @@ Not sure about this... I want to retain Shift-Alt movement and selection everywh
 
 Consider switching meta-left/right to =C-c C-,= and =C-c C-.=. These are used to promote and demote subtrees.
 
-#+BEGIN_SRC emacs-lisp :tangle no
-(add-hook 'org-mode-hook
-          (lambda()
-            (progn
-              (local-unset-key (kbd "M-<right>"))  ;; promoting
-              (local-unset-key (kbd "M-<left>"))   ;; and demoting subtrees still work in headers
-
-              (local-unset-key (kbd "S-<right>"))
-              (local-unset-key (kbd "S-<left>"))
-
-              (local-unset-key (kbd "M-S-<right>"))
-              (local-unset-key (kbd "M-S-<left>")) ;; select by word
-
-              (local-set-key (kbd "C-c C-,") 'org-metaleft)
-              (local-set-key (kbd "C-c C-.") 'org-metaright)
-              )))
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp
-(define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
-(define-key org-mode-map (kbd "C-s-<up>") 'widen)
-#+END_SRC
-
 #+BEGIN_SRC emacs-lisp
 ;; no shift or alt with arrows
 (define-key org-mode-map (kbd "<S-left>") nil)
@@ -972,14 +886,21 @@ Consider switching meta-left/right to =C-c C-,= and =C-c C-.=. These are used to
 (define-key org-mode-map (kbd "<M-S-left>") nil)
 (define-key org-mode-map (kbd "<M-S-right>") nil)
 
-(define-key org-mode-map (kbd "C-c C-,") 'org-metaleft)
-(define-key org-mode-map (kbd "C-c C-.") 'org-metaright)
+(define-key org-mode-map (kbd "C-s-<left>") 'org-metaleft)
+(define-key org-mode-map (kbd "C-s-<right>") 'org-metaright)
 #+END_SRC
 
 Enable speed keys to manage headings without arrows.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-use-speed-commands t)
+#+END_SRC
+
+Narrow and widen with =Cmd+Ctrl+Up/Down=.
+
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
+(define-key org-mode-map (kbd "C-s-<up>") 'widen)
 #+END_SRC
 
 ** Capture templates
@@ -1005,8 +926,6 @@ Enable speed keys to manage headings without arrows.
                  "* %U\n%?"))
                ))
 #+END_SRC
-
-
 
 ** Pandoc exporter
 
@@ -1089,8 +1008,6 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
   (org-export-to-buffer 'slimhtml "*slimhtml*"
     async subtreep visible-only body-only ext-plist (lambda () (html-mode))))
 
-;; (global-set-key (kbd "s-O") (lambda () (interactive) (org-html-export-as-slimhtml nil nil nil t)))
-
 (eval-after-load 'org
   `(define-key org-mode-map (kbd "s-O") (lambda ()
                                           (interactive)
@@ -1098,7 +1015,6 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
                                           (with-no-warnings (mark-whole-buffer))
                                           (simpleclip-copy (point-min) (point-max))
                                           (delete-window))))
-;; (org-export-to-buffer 'slimhtml "*slimhtml*")
 #+END_SRC
 
 * Customizations
@@ -1146,6 +1062,22 @@ Here are some snippets of elisp and config that aren't currently used, but I don
 (set-face-foreground 'show-paren-match nil)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package smartparens
+  :config
+  ;; (require 'smartparens-config)
+  (smartparens-global-mode t)
+  (show-smartparens-global-mode t)
+  (setq sp-show-pair-delay 0)
+
+  ;; no '' pair in emacs-lisp-mode
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  ;; (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
+  ;; (sp-local-tag 'markdown-mode "s" "```scheme" "```")
+  (define-key smartparens-mode-map (kbd "C-s-<right>") 'sp-forward-slurp-sexp)
+  (define-key smartparens-mode-map (kbd "C-s-<left>") 'sp-forward-barf-sexp))
+#+END_SRC
+
 ** Move around with =Cmd+i/j/k/l=
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1166,7 +1098,7 @@ Here are some snippets of elisp and config that aren't currently used, but I don
   (set-face-foreground 'git-gutter:deleted "red"))
 #+END_SRC
 
-** Projectile (disabled)
+** Projectile
 
 Install Projectile.
 
@@ -1178,7 +1110,7 @@ Install Projectile.
   (projectile-mode +1))
 #+END_SRC
 
-** Helm (disabled)
+** Helm
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package helm-swoop)
@@ -1277,6 +1209,13 @@ Ivy-rich makes Ivy a bit more friendly by adding information to ivy buffers, e.g
  (unknown . question-mark)))
 #+END_SRC
 
+** Modeline
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(set-face-attribute 'mode-line nil :background "NavajoWhite")
+(set-face-attribute 'mode-line-inactive nil :background "#FAFAFA")
+#+END_SRC
+
 ** Paredit + Electrinc pair mode?
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1288,5 +1227,32 @@ Ivy-rich makes Ivy a bit more friendly by adding information to ivy buffers, e.g
   (setq-local electric-pair-pairs (append electric-pair-pairs markdown-electric-pairs))
   (setq-local electric-pair-text-pairs electric-pair-pairs))
 (add-hook 'markdown-mode-hook 'markdown-add-electric-pairs)
+#+END_SRC
 
+** Which key
+
+This is great for learning Emacs, it shows a nice table of possible commands.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package which-key
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 0.5))
+#+END_SRC
+
+** NeoTree
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package neotree
+  :config
+  (setq neo-window-width 32
+        neo-create-file-auto-open t
+        neo-banner-message nil
+        neo-mode-line-type 'neotree
+        neo-smart-open t
+        neo-show-hidden-files t
+        neo-mode-line-type 'none
+        neo-auto-indent-point t)
+  (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
+  (global-set-key (kbd "s-B") 'neotree-toggle))
 #+END_SRC
