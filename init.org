@@ -176,17 +176,28 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 Show parens and other pairs.
 
 #+BEGIN_SRC emacs-lisp
+(use-package paredit
+  :init
+  (progn
+    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+    (add-hook 'clojure-mode-hook 'paredit-mode)
+    (add-hook 'clojurescript-mode-hook 'paredit-mode)
+    (add-hook 'clojurec-mode-hook 'paredit-mode)
+    (add-hook 'cider-repl-mode-hook 'paredit-mode)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package smartparens
   :config
-  (require 'smartparens-config)
+  ;; (require 'smartparens-config)
   (smartparens-global-mode t)
   (show-smartparens-global-mode t)
   (setq sp-show-pair-delay 0)
 
   ;; no '' pair in emacs-lisp-mode
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-  (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
-  (sp-local-tag 'markdown-mode "s" "```scheme" "```")
+  ;; (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
+  ;; (sp-local-tag 'markdown-mode "s" "```scheme" "```")
   (define-key smartparens-mode-map (kbd "C-s-<right>") 'sp-forward-slurp-sexp)
   (define-key smartparens-mode-map (kbd "C-s-<left>") 'sp-forward-barf-sexp))
 #+END_SRC
@@ -1252,4 +1263,18 @@ Ivy-rich makes Ivy a bit more friendly by adding information to ivy buffers, e.g
  (top-bottom left-bracket right-bracket top-right-angle top-left-angle)
  (empty-line . empty-line)
  (unknown . question-mark)))
+#+END_SRC
+
+** Paredit + Electrinc pair mode?
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(put 'paredit-backward-delete 'delete-selection 'supersede)
+
+(electric-pair-mode 1)
+(defvar markdown-electric-pairs '((?* . ?*)) "Electric pairs for markdown-mode.")
+(defun markdown-add-electric-pairs ()
+  (setq-local electric-pair-pairs (append electric-pair-pairs markdown-electric-pairs))
+  (setq-local electric-pair-text-pairs electric-pair-pairs))
+(add-hook 'markdown-mode-hook 'markdown-add-electric-pairs)
+
 #+END_SRC
