@@ -347,7 +347,7 @@ Avy for fast navigation.
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :config
-  (global-set-key (kbd "s-;") 'avy-goto-char))
+  (global-set-key (kbd "s-;") 'avy-goto-char-timer))
 #+END_SRC
 
 Go back to previous mark (position) within buffer and go back (forward?).
@@ -590,6 +590,7 @@ Select any region and edit it in another buffer.
       '((swiper . ivy--regex-plus)
         (swiper-isearch . ivy--regex-plus)
         (counsel-ag . ivy--regex-plus)
+        (counsel-rg . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
 
   (global-set-key (kbd "s-b") 'ivy-switch-buffer))
@@ -603,7 +604,7 @@ Select any region and edit it in another buffer.
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "s-y") 'counsel-yank-pop)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "s-F") 'counsel-ag)
+  (global-set-key (kbd "s-F") 'counsel-rg)
   (global-set-key (kbd "s-p") 'counsel-git))
 
 ;; When using git ls (via counsel-git), include unstaged files
