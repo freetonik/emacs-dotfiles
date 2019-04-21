@@ -36,19 +36,19 @@ I think it'll be better not to clone and use this config as is, but rather build
 
 Clone the repo:
 
-#+BEGIN_SRC :tangle no
+#+BEGIN_SRC sh :tangle no
 git clone https://github.com/freetonik/emacs-dotfiles
 #+END_SRC
 
 Make a backup of your old =.emacs.d=:
 
-#+BEGIN_SRC :tangle no
+#+BEGIN_SRC sh :tangle no
 mv ~/.emacs.d ~/.emacs.d-bak
 #+END_SRC
 
 Rename cloned directory:
 
-#+BEGIN_SRC :tangle no
+#+BEGIN_SRC sh :tangle no
 mv dot-emacs ~/.emacs.d
 #+END_SRC
 
