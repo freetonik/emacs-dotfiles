@@ -49,7 +49,7 @@ mv ~/.emacs.d ~/.emacs.d-bak
 Rename cloned directory:
 
 #+BEGIN_SRC sh :tangle no
-mv dot-emacs ~/.emacs.d
+mv emacs-dotfiles ~/.emacs.d
 #+END_SRC
 
 On the first run Emacs will install some packages. It's best to restart Emacs after that process is done for the first time.
