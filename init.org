@@ -152,7 +152,8 @@ Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
 
 #+BEGIN_SRC emacs-lisp
 (setq mac-right-command-modifier 'super)
-;; (setq mac-left-option-modifier 'meta)
+(setq mac-left-option-modifier 'meta)
+(setq mac-right-option-modifier 'meta)
 (setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'super)
 #+END_SRC
@@ -169,6 +170,8 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 
 #+BEGIN_SRC emacs-lisp
 (load-theme 'tsdh-light)
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . light))
 #+END_SRC
 
 Inconsolata font, remove the cruft and make the initial size bigger.
@@ -391,6 +394,7 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
   :config
   (global-set-key (kbd "s-'") 'er/expand-region)
   (global-set-key (kbd "s-\"") 'er/contract-region))
+
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
@@ -532,14 +536,13 @@ Shackle to make sure all windows are nicely positioned.
                         ("*Flycheck errors*" :select nil :size 0.25)
                         ("*Warnings*"        :select nil :size 0.25)
                         ("*Error*"           :select nil :size 0.25)
-                        ("*Org Links*"       :select nil   :size 0.2)
+                        ("*Org Links*"       :select nil :size 0.1)
                         (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
                         (magit-log-mode                   :same t                  :inhibit-window-quit t)
                         (magit-commit-mode                :ignore t)
                         (magit-diff-mode     :select nil  :align left   :size 0.5)
                         (git-commit-mode                  :same t)
                         (vc-annotate-mode                 :same t)
-                        ("^\\*git-gutter.+\\*$" :regexp t :size 15 :noselect t)
                         ))
   :config
   (shackle-mode 1))
@@ -651,6 +654,19 @@ Word definition search.
 (use-package define-word
   :config
   (global-set-key (kbd "M-\\") 'define-word-at-point))
+#+END_SRC
+
+** Abbrev
+
+#+BEGIN_SRC emacs-lisp
+(clear-abbrev-table global-abbrev-table)
+
+(define-abbrev-table 'global-abbrev-table
+  '(
+    ("afaik" "as far as i know" )
+    ("em" "—")
+    ("ra" "→" )
+    ))
 #+END_SRC
 
 ** Auto completion
@@ -915,9 +931,9 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
                ;;   "* TODO %?\n%U\n%a\n")
 
                ("n"
-                 "Note"
+                 "Knowledge Base Note"
                  entry
-                 (file+olp "main.org" "Notes Inbox")
+                 (file+olp "main.org" "Inbox")
                  "* %?\n%U\n%a\n")
                ("j"
                  "Journal"
