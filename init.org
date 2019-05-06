@@ -867,6 +867,7 @@ Quickly open todo and config files.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
 (global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/journal.org")))
+(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/main.org")))
 (global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "~/Google Drive/Knowledgebase/org/links.org")))
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
 (global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil "~/Google Drive/Knowledgebase/org")))
