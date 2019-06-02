@@ -984,7 +984,7 @@ See `org-capture-templates' for more information."
     "Returns `org-capture' template string for new comic post.
 See `org-capture-templates' for more information."
     (let* ((title (read-from-minibuffer "Comic Title: ")) ;Prompt to enter the post title
-           (fname (read-from-minibuffer "Image Filename: "))
+           (fname (completing-read "Image File:" (directory-files "/Users/rakhim/code/rakhim.org/static/images/honestly-undefined/" nil "\\.jpg$")))
            (cnumber (number-to-string (length (org-map-entries nil nil '("/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org"))))))
 
       (mapconcat #'identity
