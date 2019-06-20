@@ -154,9 +154,9 @@ Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
 
 #+BEGIN_SRC emacs-lisp
 (setq mac-right-command-modifier 'super)
+(setq mac-option-modifier 'meta)
 (setq mac-left-option-modifier 'meta)
 (setq mac-right-option-modifier 'meta)
-(setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'super)
 #+END_SRC
 
@@ -312,8 +312,8 @@ Use =super= (which is =Cmd=) for movement and selection just like in macOS.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-<right>") 'end-of-visual-line)
-(global-set-key (kbd "s-<left>") (kbd "M-m"))
-(global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
+(global-set-key (kbd "s-<left>") 'beginning-of-visual-line)
+;; (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
 
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
 (global-set-key (kbd "s-<down>") 'end-of-buffer)
@@ -710,6 +710,17 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
                                                    (set-buffer "*markdown-output*")
                                                    (with-no-warnings (mark-whole-buffer))
                                                    (simpleclip-copy (point-min) (point-max)))))))
+(eval-after-load 'markdown-mode
+  `(define-key markdown-mode-map (kbd "M-s-O") (lambda ()
+                                               (interactive)
+                                               (markdown-kill-ring-save)
+                                               (let ((oldbuf (current-buffer)))
+                                                 (save-current-buffer
+                                                   (set-buffer "*markdown-output*")
+                                                   (beginning-of-buffer)
+                                                   (kill-whole-line)
+                                                   (with-no-warnings (mark-whole-buffer))
+                                                   (simpleclip-copy (point-min) (point-max)))))))
 #+END_SRC
 
 ** Packages for programming
@@ -793,12 +804,13 @@ Handy killall command.
 
 * Org
 
-Visually indent sections. This looks better for smaller files.
+Visually indent sections. This looks better for smaller files. Also, disallow editing invisible areas.
 
 #+BEGIN_SRC emacs-lisp
 (use-package org
   :config
-  (setq org-startup-indented t))
+  (setq org-startup-indented t)
+  (setq org-catch-invisible-edits 'error))
 #+END_SRC
 
 Store all my org files in =~/Google Drive/Knowledgebase/org=.
@@ -1085,12 +1097,13 @@ Here are some snippets of elisp and config that aren't currently used, but I don
 (use-package smartparens
   :config
   ;; (require 'smartparens-config)
+
   (smartparens-global-mode t)
   (show-smartparens-global-mode t)
   (setq sp-show-pair-delay 0)
 
   ;; no '' pair in emacs-lisp-mode
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  ;; (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   ;; (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
   ;; (sp-local-tag 'markdown-mode "s" "```scheme" "```")
   (define-key smartparens-mode-map (kbd "C-s-<right>") 'sp-forward-slurp-sexp)
