@@ -28,6 +28,8 @@ Few utils needed.
 brew install ripgrep
 brew cask install mactex
 brew install aspell
+brew cask install xquartz
+brew install wordnet
 #+END_SRC
 
 ** Config
@@ -640,12 +642,12 @@ Spellcheck current word.
 
 ** Thesaurus
 
-Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=.
+Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=. It requires =wordnet= to be installed locally.
 
 #+BEGIN_SRC emacs-lisp
-(use-package powerthesaurus
+(use-package synosaurus
   :config
-  (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim))
+  (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace))
 #+END_SRC
 
 Word definition search.
