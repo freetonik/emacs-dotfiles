@@ -14,7 +14,7 @@
  '(org-export-backends (quote (ascii html latex md hugo slimhtml)))
  '(package-selected-packages
    (quote
-    (deadgrep synosaurus change-inner avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
+    (synosaurus ledger-mode ledger embrace change-inner avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
  '(pop-up-frames nil)
  '(safe-local-variable-values (quote ((org-hugo-auto-export-on-save . t))))
  '(shell-pop-shell-type
@@ -23,6 +23,7 @@
      (lambda nil
        (ansi-term shell-pop-term-shell)))))
  '(shell-pop-universal-key "s-=")
+ '(synosaurus-choose-method (quote default))
  '(vc-follow-symlinks t)
  '(word-wrap t)
  '(yascroll:delay-to-hide nil))
