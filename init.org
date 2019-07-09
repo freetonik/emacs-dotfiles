@@ -734,19 +734,6 @@ Here are all the packages needed for programming languages and formats.
   (dumb-jump-mode))
 #+END_SRC
 
-LISP.
-
-#+BEGIN_SRC emacs-lisp
-(use-package paredit
-  :init
-  (progn
-    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-    (add-hook 'clojure-mode-hook 'paredit-mode)
-    (add-hook 'clojurescript-mode-hook 'paredit-mode)
-    (add-hook 'clojurec-mode-hook 'paredit-mode)
-    (add-hook 'cider-repl-mode-hook 'paredit-mode)))
-#+END_SRC
-
 Clojure.
 
 #+BEGIN_SRC emacs-lisp
