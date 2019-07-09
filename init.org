@@ -1012,6 +1012,22 @@ See `org-capture-templates' for more information."
                  (function org-hugo-new-subtree-post-capture-template-comic))))
 #+END_SRC
 
+Org-download creates links, but I need to change the path for my blog. This simple hook runs on every save.
+
+#+BEGIN_SRC emacs-lisp
+(defun org-mode-blog-fix-org-downloaded-image-paths ()
+  (when (equal (buffer-file-name) "/Users/rakhim/code/rakhim.org/content-org/blog.org")
+    (progn
+      (while (re-search-forward "file:../static" nil t)
+        (replace-match "file:"))
+
+      (while (re-search-backward "file:../static" nil t)
+        (replace-match "file:"))
+      )))
+
+(add-hook 'after-save-hook 'org-mode-blog-fix-org-downloaded-image-paths)
+#+END_SRC
+
 ** Slim HTML export
 
 slimhtml is an emacs org mode export backend. It is a set of transcoders for common org elements which outputs minimal HTML.
@@ -1034,6 +1050,18 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
                                           (simpleclip-copy (point-min) (point-max))
                                           (delete-window))))
 #+END_SRC
+
+** Org Download
+
+Drag and drop images to org files.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-download
+  :config
+  ;; add support to dired
+  (add-hook 'dired-mode-hook 'org-download-enable))
+#+END_SRC
+
 
 * Customizations
 
