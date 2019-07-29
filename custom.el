@@ -16,7 +16,13 @@
    (quote
     (synosaurus ledger-mode ledger embrace change-inner avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
  '(pop-up-frames nil)
- '(safe-local-variable-values (quote ((org-hugo-auto-export-on-save . t))))
+ '(safe-local-variable-values
+   (quote
+    ((org-download-timestamp . "")
+     (org-download-display-inline-images)
+     (org-download-heading-lvl . 1)
+     (org-download-image-dir . "../static/images/posts")
+     (org-hugo-auto-export-on-save . t))))
  '(shell-pop-shell-type
    (quote
     ("ansi-term" "*ansi-term*"
