@@ -850,6 +850,7 @@ While writing this configuration file in Org mode, I have to write code blocks a
 (eval-after-load 'org
   '(progn
     (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
+    (add-to-list 'org-structure-template-alist '("eq" "\\begin{equation}\n?\n\\end{equation}"))
     (define-key org-mode-map (kbd "C-'") nil)
     (global-set-key "\C-ca" 'org-agenda)))
 #+END_SRC
