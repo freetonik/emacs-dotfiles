@@ -5,7 +5,7 @@
 #+STARTUP: overview
 
 * Credits
-Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]].
+Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]], and then provide updates in consequent episodes.
 
 * Installing
 
@@ -189,7 +189,7 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 Matching parenthesis appearance.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-background 'show-paren-match "grey84")
+(set-face-background 'show-paren-match "wheat")
 (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 (show-paren-mode)
 #+END_SRC
@@ -664,7 +664,7 @@ Word definition search.
 
 #+BEGIN_SRC emacs-lisp
 (clear-abbrev-table global-abbrev-table)
-
+(setq-default abbrev-mode t)
 (define-abbrev-table 'global-abbrev-table
   '(
     ("afaik" "as far as i know" )
@@ -685,8 +685,6 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
         '("~/.emacs.d/snippets"))
 
   (yas-global-mode 1))
-
-
 #+END_SRC
 
 ** Auto completion
@@ -728,6 +726,8 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
                                                    (set-buffer "*markdown-output*")
                                                    (with-no-warnings (mark-whole-buffer))
                                                    (simpleclip-copy (point-min) (point-max)))))))
+
+;; Export without the first line (usually there's a header)
 (eval-after-load 'markdown-mode
   `(define-key markdown-mode-map (kbd "M-s-O") (lambda ()
                                                (interactive)
@@ -757,8 +757,8 @@ Clojure.
 #+BEGIN_SRC emacs-lisp
 (use-package clojure-mode)
 (use-package cider)
-
 (use-package clj-refactor)
+
 (defun my-clojure-mode-hook ()
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
@@ -1080,7 +1080,6 @@ Drag and drop images to org files.
   ;; add support to dired
   (add-hook 'dired-mode-hook 'org-download-enable))
 #+END_SRC
-
 
 * Customizations
 
