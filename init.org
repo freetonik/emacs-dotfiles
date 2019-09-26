@@ -964,6 +964,31 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
                ))
 #+END_SRC
 
+** Latex
+
+#+BEGIN_SRC emacs-lisp
+(require 'ox-latex)
+(with-eval-after-load 'ox-latex
+  (add-to-list
+   'org-latex-classes
+   '("tufte-book"
+     "\\documentclass[a4paper, sfsidenotes, justified, notitlepage]{tufte-book}
+     \\input{/users/rakhim/.emacs.d/latex/tufte.tex}"
+     ("\\part{%s}" . "\\part*{%s}")
+     ("\\chapter{%s}" . "\\chapter*{%s}")
+     ("\\section{%s}" . "\\section*{%s}")
+     ("\\subsection{%s}" . "\\subsection*{%s}"))))
+
+(add-to-list 'org-latex-classes
+             '("tufte-book"
+               "\\documentclass{tufte-book}"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+END_SRC
+
 ** Pandoc exporter
 
 #+BEGIN_SRC emacs-lisp
