@@ -609,7 +609,7 @@ It's time for Magit!
 Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast listener fritzgrabo).
 
 #+BEGIN_SRC emacs-lisp
-(setq magit-repository-directories '(("\~/code" . 4) ("\~/Google Drive/Codexpanse/Course materials" . 3)))
+(setq magit-repository-directories '(("\~/code" . 4) ("\~/Google Drive/Codexpanse/Course materials" . 3) ("\~/icloud/KnowledgeBase" . 3)))
 
 (defun magit-status-with-prefix-arg ()
   "Call `magit-status` with a prefix."
