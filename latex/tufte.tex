@@ -3,16 +3,39 @@
 \linespread{1.05}
 \usepackage{eulervm}
 \usepackage[usenames]{xcolor}
+\usepackage{tocloft}
+
+%% no blank page after part
+\makeatletter\@openrightfalse
+
+%% title page
+\renewcommand{\maketitlepage}{%
+  \cleardoublepage
+  {%
+  \sffamily
+  \begin{fullwidth}%
+  \fontsize{18}{20}\selectfont\par\noindent\textcolor{darkgray}{\thanklessauthor}%
+  \vspace{11.5pc}%
+  \fontsize{36}{40}\selectfont\par\noindent\textcolor{darkgray}{\thanklesstitle}%
+  \vfill
+  \fontsize{14}{16}\selectfont\par\noindent\thanklesspublisher%
+  \end{fullwidth}%
+  }%
+  \thispagestyle{empty}%
+  \clearpage
+}
 
 %% footnote color
 \renewcommand{\thefootnote}{\textcolor{Gray}{\arabic{footnote}}}
-\makeatletter
+
 
 %%
 %% chapter number style
+%% (large arabic number + black title)
 %%
 
 \usepackage{titlesec}
+
 \definecolor{gray75}{gray}{0.75}
 \newcommand{\hsp}{\hspace{0pt}}
 \titleformat{\chapter}[hang]{\flushright
@@ -50,6 +73,7 @@
 %%==============================================================================
 %% section numbering to subsection
 \setcounter{secnumdepth}{3}
+\renewcommand{\thepart}{\Roman{part}}
 \renewcommand{\thesection}{\Roman{section}}
 \renewcommand{\thesubsection}{\thesection.\Alph{subsection}}
 \renewcommand{\thesubsubsection}{\thesubsection\arabic{subsubsection})}
@@ -58,6 +82,11 @@
 %%==============================================================================
 %%                                 COLORS
 %%==============================================================================
+
+% part format
+\titleformat{\part}
+  {\normalfont\bfseries}{}{10pt}{\Huge\thepart.\quad}
+
 %% section format
 \titleformat{\section}%
   {\normalfont\Large\itshape\color{Cerulean}}% format applied to label+text
@@ -74,7 +103,16 @@
   {}% before the title body
   []% after the title body
 
+% subsubsection format
+\titleformat{\subsubsection}%
+  {\normalfont\large\itshape\color{TealBlue}}% format applied to label+text
+  {\llap{\colorbox{TealBlue}{\parbox{1cm}{\hfill\color{white}\thesubsubsection}}}}% label
+  {0.5em}% horizontal separation between label and title body
+  {}% before the title body
+  []% after the title body
+
 \renewcommand{\footnotesize}{\scriptsize}
 \setcaptionfont{\color{SeaGreen}\footnotesize}
 \setsidenotefont{\color{Gray}\sffamily\footnotesize}
-\setmarginnotefont{\color{SeaGreen}\itshape\footnotesize}"
+%% \setmarginnotefont{\color{SeaGreen}\itshape\footnotesize}"
+\setmarginnotefont{\small\itshape\color{blue}}
