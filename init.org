@@ -389,6 +389,10 @@ Go to other windows easily with one keystroke =s-something= instead of =C-x some
 (global-set-key (kbd "s-t") 'hsplit-last-buffer)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-k") 'kill-this-buffer)
+#+END_SRC
+
 Expand-region allows to gradually expand selection inside words, sentences, etc. =C-'= is bound to Org's =cycle through agenda files=, which I don't really use, so I unbind it here before assigning global shortcut for expansion.
 
 #+BEGIN_SRC emacs-lisp
@@ -972,21 +976,26 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
   (add-to-list
    'org-latex-classes
    '("tufte-book"
-     "\\documentclass[a4paper, sfsidenotes, justified, notitlepage]{tufte-book}
+
+     "\\documentclass{tufte-book}
      \\input{/users/rakhim/.emacs.d/latex/tufte.tex}"
      ("\\part{%s}" . "\\part*{%s}")
      ("\\chapter{%s}" . "\\chapter*{%s}")
      ("\\section{%s}" . "\\section*{%s}")
-     ("\\subsection{%s}" . "\\subsection*{%s}"))))
+     ("\\subsection{%s}" . "\\subsection*{%s}")
+     ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 
-(add-to-list 'org-latex-classes
-             '("tufte-book"
-               "\\documentclass{tufte-book}"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+;; sfsidenotes,
+;; (with-eval-after-load 'ox-latex
+;;   (add-to-list
+;;    'org-latex-classes
+;;    '(("tufte-book"
+;;       "\\documentclass[a4paper, sfsidenotes, justified, notitlepage]{tufte-book}
+;;      \\input{/users/rakhim/.emacs.d/latex/tufte-book.cls}"
+;;       ("\\part{%s}" . "\\part*{%s}")
+;;       ("\\chapter{%s}" . "\\chapter*{%s}")
+;;       ("\\section{%s}" . "\\section*{%s}")
+;;       ("\\subsection{%s}" . "\\subsection*{%s}")))))
 #+END_SRC
 
 ** Pandoc exporter
