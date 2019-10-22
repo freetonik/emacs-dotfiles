@@ -14,7 +14,7 @@
  '(org-export-backends (quote (ascii html latex md hugo slimhtml)))
  '(package-selected-packages
    (quote
-    (ox-tufte smartparens writegood-mode elixir-mode synosaurus ledger-mode ledger embrace change-inner avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
+    (go-mode ox-tufte smartparens writegood-mode elixir-mode synosaurus ledger-mode ledger embrace change-inner avy edit-indirect ox-pandoc slim-mode clj-refactor ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle neotree define-word yaml-mode which-key web-mode visual-regexp use-package spaceline smex simpleclip shell-pop powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell dumb-jump company cider)))
  '(pop-up-frames nil)
  '(safe-local-variable-values
    (quote
