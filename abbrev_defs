@@ -5,9 +5,7 @@
 
 (define-abbrev-table 'Info-edit-mode-abbrev-table '())
 
-(define-abbrev-table 'awk-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'awk-mode-abbrev-table '())
 
 (define-abbrev-table 'bibtex-mode-abbrev-table '())
 
@@ -15,13 +13,9 @@
 
 (define-abbrev-table 'bookmark-edit-annotation-mode-abbrev-table '())
 
-(define-abbrev-table 'c++-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'c++-mode-abbrev-table '())
 
-(define-abbrev-table 'c-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'c-mode-abbrev-table '())
 
 (define-abbrev-table 'calendar-mode-abbrev-table '())
 
@@ -114,7 +108,8 @@
     ("em" "—" nil 1)
     ("eqq" "≡" nil 2)
     ("pll" "<span class=\"play\">►</span>
-" ra 2)
+" ra 5)
+    ("ra" "→" nil 0)
    ))
 
 (define-abbrev-table 'gnus-group-mode-abbrev-table '())
@@ -139,9 +134,7 @@
 
 (define-abbrev-table 'ivy-occur-mode-abbrev-table '())
 
-(define-abbrev-table 'java-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'java-mode-abbrev-table '())
 
 (define-abbrev-table 'js-jsx-mode-abbrev-table '())
 
@@ -199,6 +192,8 @@
 
 (define-abbrev-table 'markdown-mode-abbrev-table
   '(
+    ("jn" "```{.javascript .language-javascript .line-numbers}" nil 34)
+    ("jnn" "```{.javascript .language-javascript}" nil 28)
     ("pn" "```{.python .language-python .line-numbers}" nil 33)
     ("pnn" "```{.python .language-python}" nil 22)
    ))
@@ -215,9 +210,7 @@
 
 (define-abbrev-table 'nxml-mode-abbrev-table '())
 
-(define-abbrev-table 'objc-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'objc-mode-abbrev-table '())
 
 (define-abbrev-table 'occur-edit-mode-abbrev-table '())
 
@@ -231,9 +224,7 @@
 
 (define-abbrev-table 'package-menu-mode-abbrev-table '())
 
-(define-abbrev-table 'pike-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'pike-mode-abbrev-table '())
 
 (define-abbrev-table 'plain-tex-mode-abbrev-table '())
 
