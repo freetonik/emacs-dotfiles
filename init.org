@@ -299,6 +299,31 @@ A nice little real terminal in a popup.
 (use-package shell-pop)
 #+END_SRC
 
+Use =Cmd+i= to open the current folder in a new tab of iTerm:
+
+#+BEGIN_SRC emacs-lisp
+(defun iterm-goto-filedir-or-home ()
+  "Go to present working dir and focus iterm"
+  (interactive)
+  (do-applescript
+   (concat
+    " tell application \"iTerm2\"\n"
+    "   tell current window\n"
+    "     create tab with profile \"Default\"\n"
+    "   end tell\n"
+    "   tell the current session of current window\n"
+    (format "     write text \"cd %s\" \n"
+            ;; string escaping madness for applescript
+            (replace-regexp-in-string "\\\\" "\\\\\\\\"
+                                      (shell-quote-argument (or default-directory "~"))))
+    "   end tell\n"
+    " end tell\n"
+    " do shell script \"open -a iTerm\"\n"
+    ))
+  )
+(global-set-key (kbd "s-i") 'iterm-goto-filedir-or-home)
+#+END_SRC
+
 ** Navigation and editing
 
 Kill line with =s-Backspace=, which is =Cmd-Backspace=. Note that thanks to Simpleclip, killing doesn't rewrite the system clipboard. Kill one word by =Alt-Backspace=. Also, kill forward word with =Alt-Shift-Backspace=, since =Alt-Backspace= is kill word backwards.
