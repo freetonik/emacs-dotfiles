@@ -638,7 +638,7 @@ It's time for Magit!
 Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast listener fritzgrabo).
 
 #+BEGIN_SRC emacs-lisp
-(setq magit-repository-directories '(("\~/code" . 4) ("\~/Google Drive/Codexpanse/Course materials" . 3) ("\~/icloud/KnowledgeBase" . 3)))
+(setq magit-repository-directories '(("\~/code" . 4) ("\~/gdrive/1 Projects/1.1 Codexpanse" . 4)))
 
 (defun magit-status-with-prefix-arg ()
   "Call `magit-status` with a prefix."
@@ -847,16 +847,16 @@ Visually indent sections. This looks better for smaller files. Also, disallow ed
   (setq org-catch-invisible-edits 'error))
 #+END_SRC
 
-Store all my org files in iCloud (=/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase=).
+Store all my org files in Google Drive (=/Users/rakhim/gdrive=).
 
 #+BEGIN_SRC emacs-lisp
-(setq org-directory "/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org")
+(setq org-directory "/Users/rakhim/gdrive/4 Etc/org")
 #+END_SRC
 
 And all of those files should be in included agenda.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org"))
+(setq org-agenda-files '("/Users/rakhim/gdrive/4 Etc/org"))
 #+END_SRC
 
 Refile targets should include files and down to 9 levels into them.
@@ -898,28 +898,12 @@ State changes for todos and also notes should go into a Logbook drawer:
 (setq org-log-into-drawer t)
 #+END_SRC
 
-I keep my links in =links.org=, export them to HTML and access them via browser. This makes the HTML file automatically on every save.
-
-#+BEGIN_SRC emacs-lisp
-(defun org-mode-export-links ()
-  "Export links document to HTML automatically when 'links.org' is changed"
-  (when (equal (buffer-file-name) "/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org/links.org")
-    (progn
-      (org-html-export-to-html)
-      (message "HTML exported"))))
-
-(add-hook 'after-save-hook 'org-mode-export-links)
-#+END_SRC
-
 Quickly open todo and config files.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
-(global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org/journal.org")))
-(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org/main.org")))
-(global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org/links.org")))
+(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "/Users/rakhim/gdrive/4 Etc/org/main.org")))
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
-(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil "/Users/rakhim/Library/Mobile Documents/com~apple~CloudDocs/KnowledgeBase/Etc/org")))
 #+END_SRC
 
 Org capture.
@@ -1379,4 +1363,35 @@ This is great for learning Emacs, it shows a nice table of possible commands.
         neo-auto-indent-point t)
   (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
   (global-set-key (kbd "s-B") 'neotree-toggle))
+#+END_SRC
+
+** Links file
+
+
+I keep my links in =links.org=, export them to HTML and access them via browser. This makes the HTML file automatically on every save.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun org-mode-export-links ()
+  "Export links document to HTML automatically when 'links.org' is changed"
+  (when (equal (buffer-file-name) "PATH_TO/org/links.org")
+    (progn
+      (org-html-export-to-html)
+      (message "HTML exported"))))
+
+(global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "PATH_TO/org/links.org")))
+
+
+(add-hook 'after-save-hook 'org-mode-export-links)
+#+END_SRC
+
+** Org journal
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "PATH_TO/org/journal.org")))
+#+END_SRC
+
+** Search in all org files
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil "PATH_TO/org")))
 #+END_SRC
