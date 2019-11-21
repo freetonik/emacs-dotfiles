@@ -146,6 +146,9 @@ Install use-package.
 (eval-when-compile (require 'use-package))
 
 (setq use-package-always-ensure t)
+
+;; this package is useful for overriding major mode keybindings
+(require 'bind-key)
 #+END_SRC
 
 ** Modifier keys
@@ -330,7 +333,10 @@ Kill line with =s-Backspace=, which is =Cmd-Backspace=. Note that thanks to Simp
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-<backspace>") 'kill-whole-line)
+(global-set-key (kbd "s-<delete>") 'kill-whole-line)
 (global-set-key (kbd "M-S-<backspace>") 'kill-word)
+(global-set-key (kbd "M-<delete>") 'kill-word)
+(bind-key* "S-<delete>" 'kill-word)
 #+END_SRC
 
 Use =super= (which is =Cmd=) for movement and selection just like in macOS.
