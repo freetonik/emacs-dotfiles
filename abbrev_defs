@@ -101,15 +101,11 @@
 
 (define-abbrev-table 'global-abbrev-table
   '(
-    ("--" "—" nil 0)
-    ("---" "—" nil 0)
-    ("afaik" "as far as i know" nil 0)
-    ("bsq" "→◼" nil 7)
+    ("afaik" "as far as i know" nil 1)
+    ("bsq" "→◼" nil 15)
     ("em" "—" nil 1)
-    ("eqq" "≡" nil 2)
-    ("pll" "<span class=\"play\">►</span>
-" ra 5)
-    ("ra" "→" nil 0)
+    ("eqq" "≡" nil 10)
+    ("pll" "<span class=\"play\">►</span>" nil 6)
    ))
 
 (define-abbrev-table 'gnus-group-mode-abbrev-table '())
@@ -192,10 +188,10 @@
 
 (define-abbrev-table 'markdown-mode-abbrev-table
   '(
-    ("jn" "```{.javascript .language-javascript .line-numbers}" nil 34)
-    ("jnn" "```{.javascript .language-javascript}" nil 28)
+    ("jn" "```{.javascript .language-javascript .line-numbers}" nil 38)
+    ("jnn" "```{.javascript .language-javascript}" nil 32)
     ("pn" "```{.python .language-python .line-numbers}" nil 33)
-    ("pnn" "```{.python .language-python}" nil 22)
+    ("pnn" "```{.python .language-python}" nil 25)
    ))
 
 (define-abbrev-table 'markdown-view-mode-abbrev-table '())
