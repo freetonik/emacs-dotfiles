@@ -641,7 +641,7 @@ It's time for Magit!
   (global-set-key (kbd "s-g") 'magit-status))
 #+END_SRC
 
-Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast listener fritzgrabo).
+Navigate to projects with =Cmd+Shift+P= (thanks to reddit user and emacscast listener fritzgrabo):
 
 #+BEGIN_SRC emacs-lisp
 (setq magit-repository-directories '(("\~/code" . 4) ("\~/gdrive/1 Projects/1.1 Codexpanse" . 4)))
@@ -653,6 +653,16 @@ Navigate to projects with Cmd+Shift+P (thanks to reddit user and emacscast liste
     (call-interactively #'magit-status)))
 
 (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun my-magit-stage-all-and-commit-and-push () (interactive)
+       (let ((m (read-string "Commit message: ")))
+         (unless (string= "" m)
+           (magit-stage-modified)
+           (magit-call-git "commit" "-m" m)
+           (magit-call-git "push" "origin" "master"))))
+(global-set-key (kbd "s-G") 'my-magit-stage-all-and-commit-and-push)
 #+END_SRC
 
 ** Spell checking
