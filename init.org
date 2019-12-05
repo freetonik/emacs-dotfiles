@@ -659,7 +659,7 @@ Navigate to projects with =Cmd+Shift+P= (thanks to reddit user and emacscast lis
 (defun my-magit-stage-all-and-commit-and-push () (interactive)
        (let ((m (read-string "Commit message: ")))
          (unless (string= "" m)
-           (magit-stage-modified)
+           (magit-call-git "add" ".")
            (magit-call-git "commit" "-m" m)
            (magit-call-git "push" "origin" "master"))))
 (global-set-key (kbd "s-G") 'my-magit-stage-all-and-commit-and-push)
@@ -1120,10 +1120,26 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
   (org-export-to-buffer 'slimhtml "*slimhtml*"
     async subtreep visible-only body-only ext-plist (lambda () (html-mode))))
 
+
+
+(eval-after-load 'org
+  `(define-key org-mode-map (kbd "M-s-O") (lambda ()
+                                          (interactive)
+                                          (org-html-export-as-html nil nil t t)
+                                          (beginning-of-buffer)
+                                          (kill-whole-line)
+                                          (kill-whole-line)
+                                          (end-of-buffer)
+                                          (previous-line)
+                                          (kill-whole-line)
+                                          (with-no-warnings (mark-whole-buffer))
+                                          (simpleclip-copy (point-min) (point-max))
+                                          (delete-window))))
+
 (eval-after-load 'org
   `(define-key org-mode-map (kbd "s-O") (lambda ()
                                           (interactive)
-                                          (org-html-export-as-slimhtml nil nil nil t)
+                                          (org-html-export-as-html nil nil t t)
                                           (with-no-warnings (mark-whole-buffer))
                                           (simpleclip-copy (point-min) (point-max))
                                           (delete-window))))
