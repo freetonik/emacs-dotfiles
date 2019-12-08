@@ -25,6 +25,7 @@ brew cask install emacs-mac
 Few utils needed.
 
 #+BEGIN_SRC sh :tangle no
+brew install pandoc
 brew install ripgrep
 brew cask install mactex
 brew install aspell
