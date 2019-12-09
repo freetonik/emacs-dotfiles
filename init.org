@@ -691,7 +691,7 @@ Spellcheck current word.
 Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=. It requires =wordnet= to be installed locally.
 
 #+BEGIN_SRC emacs-lisp
-(use-package synosaurus
+(use-package powerthesaurus
   :config
   ;; (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)
