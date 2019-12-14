@@ -25,7 +25,6 @@ brew cask install emacs-mac
 Few utils needed.
 
 #+BEGIN_SRC sh :tangle no
-brew install pandoc
 brew install ripgrep
 brew cask install mactex
 brew install aspell
@@ -360,7 +359,18 @@ Basic things you should expect from macOS.
 (global-set-key (kbd "s-s") 'save-buffer)             ;; save
 (global-set-key (kbd "s-S") 'write-file)              ;; save as
 (global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
-(global-set-key (kbd "s-z") 'undo)                    ;; undo
+;; (global-set-key (kbd "s-z") 'undo)                    ;; undo
+#+END_SRC
+
+Regular undo-redo.
+
+#+BEGIN_SRC emacs-lisp
+(load "~/.emacs.d/elisp/undo-fu.el")
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-z")   'undo-fu-only-undo)
+(global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
+(global-set-key (kbd "s-z")   'undo-fu-only-undo)
+(global-set-key (kbd "s-r")   'undo-fu-only-redo)
 #+END_SRC
 
 Avy for fast navigation.
@@ -499,9 +509,9 @@ Upcase word and region using the same keys.
 (global-set-key (kbd "M-l") 'downcase-dwim)
 #+END_SRC
 
-Provide nice visual feedback for replace.
+Provide nice visual feedback for replace. (temporarily disabled)
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package visual-regexp
   :config
   (define-key global-map (kbd "s-r") 'vr/replace))
@@ -691,7 +701,7 @@ Spellcheck current word.
 Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=. It requires =wordnet= to be installed locally.
 
 #+BEGIN_SRC emacs-lisp
-(use-package powerthesaurus
+(use-package synosaurus
   :config
   ;; (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)
@@ -896,7 +906,6 @@ While writing this configuration file in Org mode, I have to write code blocks a
 (eval-after-load 'org
   '(progn
     (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
-    (add-to-list 'org-structure-template-alist '("j" "#+BEGIN_SRC clojure \n?\n#+END_SRC"))
     (add-to-list 'org-structure-template-alist '("eq" "\\begin{equation}\n?\n\\end{equation}"))
     (define-key org-mode-map (kbd "C-'") nil)
     (global-set-key "\C-ca" 'org-agenda)))
