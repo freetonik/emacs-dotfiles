@@ -745,7 +745,9 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
 
 ** Auto completion
 
-#+BEGIN_SRC emacs-lisp
+Temporarily disabled to see if I really need this.
+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package company
   :config
   (setq company-idle-delay 0.1)
