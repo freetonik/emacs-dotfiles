@@ -616,7 +616,7 @@ Select any region and edit it in another buffer.
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
       '((swiper . ivy--regex-plus)
-        (swiper-isearch . ivy--regex-plus)
+        (swiper-isearch . regexp-quote)
         (counsel-ag . ivy--regex-plus)
         (counsel-rg . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
@@ -1134,7 +1134,7 @@ slimhtml is an emacs org mode export backend. It is a set of transcoders for com
 
 
 (eval-after-load 'org
-  `(define-key org-mode-map (kbd "M-s-O") (lambda ()
+  `(define-key org-mode-map (kbd "M-s-o") (lambda ()
                                           (interactive)
                                           (org-html-export-as-html nil nil t t)
                                           (beginning-of-buffer)
