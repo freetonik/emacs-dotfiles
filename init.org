@@ -945,6 +945,10 @@ Org capture.
 (setq org-cycle-separator-lines 1)
 #+END_SRC
 
+Easy export to HTML:
+
+(define-key org-mode-map (kbd "s-e") (kbd "C-c C-e h h"))
+
 Add closed date when todo goes to DONE state.
 
 #+BEGIN_SRC emacs-lisp
