@@ -11,14 +11,17 @@ Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setu
 
 ** Emacs
 
-This config works best with this [[https://emacsformacosx.com/][https://emacsformacosx.com/]].
-
-Alternative build:
+This config works best with this [[https://emacsformacosx.com/][https://emacsformacosx.com/]]. Alternative build I'm currently using is this port:
 
 #+BEGIN_SRC sh :tangle no
 brew tap railwaycat/emacsmacport
 brew cask install emacs-mac
 #+END_SRC
+
+It works well and provides some things the official distribution doesn't:
+- per-pixel scrolling
+- nicer-looking native transparent topbar
+- emoji support
 
 ** Dependencies
 
@@ -30,6 +33,7 @@ brew cask install mactex
 brew install aspell
 brew cask install xquartz
 brew install wordnet
+brew install pandoc
 #+END_SRC
 
 ** Config
@@ -68,6 +72,18 @@ If one wishes to make changes to the repo-version of =init.el= start tracking ag
 git update-index --no-assume-unchanged init.el
 #+END_SRC
 
+* Startup timer
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+#+END_SRC
+
 * Configurations
 
 ** Meta
@@ -76,7 +92,6 @@ When this configuration is loaded for the first time, the =init.el= is the file 
 
 #+BEGIN_SRC emacs-lisp :tangle no
 ;; This file replaces itself with the actual configuration at first run.
-
 ;; We can't tangle without org!
 (require 'org)
 ;; Open the configuration
@@ -89,10 +104,11 @@ When this configuration is loaded for the first time, the =init.el= is the file 
 (byte-compile-file (concat user-emacs-directory "init.el"))
 #+END_SRC
 
-Lexical scoping for the init-file is needed, it can be specified in the header. This is the first line of the actual configuration:
+Lexical scoping for the init-file is needed, it can be specified in the header. Make startup faster by reducing the frequency of garbage collection.  The default is 800 kilobytes.  Measured in bytes. These are the first lines of the actual configuration.
 
 #+BEGIN_SRC emacs-lisp
 ;;; -*- lexical-binding: t -*-
+(setq gc-cons-threshold (* 50 1000 1000))
 #+END_SRC
 
 Tangle and compile this file on save automatically:
@@ -114,8 +130,8 @@ tangled, and the tangled file is compiled."
 This helps get rid of =functions might not be defined at runtime= warnings. See https://github.com/jwiegley/use-package/issues/590
 
 #+BEGIN_SRC emacs-lisp
-(eval-when-compile
-  (setq use-package-expand-minimally byte-compile-current-file))
+;; (eval-when-compile
+;;   (setq use-package-expand-minimally byte-compile-current-file))
 #+END_SRC
 
 ** Use package
@@ -127,12 +143,13 @@ Initialize package and add Melpa source.
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                  (not (gnutls-available-p))))
     (proto (if no-ssl "http" "https")))
-    ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+
     (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
     ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+
     (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-(add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
+      ;; For important compatibility libraries like cl-lib
+      (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 #+END_SRC
 
@@ -144,28 +161,24 @@ Install use-package.
   (package-install 'use-package))
 
 (eval-when-compile (require 'use-package))
-
 (setq use-package-always-ensure t)
 
 ;; this package is useful for overriding major mode keybindings
-(require 'bind-key)
+(use-package bind-key)
 #+END_SRC
 
 ** Modifier keys
 
-Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt.
+Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt. Right Alt (option) can be used to enter symbols like em dashes =—=.
 
 #+BEGIN_SRC emacs-lisp
 (setq mac-right-command-modifier 'super)
+(setq mac-command-modifier 'super)
+
 (setq mac-option-modifier 'meta)
 (setq mac-left-option-modifier 'meta)
 (setq mac-right-option-modifier 'meta)
-(setq mac-command-modifier 'super)
-#+END_SRC
 
-Right Alt (option) can be used to enter symbols like em dashes =—=.
-
-#+BEGIN_SRC emacs-lisp
 (setq mac-right-option-modifier 'nil)
 #+END_SRC
 
@@ -183,8 +196,8 @@ Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil :font "Inconsolata LGC 14")
-;; (setq default-frame-alist '((font . "Inconsolata LGC 14")))
 (setq-default line-spacing 0)
+
 (setq initial-frame-alist '((width . 135) (height . 55)))
 (tool-bar-mode -1)
 #+END_SRC
@@ -195,13 +208,6 @@ Matching parenthesis appearance.
 (set-face-background 'show-paren-match "wheat")
 (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 (show-paren-mode)
-#+END_SRC
-
-Wrap lines always.
-
-#+BEGIN_SRC emacs-lisp
-;; (global-visual-line-mode 1)
-(setq org-startup-truncated nil)
 #+END_SRC
 
 Nice and simple mode line.
@@ -296,12 +302,6 @@ Pass system shell environment to Emacs. This is important primarily for shell in
   (exec-path-from-shell-initialize))
 #+END_SRC
 
-A nice little real terminal in a popup.
-
-#+BEGIN_SRC emacs-lisp
-(use-package shell-pop)
-#+END_SRC
-
 Use =Cmd+i= to open the current folder in a new tab of iTerm:
 
 #+BEGIN_SRC emacs-lisp
@@ -344,7 +344,6 @@ Use =super= (which is =Cmd=) for movement and selection just like in macOS.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-<right>") 'end-of-visual-line)
 (global-set-key (kbd "s-<left>") 'beginning-of-visual-line)
-;; (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))
 
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
 (global-set-key (kbd "s-<down>") 'end-of-buffer)
@@ -359,7 +358,6 @@ Basic things you should expect from macOS.
 (global-set-key (kbd "s-s") 'save-buffer)             ;; save
 (global-set-key (kbd "s-S") 'write-file)              ;; save as
 (global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
-;; (global-set-key (kbd "s-z") 'undo)                    ;; undo
 #+END_SRC
 
 Regular undo-redo.
@@ -377,6 +375,7 @@ Avy for fast navigation.
 
 #+BEGIN_SRC emacs-lisp
 (use-package avy
+  :defer 1
   :config
   (global-set-key (kbd "s-;") 'avy-goto-char-timer))
 #+END_SRC
@@ -449,6 +448,8 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
 
 #+BEGIN_SRC emacs-lisp
 (use-package move-text
+  :defer 1
+  :commands move-text-default-bindings
   :config
   (move-text-default-bindings))
 #+END_SRC
@@ -509,14 +510,6 @@ Upcase word and region using the same keys.
 (global-set-key (kbd "M-l") 'downcase-dwim)
 #+END_SRC
 
-Provide nice visual feedback for replace. (temporarily disabled)
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package visual-regexp
-  :config
-  (define-key global-map (kbd "s-r") 'vr/replace))
-#+END_SRC
-
 Delete trailing spaces and add new line in the end of a file on save.
 
 #+BEGIN_SRC emacs-lisp
@@ -528,6 +521,7 @@ Multiple cusors are a must. Make <return> insert a newline; multiple-cursors-mod
 
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
+  :defer 1
   :config
   (setq mc/always-run-for-all 1)
   (global-set-key (kbd "s-d") 'mc/mark-next-like-this)
@@ -556,6 +550,7 @@ Move between windows with Control-Command-Arrow and with =Cmd= just like in iTer
 (global-set-key (kbd "s-o") (kbd "C-x o"))
 
 (use-package windmove
+  :defer 1
   :config
   (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
   (global-set-key (kbd "s-]")  'windmove-right)        ;; Cmd+] go to right window
@@ -573,6 +568,9 @@ Shackle to make sure all windows are nicely positioned.
 
 #+BEGIN_SRC emacs-lisp
 (use-package shackle
+  :defer 1
+  ;; use :commands to to introduce dummy variable and function declarations solely for the sake of the byte-compiler
+  :commands shackle-mode
   :init
   (setq shackle-default-alignment 'below
         shackle-default-size 0.4
@@ -599,9 +597,11 @@ Shackle to make sure all windows are nicely positioned.
 ** Edit indirect
 
 Select any region and edit it in another buffer.
+TODO: if region selected, invoke edit indirect with same keystroke as narrow
 
 #+BEGIN_SRC emacs-lisp
-(use-package edit-indirect)
+(use-package edit-indirect
+  :defer 1)
 #+END_SRC
 
 ** Ivy, Swiper and Counsel
@@ -638,8 +638,10 @@ Select any region and edit it in another buffer.
 ;; When using git ls (via counsel-git), include unstaged files
 (setq counsel-git-cmd "git ls-files --full-name --exclude-standard --others --cached --")
 
-(use-package smex)
-(use-package flx)
+(use-package smex
+  :defer 1)
+(use-package flx
+  :defer 1)
 #+END_SRC
 
 ** Git
@@ -684,15 +686,10 @@ Spell checking requires an external command to be available. Install =aspell= on
 (setq ispell-program-name "aspell")
 #+END_SRC
 
-Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX.
+Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX. Spellcheck current word.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'text-mode-hook 'flyspell-mode)
-#+END_SRC
-
-Spellcheck current word.
-
-#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-\\") 'ispell-word)
 #+END_SRC
 
@@ -701,17 +698,25 @@ Spellcheck current word.
 Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=. It requires =wordnet= to be installed locally.
 
 #+BEGIN_SRC emacs-lisp
-(use-package synosaurus
+(use-package powerthesaurus
+  :defer 1
   :config
-  ;; (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)
   )
+
+;; Alternative, local thesaurus
+;; (use-package synosaurus
+;;   :defer 1
+;;   :config
+;;   (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
+;;   )
 #+END_SRC
 
 Word definition search.
 
 #+BEGIN_SRC emacs-lisp
 (use-package define-word
+  :defer 1
   :config
   (global-set-key (kbd "M-\\") 'define-word-at-point))
 #+END_SRC
@@ -735,25 +740,13 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
-  :ensure t
+  :defer 1
+  :commands yas-global-mode yas-minor-mode
   :config
   (setq yas-snippet-dirs
         '("~/.emacs.d/snippets"))
 
   (yas-global-mode 1))
-#+END_SRC
-
-** Auto completion
-
-Temporarily disabled to see if I really need this.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package company
-  :config
-  (setq company-idle-delay 0.1)
-  (setq company-global-modes '(not org-mode markdown-mode))
-  (setq company-minimum-prefix-length 1)
-  (add-hook 'after-init-hook 'global-company-mode))
 #+END_SRC
 
 ** Markdown
@@ -762,7 +755,8 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
-  :commands (markdown-mode gfm-mode)
+  :defer 1
+  :commands (markdown-mode gfm-mode markdown-kill-ring-save)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
@@ -774,7 +768,6 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
 (eval-after-load 'markdown-mode
   `(define-key markdown-mode-map (kbd "C-s-<up>") 'widen))
 
-(require 'markdown-mode)
 (eval-after-load 'markdown-mode
   `(define-key markdown-mode-map (kbd "s-O") (lambda ()
                                                (interactive)
@@ -793,7 +786,7 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
                                                (let ((oldbuf (current-buffer)))
                                                  (save-current-buffer
                                                    (set-buffer "*markdown-output*")
-                                                   (beginning-of-buffer)
+                                                   (goto-char (point-min))
                                                    (kill-whole-line)
                                                    (with-no-warnings (mark-whole-buffer))
                                                    (simpleclip-copy (point-min) (point-max)))))))
@@ -804,18 +797,21 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
 Here are all the packages needed for programming languages and formats.
 
 #+BEGIN_SRC emacs-lisp
-(use-package yaml-mode)
-(use-package dumb-jump
-  :config
-  (dumb-jump-mode))
+(use-package yaml-mode
+  :mode (("\\.yml\\'" . yaml-mode)
+         ("\\.yaml\\'" . yaml-mode)))
 #+END_SRC
 
 Clojure.
 
 #+BEGIN_SRC emacs-lisp
-(use-package clojure-mode)
-(use-package cider)
-(use-package clj-refactor)
+(use-package clojure-mode
+  :defer 1)
+(use-package cider
+  :defer 1)
+(use-package clj-refactor
+  :commands clj-refactor-mode cljr-add-keybindings-with-prefix
+  :defer 1)
 
 (defun my-clojure-mode-hook ()
     (clj-refactor-mode 1)
@@ -838,6 +834,7 @@ Emmet.
 
 #+BEGIN_SRC emacs-lisp
 (use-package emmet-mode
+  :defer 1
   :commands emmet-mode
   :init
   (setq emmet-indentation 2)
@@ -845,7 +842,7 @@ Emmet.
   :config
   (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
   (add-hook 'web-mode-hook  'emmet-mode)
-  (add-hook 'html-mode-hook  'emmet-mode)
+  (add-hook 'html-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook  'emmet-mode)) ;; enable Emmet's css abbreviation.
 #+END_SRC
 
@@ -876,15 +873,10 @@ Visually indent sections. This looks better for smaller files. Also, disallow ed
   (setq org-catch-invisible-edits 'error))
 #+END_SRC
 
-Store all my org files in Google Drive (=/Users/rakhim/gdrive=).
+Store all my org files in Google Drive (=/Users/rakhim/gdrive=). And all of those files should be in included agenda.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-directory "/Users/rakhim/gdrive/4 Etc/org")
-#+END_SRC
-
-And all of those files should be in included agenda.
-
-#+BEGIN_SRC emacs-lisp
 (setq org-agenda-files '("/Users/rakhim/gdrive/4 Etc/org"))
 #+END_SRC
 
@@ -893,7 +885,6 @@ Refile targets should include files and down to 9 levels into them.
 #+BEGIN_SRC emacs-lisp
 (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                  (org-agenda-files :maxlevel . 9))))
-
 #+END_SRC
 
 Allow shift selection with arrows. This will not interfere with some built-in shift+arrow functionality in Org.
@@ -902,7 +893,7 @@ Allow shift selection with arrows. This will not interfere with some built-in sh
 (setq org-support-shift-select t)
 #+END_SRC
 
-While writing this configuration file in Org mode, I have to write code blocks all the time. Org has templates, so doing =<s TAB= creates a source code block. Here I create a custom template for emacs-lisp specifically. So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
+Custom source block templates (e.g. =<el= for emacs lisp).
 
 #+BEGIN_SRC emacs-lisp
 (eval-after-load 'org
@@ -921,10 +912,11 @@ And inside those code blocks indentation should be correct depending on the sour
 (setq org-src-fontify-natively t)
 #+END_SRC
 
-State changes for todos and also notes should go into a Logbook drawer:
+State changes for todos and also notes should go into a Logbook drawer. Add closed date when todo goes to DONE state.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-log-into-drawer t)
+(setq org-log-done 'time)
 #+END_SRC
 
 Quickly open todo and config files.
@@ -945,14 +937,10 @@ Org capture.
 (setq org-cycle-separator-lines 1)
 #+END_SRC
 
-Easy export to HTML:
-
-(define-key org-mode-map (kbd "s-e") (kbd "C-c C-e h h"))
-
-Add closed date when todo goes to DONE state.
+Easy export to HTML.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-log-done 'time)
+(define-key org-mode-map (kbd "s-e") (kbd "C-c C-e h h"))
 #+END_SRC
 
 Not sure about this... I want to retain Shift-Alt movement and selection everywhere, but in Org mode these bindings are important built ins, and I don't know if there is a viable alternative.
@@ -986,30 +974,6 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
 (define-key org-mode-map (kbd "C-s-<up>") 'widen)
 #+END_SRC
 
-** Capture templates
-
-#+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-      (quote (
-               ;; (("t"
-               ;;   "TODO"
-               ;;   entry
-               ;;   (file+olp "inbox.org" "Tasks")
-               ;;   "* TODO %?\n%U\n%a\n")
-
-               ("n"
-                 "Knowledge Base Note"
-                 entry
-                 (file+olp "main.org" "Inbox")
-                 "* %?\n%U\n%a\n")
-               ("j"
-                 "Journal"
-                 entry
-                 (file+datetree "journal.org")
-                 "* %U\n%?"))
-               ))
-#+END_SRC
-
 ** Latex
 
 #+BEGIN_SRC emacs-lisp
@@ -1026,31 +990,23 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
      ("\\section{%s}" . "\\section*{%s}")
      ("\\subsection{%s}" . "\\subsection*{%s}")
      ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
-
-;; sfsidenotes,
-;; (with-eval-after-load 'ox-latex
-;;   (add-to-list
-;;    'org-latex-classes
-;;    '(("tufte-book"
-;;       "\\documentclass[a4paper, sfsidenotes, justified, notitlepage]{tufte-book}
-;;      \\input{/users/rakhim/.emacs.d/latex/tufte-book.cls}"
-;;       ("\\part{%s}" . "\\part*{%s}")
-;;       ("\\chapter{%s}" . "\\chapter*{%s}")
-;;       ("\\section{%s}" . "\\section*{%s}")
-;;       ("\\subsection{%s}" . "\\subsection*{%s}")))))
 #+END_SRC
 
 ** Pandoc exporter
 
 #+BEGIN_SRC emacs-lisp
-(use-package ox-pandoc)
+(use-package ox-pandoc
+  :defer 2)
 #+END_SRC
 
 ** Blogging with hugo
+
 Install =ox-hugo= and enable auto export.
 
 #+BEGIN_SRC emacs-lisp
 (use-package ox-hugo
+  :defer 1
+  :commands org-hugo-slug
   :after ox)
 #+END_SRC
 
@@ -1058,8 +1014,6 @@ Org Capture template to quickly create posts and generate slugs.
 
 #+BEGIN_SRC emacs-lisp
 ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
-(require 'ox-hugo)
-;; define variable to get rid of 'reference to free variable' warnings
 (defvar org-capture-templates nil)
 (with-eval-after-load 'org-capture
   (defun org-hugo-new-subtree-post-capture-template ()
@@ -1128,31 +1082,34 @@ Org-download creates links, but I need to change the path for my blog. This simp
 slimhtml is an emacs org mode export backend. It is a set of transcoders for common org elements which outputs minimal HTML.
 
 #+BEGIN_SRC emacs-lisp
-(use-package htmlize)
-(use-package ox-slimhtml)
+(use-package htmlize
+  :defer 2)
+(use-package ox-slimhtml
+  :defer 2)
 
 (defun org-html-export-as-slimhtml
-(&optional async subtreep visible-only body-only ext-plist)
+  (&optional async subtreep visible-only body-only ext-plist)
   (interactive)
   (org-export-to-buffer 'slimhtml "*slimhtml*"
     async subtreep visible-only body-only ext-plist (lambda () (html-mode))))
 
-
-
+;; Cmd+Shift+Alt+o to export whole buffer to HTML without first two lines and one last line
+;; This is done to remove container div and header title
 (eval-after-load 'org
   `(define-key org-mode-map (kbd "M-s-o") (lambda ()
                                           (interactive)
                                           (org-html-export-as-html nil nil t t)
-                                          (beginning-of-buffer)
+                                          (goto-char (point-min))
                                           (kill-whole-line)
                                           (kill-whole-line)
-                                          (end-of-buffer)
-                                          (previous-line)
+                                          (goto-char (point-max))
+                                          (forward-line -1)
                                           (kill-whole-line)
                                           (with-no-warnings (mark-whole-buffer))
                                           (simpleclip-copy (point-min) (point-max))
                                           (delete-window))))
 
+;; Cmd+Shift+o to export whole buffer to HTML
 (eval-after-load 'org
   `(define-key org-mode-map (kbd "s-O") (lambda ()
                                           (interactive)
@@ -1168,6 +1125,7 @@ Drag and drop images to org files.
 
 #+BEGIN_SRC emacs-lisp
 (use-package org-download
+  :defer 2
   :config
   ;; add support to dired
   (add-hook 'dired-mode-hook 'org-download-enable))
@@ -1201,13 +1159,6 @@ emacsclient -n "$@" || (open -a emacs "$@")
 * Useful, unused snippets
 
 Here are some snippets of elisp and config that aren't currently used, but I don't want to lose them in git history. None of these are tangled.
-
-** Manually installed packages
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "edit-indirect")
-#+END_SRC
 
 ** Parens
 
@@ -1416,7 +1367,6 @@ This is great for learning Emacs, it shows a nice table of possible commands.
 
 ** Links file
 
-
 I keep my links in =links.org=, export them to HTML and access them via browser. This makes the HTML file automatically on every save.
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1428,7 +1378,6 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
       (message "HTML exported"))))
 
 (global-set-key (kbd "\e\el") (lambda () (interactive) (find-file "PATH_TO/org/links.org")))
-
 
 (add-hook 'after-save-hook 'org-mode-export-links)
 #+END_SRC
@@ -1443,4 +1392,66 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil "PATH_TO/org")))
+#+END_SRC
+
+** Capture templates
+
+#+BEGIN_SRC emacs-lisp
+;; (setq org-capture-templates
+;;       (quote (
+;;                ;; (("t"
+;;                ;;   "TODO"
+;;                ;;   entry
+;;                ;;   (file+olp "inbox.org" "Tasks")
+;;                ;;   "* TODO %?\n%U\n%a\n")
+
+;;                ("n"
+;;                  "Knowledge Base Note"
+;;                  entry
+;;                  (file+olp "main.org" "Inbox")
+;;                  "* %?\n%U\n%a\n")
+;;                ("j"
+;;                  "Journal"
+;;                  entry
+;;                  (file+datetree "journal.org")
+;;                  "* %U\n%?"))
+;;                ))
+#+END_SRC
+
+** Shellpop
+
+A nice little real terminal in a popup.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package shell-pop
+  :defer 1)
+#+END_SRC
+
+** Nice visual feedback for replace
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package visual-regexp
+  :config
+  (define-key global-map (kbd "s-r") 'vr/replace))
+#+END_SRC
+** Auto completion
+
+Temporarily disabled to see if I really need this.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package company
+  :defer 1
+  :config
+  (setq company-idle-delay 0.1)
+  (setq company-global-modes '(not org-mode markdown-mode))
+  (setq company-minimum-prefix-length 1)
+  (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+
+* Final
+
+Make gc pauses faster by decreasing the threshold.
+
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold (* 2 1000 1000))
 #+END_SRC
