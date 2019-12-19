@@ -287,7 +287,8 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 
 #+BEGIN_SRC emacs-lisp
 (use-package simpleclip
-  :config
+  :commands simpleclip-mode simpleclip-copy
+  :init
   (simpleclip-mode 1))
 #+END_SRC
 
@@ -296,10 +297,11 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
 
 #+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell)
-
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+  :commands exec-path-from-shell-initialize
+  :config
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)))
 #+END_SRC
 
 Use =Cmd+i= to open the current folder in a new tab of iTerm:
@@ -608,6 +610,7 @@ TODO: if region selected, invoke edit indirect with same keystroke as narrow
 
 #+BEGIN_SRC emacs-lisp
 (use-package ivy
+  :commands ivy-mode
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -867,10 +870,8 @@ Handy killall command.
 Visually indent sections. This looks better for smaller files. Also, disallow editing invisible areas.
 
 #+BEGIN_SRC emacs-lisp
-(use-package org
-  :config
-  (setq org-startup-indented t)
-  (setq org-catch-invisible-edits 'error))
+(setq org-startup-indented t)
+(setq org-catch-invisible-edits 'error)
 #+END_SRC
 
 Store all my org files in Google Drive (=/Users/rakhim/gdrive=). And all of those files should be in included agenda.
@@ -896,12 +897,10 @@ Allow shift selection with arrows. This will not interfere with some built-in sh
 Custom source block templates (e.g. =<el= for emacs lisp).
 
 #+BEGIN_SRC emacs-lisp
-(eval-after-load 'org
-  '(progn
-    (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
-    (add-to-list 'org-structure-template-alist '("eq" "\\begin{equation}\n?\n\\end{equation}"))
-    (define-key org-mode-map (kbd "C-'") nil)
-    (global-set-key "\C-ca" 'org-agenda)))
+(with-eval-after-load 'org
+  (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
+  (add-to-list 'org-structure-template-alist '("eq" "\\begin{equation}\n?\n\\end{equation}"))
+  (define-key org-mode-map (kbd "C-'") nil))
 #+END_SRC
 
 And inside those code blocks indentation should be correct depending on the source language used and have code highlighting.
@@ -927,10 +926,11 @@ Quickly open todo and config files.
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
 #+END_SRC
 
-Org capture.
+Org capture and agenda.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key "\C-ca" 'org-agenda)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -940,7 +940,8 @@ Org capture.
 Easy export to HTML.
 
 #+BEGIN_SRC emacs-lisp
-(define-key org-mode-map (kbd "s-e") (kbd "C-c C-e h h"))
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "s-e") (kbd "C-c C-e h h")))
 #+END_SRC
 
 Not sure about this... I want to retain Shift-Alt movement and selection everywhere, but in Org mode these bindings are important built ins, and I don't know if there is a viable alternative.
@@ -948,17 +949,18 @@ Not sure about this... I want to retain Shift-Alt movement and selection everywh
 Consider switching meta-left/right to =C-c C-,= and =C-c C-.=. These are used to promote and demote subtrees.
 
 #+BEGIN_SRC emacs-lisp
-;; no shift or alt with arrows
-(define-key org-mode-map (kbd "<S-left>") nil)
-(define-key org-mode-map (kbd "<S-right>") nil)
-(define-key org-mode-map (kbd "<M-left>") nil)
-(define-key org-mode-map (kbd "<M-right>") nil)
-;; no shift-alt with arrows
-(define-key org-mode-map (kbd "<M-S-left>") nil)
-(define-key org-mode-map (kbd "<M-S-right>") nil)
+(with-eval-after-load 'org
+  ;; no shift or alt with arrows
+  (define-key org-mode-map (kbd "<S-left>") nil)
+  (define-key org-mode-map (kbd "<S-right>") nil)
+  (define-key org-mode-map (kbd "<M-left>") nil)
+  (define-key org-mode-map (kbd "<M-right>") nil)
+  ;; no shift-alt with arrows
+  (define-key org-mode-map (kbd "<M-S-left>") nil)
+  (define-key org-mode-map (kbd "<M-S-right>") nil)
 
-(define-key org-mode-map (kbd "C-s-<left>") 'org-metaleft)
-(define-key org-mode-map (kbd "C-s-<right>") 'org-metaright)
+  (define-key org-mode-map (kbd "C-s-<left>") 'org-metaleft)
+  (define-key org-mode-map (kbd "C-s-<right>") 'org-metaright))
 #+END_SRC
 
 Enable speed keys to manage headings without arrows.
@@ -970,8 +972,9 @@ Enable speed keys to manage headings without arrows.
 Narrow and widen with =Cmd+Ctrl+Up/Down=.
 
 #+BEGIN_SRC emacs-lisp
-(define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
-(define-key org-mode-map (kbd "C-s-<up>") 'widen)
+;; (eval-after-load 'org
+;;   (define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
+;;   (define-key org-mode-map (kbd "C-s-<up>") 'widen))
 #+END_SRC
 
 ** Latex
