@@ -377,7 +377,6 @@ Avy for fast navigation.
 
 #+BEGIN_SRC emacs-lisp
 (use-package avy
-  :defer 1
   :config
   (global-set-key (kbd "s-;") 'avy-goto-char-timer))
 #+END_SRC
@@ -450,7 +449,6 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
 
 #+BEGIN_SRC emacs-lisp
 (use-package move-text
-  :defer 1
   :commands move-text-default-bindings
   :config
   (move-text-default-bindings))
@@ -523,7 +521,6 @@ Multiple cusors are a must. Make <return> insert a newline; multiple-cursors-mod
 
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
-  :defer 1
   :config
   (setq mc/always-run-for-all 1)
   (global-set-key (kbd "s-d") 'mc/mark-next-like-this)
@@ -552,7 +549,6 @@ Move between windows with Control-Command-Arrow and with =Cmd= just like in iTer
 (global-set-key (kbd "s-o") (kbd "C-x o"))
 
 (use-package windmove
-  :defer 1
   :config
   (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
   (global-set-key (kbd "s-]")  'windmove-right)        ;; Cmd+] go to right window
@@ -570,7 +566,6 @@ Shackle to make sure all windows are nicely positioned.
 
 #+BEGIN_SRC emacs-lisp
 (use-package shackle
-  :defer 1
   ;; use :commands to to introduce dummy variable and function declarations solely for the sake of the byte-compiler
   :commands shackle-mode
   :init
@@ -602,15 +597,13 @@ Select any region and edit it in another buffer.
 TODO: if region selected, invoke edit indirect with same keystroke as narrow
 
 #+BEGIN_SRC emacs-lisp
-(use-package edit-indirect
-  :defer 1)
+(use-package edit-indirect)
 #+END_SRC
 
 ** Ivy, Swiper and Counsel
 
 #+BEGIN_SRC emacs-lisp
 (use-package ivy
-  :commands ivy-mode
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -620,6 +613,7 @@ TODO: if region selected, invoke edit indirect with same keystroke as narrow
   (setq ivy-re-builders-alist
       '((swiper . ivy--regex-plus)
         (swiper-isearch . regexp-quote)
+        (counsel-git . ivy--regex-plus)
         (counsel-ag . ivy--regex-plus)
         (counsel-rg . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
@@ -639,12 +633,10 @@ TODO: if region selected, invoke edit indirect with same keystroke as narrow
   (global-set-key (kbd "s-p") 'counsel-git))
 
 ;; When using git ls (via counsel-git), include unstaged files
-(setq counsel-git-cmd "git ls-files --full-name --exclude-standard --others --cached --")
+(setq counsel-git-cmd "git ls-files -z --full-name --exclude-standard --others --cached --")
 
-(use-package smex
-  :defer 1)
-(use-package flx
-  :defer 1)
+(use-package smex)
+(use-package flx)
 #+END_SRC
 
 ** Git
@@ -702,14 +694,12 @@ Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=. It requires =wordnet= t
 
 #+BEGIN_SRC emacs-lisp
 (use-package powerthesaurus
-  :defer 1
   :config
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)
   )
 
 ;; Alternative, local thesaurus
 ;; (use-package synosaurus
-;;   :defer 1
 ;;   :config
 ;;   (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
 ;;   )
@@ -719,7 +709,6 @@ Word definition search.
 
 #+BEGIN_SRC emacs-lisp
 (use-package define-word
-  :defer 1
   :config
   (global-set-key (kbd "M-\\") 'define-word-at-point))
 #+END_SRC
@@ -743,7 +732,6 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
-  :defer 1
   :commands yas-global-mode yas-minor-mode
   :config
   (setq yas-snippet-dirs
@@ -758,7 +746,6 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
-  :defer 1
   :commands (markdown-mode gfm-mode markdown-kill-ring-save)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -808,20 +795,8 @@ Here are all the packages needed for programming languages and formats.
 Clojure.
 
 #+BEGIN_SRC emacs-lisp
-(use-package clojure-mode
-  :defer 1)
-(use-package cider
-  :defer 1)
-(use-package clj-refactor
-  :commands clj-refactor-mode cljr-add-keybindings-with-prefix
-  :defer 1)
-
-(defun my-clojure-mode-hook ()
-    (clj-refactor-mode 1)
-    (yas-minor-mode 1) ; for adding require/use/import statements
-    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-    (cljr-add-keybindings-with-prefix "C-c C-m"))
-(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
+(use-package clojure-mode)
+(use-package cider)
 #+END_SRC
 
 Web mode.
@@ -837,7 +812,6 @@ Emmet.
 
 #+BEGIN_SRC emacs-lisp
 (use-package emmet-mode
-  :defer 1
   :commands emmet-mode
   :init
   (setq emmet-indentation 2)
@@ -998,8 +972,7 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
 ** Pandoc exporter
 
 #+BEGIN_SRC emacs-lisp
-(use-package ox-pandoc
-  :defer 2)
+(use-package ox-pandoc)
 #+END_SRC
 
 ** Blogging with hugo
@@ -1008,7 +981,6 @@ Install =ox-hugo= and enable auto export.
 
 #+BEGIN_SRC emacs-lisp
 (use-package ox-hugo
-  :defer 1
   :commands org-hugo-slug
   :after ox)
 #+END_SRC
@@ -1085,10 +1057,8 @@ Org-download creates links, but I need to change the path for my blog. This simp
 slimhtml is an emacs org mode export backend. It is a set of transcoders for common org elements which outputs minimal HTML.
 
 #+BEGIN_SRC emacs-lisp
-(use-package htmlize
-  :defer 2)
-(use-package ox-slimhtml
-  :defer 2)
+(use-package htmlize)
+(use-package ox-slimhtml)
 
 (defun org-html-export-as-slimhtml
   (&optional async subtreep visible-only body-only ext-plist)
@@ -1128,7 +1098,6 @@ Drag and drop images to org files.
 
 #+BEGIN_SRC emacs-lisp
 (use-package org-download
-  :defer 2
   :config
   ;; add support to dired
   (add-hook 'dired-mode-hook 'org-download-enable))
@@ -1217,7 +1186,8 @@ Install Projectile.
 (use-package projectile
   :config
   (setq projectile-enable-caching t)
-  (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
+  (setq projectile-completion-system 'ivy)
+  ;; (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
   (projectile-mode +1))
 #+END_SRC
 
@@ -1426,8 +1396,7 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 A nice little real terminal in a popup.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-(use-package shell-pop
-  :defer 1)
+(use-package shell-pop)
 #+END_SRC
 
 ** Nice visual feedback for replace
@@ -1443,7 +1412,6 @@ Temporarily disabled to see if I really need this.
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package company
-  :defer 1
   :config
   (setq company-idle-delay 0.1)
   (setq company-global-modes '(not org-mode markdown-mode))
