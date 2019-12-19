@@ -287,7 +287,6 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 
 #+BEGIN_SRC emacs-lisp
 (use-package simpleclip
-  :commands simpleclip-mode simpleclip-copy
   :init
   (simpleclip-mode 1))
 #+END_SRC
@@ -298,7 +297,6 @@ Pass system shell environment to Emacs. This is important primarily for shell in
 
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
-  :commands exec-path-from-shell-initialize
   :config
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
@@ -449,7 +447,6 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
 
 #+BEGIN_SRC emacs-lisp
 (use-package move-text
-  :commands move-text-default-bindings
   :config
   (move-text-default-bindings))
 #+END_SRC
@@ -566,8 +563,6 @@ Shackle to make sure all windows are nicely positioned.
 
 #+BEGIN_SRC emacs-lisp
 (use-package shackle
-  ;; use :commands to to introduce dummy variable and function declarations solely for the sake of the byte-compiler
-  :commands shackle-mode
   :init
   (setq shackle-default-alignment 'below
         shackle-default-size 0.4
@@ -732,7 +727,6 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
-  :commands yas-global-mode yas-minor-mode
   :config
   (setq yas-snippet-dirs
         '("~/.emacs.d/snippets"))
@@ -746,7 +740,6 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
-  :commands (markdown-mode gfm-mode markdown-kill-ring-save)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
@@ -812,7 +805,6 @@ Emmet.
 
 #+BEGIN_SRC emacs-lisp
 (use-package emmet-mode
-  :commands emmet-mode
   :init
   (setq emmet-indentation 2)
   (setq emmet-move-cursor-between-quotes t)
@@ -981,7 +973,6 @@ Install =ox-hugo= and enable auto export.
 
 #+BEGIN_SRC emacs-lisp
 (use-package ox-hugo
-  :commands org-hugo-slug
   :after ox)
 #+END_SRC
 
