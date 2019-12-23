@@ -192,6 +192,8 @@
     ("jnn" "```{.javascript .language-javascript}" nil 32)
     ("pn" "```{.python .language-python .line-numbers}" nil 33)
     ("pnn" "```{.python .language-python}" nil 25)
+    ("cn" "```{.clojure .language-clojure .line-numbers}" nil 33)
+    ("cnn" "```{.clojure .language-clojure}" nil 25)
    ))
 
 (define-abbrev-table 'markdown-view-mode-abbrev-table '())
@@ -281,4 +283,3 @@
 (define-abbrev-table 'xref--xref-buffer-mode-abbrev-table '())
 
 (define-abbrev-table 'yaml-mode-abbrev-table '())
-

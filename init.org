@@ -711,14 +711,9 @@ Word definition search.
 ** Abbrev
 
 #+BEGIN_SRC emacs-lisp
-(clear-abbrev-table global-abbrev-table)
+(read-abbrev-file abbrev-file-name t)
 (setq-default abbrev-mode t)
-(define-abbrev-table 'global-abbrev-table
-  '(
-    ("afaik" "as far as i know" )
-    ("em" "—")
-    ("ra" "→" )
-    ))
+
 #+END_SRC
 
 ** Yasnippet
