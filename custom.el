@@ -18,7 +18,12 @@
  '(pop-up-frames nil)
  '(safe-local-variable-values
    (quote
-    ((org-babel-noweb-wrap-end . "»")
+    ((eval add-hook
+           (quote after-save-hook)
+           (lambda nil
+             (org-html-export-to-html t))
+           t t)
+     (org-babel-noweb-wrap-end . "»")
      (org-babel-noweb-wrap-start . "«")
      (org-confirm-babel-evaluate)
      (org-download-timestamp . "")

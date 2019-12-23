@@ -938,9 +938,9 @@ Enable speed keys to manage headings without arrows.
 Narrow and widen with =Cmd+Ctrl+Up/Down=.
 
 #+BEGIN_SRC emacs-lisp
-;; (eval-after-load 'org
-;;   (define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
-;;   (define-key org-mode-map (kbd "C-s-<up>") 'widen))
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-s-<down>") 'org-narrow-to-subtree)
+  (define-key org-mode-map (kbd "C-s-<up>") 'widen))
 #+END_SRC
 
 ** Latex
