@@ -226,13 +226,13 @@ Never use tabs, use spaces instead.
 
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
+(setq-default c-basic-indent 2)
+(setq-default c-basic-offset 2)
+(setq-default tab-width 2)
 (setq tab-width 2)
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
-(setq-default c-basic-offset 2)
 (setq c-basic-offset 2)
-(setq-default tab-width 2)
-(setq-default c-basic-indent 2)
 #+END_SRC
 
 Disable blinking cursor.
@@ -363,7 +363,8 @@ Basic things you should expect from macOS.
 Regular undo-redo.
 
 #+BEGIN_SRC emacs-lisp
-(load "~/.emacs.d/elisp/undo-fu.el")
+;; (load "~/.emacs.d/elisp/undo-fu.el")
+(use-package undo-fu)
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-z")   'undo-fu-only-undo)
 (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
@@ -440,7 +441,6 @@ Expand-region allows to gradually expand selection inside words, sentences, etc.
   :config
   (global-set-key (kbd "s-'") 'er/expand-region)
   (global-set-key (kbd "s-\"") 'er/contract-region))
-
 #+END_SRC
 
 =Move-text= allows moving lines around with meta-up/down.
@@ -549,8 +549,8 @@ Move between windows with Control-Command-Arrow and with =Cmd= just like in iTer
   :config
   (global-set-key (kbd "s-[")  'windmove-left)         ;; Cmd+[ go to left window
   (global-set-key (kbd "s-]")  'windmove-right)        ;; Cmd+] go to right window
-  (global-set-key (kbd "s-{")  'windmove-up)           ;; Cmd+Shift+[ go to upper window
-  (global-set-key (kbd "<s-}>")  'windmove-down))      ;; Ctrl+Shift+[ go to down window
+  (global-set-key (kbd "s-{")  'windmove-up)           ;; Cmd+Shift+ go to upper window
+  (global-set-key (kbd "<s-}>")  'windmove-down))      ;; Ctrl+Shift+ go to down window
 #+END_SRC
 
 Enable winner mode to quickly restore window configurations
@@ -590,6 +590,7 @@ Shackle to make sure all windows are nicely positioned.
 
 Select any region and edit it in another buffer.
 TODO: if region selected, invoke edit indirect with same keystroke as narrow
+TODO: Since M-h is =org-mark-element=, make M-s-h =org-babel-mark-block=
 
 #+BEGIN_SRC emacs-lisp
 (use-package edit-indirect)
@@ -658,16 +659,6 @@ Navigate to projects with =Cmd+Shift+P= (thanks to reddit user and emacscast lis
 (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(defun my-magit-stage-all-and-commit-and-push () (interactive)
-       (let ((m (read-string "Commit message: ")))
-         (unless (string= "" m)
-           (magit-call-git "add" ".")
-           (magit-call-git "commit" "-m" m)
-           (magit-call-git "push" "origin" "master"))))
-(global-set-key (kbd "s-G") 'my-magit-stage-all-and-commit-and-push)
-#+END_SRC
-
 ** Spell checking
 
 Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
@@ -713,7 +704,6 @@ Word definition search.
 #+BEGIN_SRC emacs-lisp
 (read-abbrev-file abbrev-file-name t)
 (setq-default abbrev-mode t)
-
 #+END_SRC
 
 ** Yasnippet
@@ -725,13 +715,12 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
   :config
   (setq yas-snippet-dirs
         '("~/.emacs.d/snippets"))
-
   (yas-global-mode 1))
 #+END_SRC
 
 ** Markdown
 
-While I prefer Org, I still need to be able to work with Markdown efficiently. Here's a good package and "Cmd-O" to copy raw HTML to clipboard.
+While I prefer Org, I still need to be able to work with Markdown efficiently. Here's a good package and =Cmd-O= to copy raw HTML to clipboard.
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
