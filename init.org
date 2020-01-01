@@ -839,6 +839,10 @@ Handy killall command.
  mu4e-drafts-folder "/Drafts"     ;; unfinished messages
  mu4e-trash-folder  "/Trash")     ;; trashed messages
 
+(fset 'my-move-to-trash "mTrash")
+(define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
+(define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
+
 (setq mu4e-get-mail-command  "mbsync -a")
 #+END_SRC
 
