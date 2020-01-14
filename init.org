@@ -291,6 +291,16 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
   (simpleclip-mode 1))
 #+END_SRC
 
+** Which key
+
+This is great for learning Emacs, it shows a nice table of possible commands.
+
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 0.5))
+#+END_SRC
 ** OS integration
 
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
@@ -633,8 +643,12 @@ TODO: Since M-h is =org-mark-element=, make M-s-h =org-babel-mark-block=
 
 (use-package smex)
 (use-package flx)
-#+END_SRC
 
+(use-package ivy-rich
+  :config
+  (ivy-rich-mode 1)
+  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
+#+END_SRC
 ** Git
 
 It's time for Magit!
@@ -804,7 +818,6 @@ Code formatting.
 #+BEGIN_SRC emacs-lisp
 (use-package format-all)
 #+END_SRC
-
 ** Frames, windows, buffers
 
 Always open files in the same frame, even when double-clicked from Finder.
@@ -1267,17 +1280,6 @@ Install Projectile.
 (global-set-key (kbd "s-3") (lambda () (interactive) (select-frame-by-name "ORG")))
 #+END_SRC
 
-** Ivy-rich
-
-Ivy-rich makes Ivy a bit more friendly by adding information to ivy buffers, e.g. description of commands in =M-x=, meta info about buffers in =ivy-switch-buffer=, etc.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package ivy-rich
-  :config
-  (ivy-rich-mode 1)
-  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
-#+END_SRC
-
 ** Fringe indicator
 
 #+BEGIN_SRC emacs-lisp
@@ -1320,17 +1322,6 @@ Ivy-rich makes Ivy a bit more friendly by adding information to ivy buffers, e.g
   (setq-local electric-pair-pairs (append electric-pair-pairs markdown-electric-pairs))
   (setq-local electric-pair-text-pairs electric-pair-pairs))
 (add-hook 'markdown-mode-hook 'markdown-add-electric-pairs)
-#+END_SRC
-
-** Which key
-
-This is great for learning Emacs, it shows a nice table of possible commands.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package which-key
-  :config
-  (which-key-mode)
-  (setq which-key-idle-delay 0.5))
 #+END_SRC
 
 ** NeoTree
