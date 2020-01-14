@@ -301,6 +301,7 @@ This is great for learning Emacs, it shows a nice table of possible commands.
   (which-key-mode)
   (setq which-key-idle-delay 0.5))
 #+END_SRC
+
 ** OS integration
 
 Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
@@ -649,6 +650,7 @@ TODO: Since M-h is =org-mark-element=, make M-s-h =org-babel-mark-block=
   (ivy-rich-mode 1)
   (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
 #+END_SRC
+
 ** Git
 
 It's time for Magit!
@@ -818,6 +820,7 @@ Code formatting.
 #+BEGIN_SRC emacs-lisp
 (use-package format-all)
 #+END_SRC
+
 ** Frames, windows, buffers
 
 Always open files in the same frame, even when double-clicked from Finder.
@@ -1159,12 +1162,14 @@ Drag and drop images to org files.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil org-directory)))
 #+END_SRC
+
 ** Org bullets
 
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
     :hook (org-mode . org-bullets-mode))
 #+END_SRC
+
 * Customizations
 
 Store custom-file separately, don't freak out when it's not found.
@@ -1395,12 +1400,6 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 (add-hook 'after-save-hook 'org-mode-export-links)
 #+END_SRC
 
-** Org journal
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "PATH_TO/org/journal.org")))
-#+END_SRC
-
 ** Shellpop
 
 A nice little real terminal in a popup.
@@ -1416,6 +1415,7 @@ A nice little real terminal in a popup.
   :config
   (define-key global-map (kbd "s-r") 'vr/replace))
 #+END_SRC
+
 ** Auto completion
 
 Temporarily disabled to see if I really need this.
