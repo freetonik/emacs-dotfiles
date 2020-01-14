@@ -867,11 +867,12 @@ Handy killall command.
 
 * Org
 
-Visually indent sections. This looks better for smaller files. Also, disallow editing invisible areas.
+Visually indent sections. This looks better for smaller files. Also, disallow editing invisible areas and show any number of empty lines in collapsed state.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-startup-indented t)
 (setq org-catch-invisible-edits 'error)
+(setq org-cycle-separator-lines -1)
 #+END_SRC
 
 Store all my org files in Google Drive (=/Users/rakhim/gdrive=). And all of those files should be in included agenda.
@@ -930,11 +931,8 @@ Org capture and agenda.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "s-=") 'org-capture)
 (global-set-key "\C-ca" 'org-agenda)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(setq org-cycle-separator-lines 1)
 #+END_SRC
 
 Easy export to HTML.
@@ -1053,6 +1051,7 @@ See `org-capture-templates' for more information."
                  entry
                  (file+olp "/Users/rakhim/code/rakhim.org/content-org/blog.org" "Blog")
                  (function org-hugo-new-subtree-post-capture-template)))
+
   (add-to-list 'org-capture-templates
                '("c"
                  "Comic at rakhim.org"
@@ -1128,6 +1127,44 @@ Drag and drop images to org files.
   (add-hook 'dired-mode-hook 'org-download-enable))
 #+END_SRC
 
+** Capture templates
+
+#+BEGIN_SRC emacs-lisp
+
+(add-to-list 'org-capture-templates
+              '("t"
+               "TODO"
+               entry
+               (file+datetree "main.org")
+               "* TODO %?\n%U\n%a\n" :empty-lines 1))
+
+(add-to-list 'org-capture-templates
+              '("T"
+               "Scheduled TODO"
+               entry
+               (file+datetree "main.org")
+               "* TODO %?\nDEADLINE: %^t\n" :empty-lines 1))
+
+(add-to-list 'org-capture-templates
+              '("j"
+               "Journal"
+               entry
+               (file+datetree "main.org"  )
+               "* %U\n%?" :empty-lines 1))
+
+#+END_SRC
+
+** Search in all org files
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil org-directory)))
+#+END_SRC
+** Org bullets
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+    :hook (org-mode . org-bullets-mode))
+#+END_SRC
 * Customizations
 
 Store custom-file separately, don't freak out when it's not found.
@@ -1362,36 +1399,6 @@ I keep my links in =links.org=, export them to HTML and access them via browser.
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (global-set-key (kbd "\e\ej") (lambda () (interactive) (find-file "PATH_TO/org/journal.org")))
-#+END_SRC
-
-** Search in all org files
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil "PATH_TO/org")))
-#+END_SRC
-
-** Capture templates
-
-#+BEGIN_SRC emacs-lisp
-;; (setq org-capture-templates
-;;       (quote (
-;;                ;; (("t"
-;;                ;;   "TODO"
-;;                ;;   entry
-;;                ;;   (file+olp "inbox.org" "Tasks")
-;;                ;;   "* TODO %?\n%U\n%a\n")
-
-;;                ("n"
-;;                  "Knowledge Base Note"
-;;                  entry
-;;                  (file+olp "main.org" "Inbox")
-;;                  "* %?\n%U\n%a\n")
-;;                ("j"
-;;                  "Journal"
-;;                  entry
-;;                  (file+datetree "journal.org")
-;;                  "* %U\n%?"))
-;;                ))
 #+END_SRC
 
 ** Shellpop
