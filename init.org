@@ -799,6 +799,12 @@ Emmet.
   (add-hook 'css-mode-hook  'emmet-mode)) ;; enable Emmet's css abbreviation.
 #+END_SRC
 
+Code formatting.
+
+#+BEGIN_SRC emacs-lisp
+(use-package format-all)
+#+END_SRC
+
 ** Frames, windows, buffers
 
 Always open files in the same frame, even when double-clicked from Finder.
