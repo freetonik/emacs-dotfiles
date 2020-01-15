@@ -8,11 +8,10 @@
    (quote
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(markdown-fontify-code-blocks-natively t)
- '(org-agenda-files (quote ("~/.emacs.d/init.org")))
  '(org-export-backends (quote (ascii html latex md hugo slimhtml)))
  '(package-selected-packages
    (quote
-    (org-bullets company auto-complete format-all undo-fu ox-latex winner-mode esup go-mode ox-tufte elixir-mode synosaurus ledger embrace avy edit-indirect ox-pandoc slim-mode ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle define-word yaml-mode which-key web-mode use-package spaceline smex simpleclip powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell cider)))
+    (ivy-rich org-bullets company auto-complete format-all undo-fu ox-latex winner-mode esup go-mode ox-tufte elixir-mode synosaurus ledger embrace avy edit-indirect ox-pandoc slim-mode ox-slimhtml handlebars-mode org-make-toc ox-hugo-auto-export emmet-mode shackle define-word yaml-mode which-key web-mode use-package spaceline smex simpleclip powerthesaurus ox-hugo multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell cider)))
  '(pop-up-frames nil)
  '(safe-local-variable-values
    (quote
