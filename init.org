@@ -913,6 +913,12 @@ Org capture and agenda.
 (global-set-key "\C-ca" 'org-agenda)
 #+END_SRC
 
+Don't show deadline prewarning if the task has scheduled date.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+#+END_SRC
+
 Easy export to HTML.
 
 #+BEGIN_SRC emacs-lisp
