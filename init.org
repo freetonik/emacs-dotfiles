@@ -383,7 +383,6 @@ Basic things you should expect from macOS.
 Regular undo-redo.
 
 #+BEGIN_SRC emacs-lisp
-;; (load "~/.emacs.d/elisp/undo-fu.el")
 (use-package undo-fu)
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-z")   'undo-fu-only-undo)
@@ -868,6 +867,12 @@ Refile targets should include files and down to 9 levels into them.
 #+BEGIN_SRC emacs-lisp
 (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                  (org-agenda-files :maxlevel . 9))))
+#+END_SRC
+
+Use org-checklist to reset checklists when cycle repeats. It requires =:RESET_CHECK_BOXES: t= to be added in the properties of an entry.
+
+#+BEGIN_SRC emacs-lisp
+(load "~/.emacs.d/elisp/org-checklist.el")
 #+END_SRC
 
 Allow shift selection with arrows. This will not interfere with some built-in shift+arrow functionality in Org.
