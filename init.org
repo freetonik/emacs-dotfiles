@@ -672,7 +672,7 @@ It's time for Magit!
 Navigate to projects with =Cmd+Shift+P= (thanks to reddit user and emacscast listener fritzgrabo):
 
 #+BEGIN_SRC emacs-lisp
-(setq magit-repository-directories '(("\~/code" . 4) ("\~/gdrive/1 Projects/1.1 Codexpanse" . 4)))
+(setq magit-repository-directories '(("\~/code" . 4) ("\~/Dropbox/projects/" . 4) ("~/gdrive/Codexpanse" . 3)))
 
 (defun magit-status-with-prefix-arg ()
   "Call `magit-status` with a prefix."
@@ -855,11 +855,11 @@ Visually indent sections. This looks better for smaller files. Also, disallow ed
 (setq org-cycle-separator-lines -1)
 #+END_SRC
 
-Store all my org files in Google Drive (=/Users/rakhim/gdrive=). And all of those files should be in included agenda.
+Store all my org files in Google Drive (=/Users/rakhim/Dropbox=). And all of those files should be in included agenda.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-directory "/Users/rakhim/gdrive/4 Etc/org")
-(setq org-agenda-files '("/Users/rakhim/gdrive/4 Etc/org"))
+(setq org-directory "/Users/rakhim/Dropbox/Org")
+(setq org-agenda-files '("/Users/rakhim/Dropbox/Org"))
 #+END_SRC
 
 Refile targets should include files and down to 9 levels into them.
@@ -909,7 +909,7 @@ Quickly open todo and config files.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
-(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "/Users/rakhim/gdrive/4 Etc/org/main.org")))
+(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "/Users/rakhim/Dropbox/Org/main.org")))
 (global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
 #+END_SRC
 
@@ -1127,21 +1127,21 @@ Drag and drop images to org files.
                "TODO"
                entry
                (file+datetree "main.org")
-               "* TODO %?\n%U\n%a\n" :empty-lines 1))
+               "* TODO %?\n%U\n%a\n"))
 
 (add-to-list 'org-capture-templates
               '("T"
                "Scheduled TODO"
                entry
                (file+datetree "main.org")
-               "* TODO %?\nDEADLINE: %^t\n" :empty-lines 1))
+               "* TODO %?\nDEADLINE: %^t\n"))
 
 (add-to-list 'org-capture-templates
               '("j"
                "Journal"
                entry
                (file+datetree "main.org"  )
-               "* %U\n%?" :empty-lines 1))
+               "* %U\n%?"))
 
 #+END_SRC
 
