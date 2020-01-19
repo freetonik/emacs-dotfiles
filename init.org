@@ -294,7 +294,10 @@ I want Emacs kill ring and system clipboard to be independent. Simpleclip is the
 Quickly switch to scratch buffer with =Cmd+0=:
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "s-0") (lambda () (interactive) (switch-to-buffer "*scratch*")))
+
+(global-set-key (kbd "s-0") (lambda ()
+                              (interactive)
+                              (if (string= (buffer-name) "*scratch*") (previous-buffer) (switch-to-buffer "*scratch*"))))
 #+END_SRC
 
 ** Which key
