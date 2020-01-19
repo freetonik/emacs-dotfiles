@@ -1151,13 +1151,6 @@ Drag and drop images to org files.
 (global-set-key (kbd "\e\ef") (lambda () (interactive) (counsel-rg nil org-directory)))
 #+END_SRC
 
-** Org bullets
-
-#+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-    :hook (org-mode . org-bullets-mode))
-#+END_SRC
-
 * Customizations
 
 Store custom-file separately, don't freak out when it's not found.
