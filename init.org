@@ -628,8 +628,8 @@ TODO: Since M-h is =org-mark-element=, make M-s-h =org-babel-mark-block=
   (setq ivy-re-builders-alist
       '((swiper . ivy--regex-plus)
         (swiper-isearch . regexp-quote)
-        (counsel-git . ivy--regex-plus)
-        (counsel-ag . ivy--regex-plus)
+        ;; (counsel-git . ivy--regex-plus)
+        ;; (counsel-ag . ivy--regex-plus)
         (counsel-rg . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
 
