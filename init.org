@@ -847,15 +847,16 @@ Handy killall command.
 
 * Org
 
-Visually indent sections. This looks better for smaller files. Also, disallow editing invisible areas and show any number of empty lines in collapsed state.
+Visually indent sections. This looks better for smaller files. Also, disallow editing invisible areas and show any number of empty lines in collapsed state. And use =⤵= instead of =...= for wrapped sections.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-startup-indented t)
 (setq org-catch-invisible-edits 'error)
 (setq org-cycle-separator-lines -1)
+(setq org-ellipsis "⤵")
 #+END_SRC
 
-Store all my org files in Google Drive (=/Users/rakhim/Dropbox=). And all of those files should be in included agenda.
+Store all my org files in Dropbox (=/Users/rakhim/Dropbox=). And all of those files should be in included agenda.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-directory "/Users/rakhim/Dropbox/Org")
@@ -1144,7 +1145,6 @@ Drag and drop images to org files.
                "* %U\n%?"))
 
 #+END_SRC
-
 ** Search in all org files
 
 #+BEGIN_SRC emacs-lisp
