@@ -1129,20 +1129,20 @@ Drag and drop images to org files.
                "TODO"
                entry
                (file+datetree "main.org")
-               "* TODO %?\n%U\n%a\n"))
+               "* %U\n** TODO %?"))
 
 (add-to-list 'org-capture-templates
               '("T"
                "Scheduled TODO"
                entry
                (file+datetree "main.org")
-               "* TODO %?\nDEADLINE: %^t\n"))
+               "* %U\n** TODO %?\nDEADLINE: %^t\n"))
 
 (add-to-list 'org-capture-templates
               '("j"
                "Journal"
                entry
-               (file+datetree "main.org"  )
+               (file+datetree "main.org")
                "* %U\n%?"))
 
 #+END_SRC
