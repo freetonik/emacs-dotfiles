@@ -853,6 +853,7 @@ Visually indent sections. This looks better for smaller files. Also, disallow ed
 (setq org-startup-indented t)
 (setq org-catch-invisible-edits 'error)
 (setq org-cycle-separator-lines -1)
+(setq calendar-week-start-day 1)
 (setq org-ellipsis "⤵")
 #+END_SRC
 
