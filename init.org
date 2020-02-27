@@ -875,6 +875,7 @@ Use org-checklist to reset checklists when cycle repeats. It requires =:RESET_CH
 
 #+BEGIN_SRC emacs-lisp
 (load "~/.emacs.d/elisp/org-checklist.el")
+(require 'org-tempo)
 #+END_SRC
 
 Allow shift selection with arrows. This will not interfere with some built-in shift+arrow functionality in Org.
@@ -887,8 +888,8 @@ Custom source block templates (e.g. =<el= for emacs lisp).
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'org
-  (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp \n?\n#+END_SRC"))
-  (add-to-list 'org-structure-template-alist '("eq" "\\begin{equation}\n?\n\\end{equation}"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  ;; (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (define-key org-mode-map (kbd "C-'") nil))
 #+END_SRC
 
