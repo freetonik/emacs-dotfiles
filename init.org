@@ -974,6 +974,7 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
 
 #+BEGIN_SRC emacs-lisp
 (require 'ox-latex)
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
 (setq org-highlight-latex-and-related '(latex))
 (with-eval-after-load 'ox-latex
   (add-to-list
