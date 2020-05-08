@@ -703,16 +703,16 @@ Enable spellcheck on the fly for all text modes. This includes org, latex and La
 Spellcheck was =Cmd+\=, synonym search is =Cmd+Shift+\=. It requires =wordnet= to be installed locally.
 
 #+BEGIN_SRC emacs-lisp
-(use-package powerthesaurus
-  :config
-  (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)
-  )
+;; (use-package powerthesaurus
+;;   :config
+;;   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)
+;;   )
 
 ;; Alternative, local thesaurus
-;; (use-package synosaurus
-;;   :config
-;;   (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
-;;   )
+(use-package synosaurus
+  :config
+  (global-set-key (kbd "s-|") 'synosaurus-choose-and-replace)
+  )
 #+END_SRC
 
 Word definition search.
