@@ -751,7 +751,7 @@ While I prefer Org, I still need to be able to work with Markdown efficiently. H
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "pandoc --no-highlight"))
+  :init (setq markdown-command '("pandoc" "--no-highlight")))
 
 (eval-after-load 'markdown-mode
   `(define-key markdown-mode-map (kbd "C-s-<down>") 'markdown-narrow-to-subtree))
