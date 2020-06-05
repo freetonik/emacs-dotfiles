@@ -195,7 +195,7 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 14")
+(set-face-attribute 'default nil :font "Inconsolata LGC 16")
 (setq-default line-spacing 0)
 
 (setq initial-frame-alist '((width . 135) (height . 55)))
