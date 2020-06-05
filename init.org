@@ -297,7 +297,9 @@ Quickly switch to scratch buffer with =Cmd+0=:
 
 (global-set-key (kbd "s-0") (lambda ()
                               (interactive)
-                              (if (string= (buffer-name) "*scratch*") (previous-buffer) (switch-to-buffer "*scratch*"))))
+                              (if (string= (buffer-name) "*scratch*")
+                                  (previous-buffer)
+                                (switch-to-buffer "*scratch*"))))
 #+END_SRC
 
 ** Which key
@@ -308,7 +310,7 @@ This is great for learning Emacs, it shows a nice table of possible commands.
 (use-package which-key
   :config
   (which-key-mode)
-  (setq which-key-idle-delay 0.5))
+  (setq which-key-idle-delay 1.5))
 #+END_SRC
 
 ** OS integration
