@@ -195,7 +195,7 @@ I've tried many 3rd party themes, but keep coming back to the default light them
 Inconsolata font, remove the cruft and make the initial size bigger.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Inconsolata LGC 16")
+(set-face-attribute 'default nil :font "SF Mono 16")
 (setq-default line-spacing 0)
 
 (setq initial-frame-alist '((width . 135) (height . 55)))
@@ -689,13 +689,13 @@ Navigate to projects with =Cmd+Shift+P= (thanks to reddit user and emacscast lis
 
 Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq ispell-program-name "aspell")
 #+END_SRC
 
 Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX. Spellcheck current word.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (add-hook 'text-mode-hook 'flyspell-mode)
 (global-set-key (kbd "s-\\") 'ispell-word)
 #+END_SRC
@@ -738,6 +738,7 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
+  :defer t
   :config
   (setq yas-snippet-dirs
         '("~/.emacs.d/snippets"))
@@ -791,6 +792,7 @@ Here are all the packages needed for programming languages and formats.
 
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode
+  :defer t
   :mode (("\\.yml\\'" . yaml-mode)
          ("\\.yaml\\'" . yaml-mode)))
 #+END_SRC
@@ -806,6 +808,7 @@ Web mode.
 
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
+  :defer t
   :mode ("\\.html\\'")
   :config
   (setq web-mode-markup-indent-offset 2))
@@ -815,6 +818,7 @@ Emmet.
 
 #+BEGIN_SRC emacs-lisp
 (use-package emmet-mode
+  :defer t
   :init
   (setq emmet-indentation 2)
   (setq emmet-move-cursor-between-quotes t)
@@ -1061,7 +1065,7 @@ See `org-capture-templates' for more information."
 
 Org-download creates links, but I need to change the path for my blog. This simple hook runs on every save.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun org-mode-blog-fix-org-downloaded-image-paths ()
   (when (equal (buffer-file-name) "/Users/rakhim/code/rakhim.org/content-org/blog.org")
     (progn
@@ -1151,6 +1155,7 @@ Drag and drop images to org files.
                "* %U\n%?"))
 
 #+END_SRC
+
 ** Search in all org files
 
 #+BEGIN_SRC emacs-lisp
