@@ -877,13 +877,6 @@ Refile targets should include files and down to 9 levels into them.
                                  (org-agenda-files :maxlevel . 9))))
 #+END_SRC
 
-Use org-checklist to reset checklists when cycle repeats. It requires =:RESET_CHECK_BOXES: t= to be added in the properties of an entry.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(load "~/.emacs.d/elisp/org-checklist.el")
-(require 'org-tempo)
-#+END_SRC
-
 Allow shift selection with arrows. This will not interfere with some built-in shift+arrow functionality in Org.
 
 #+BEGIN_SRC emacs-lisp
@@ -907,40 +900,10 @@ And inside those code blocks indentation should be correct depending on the sour
 (setq org-src-fontify-natively t)
 #+END_SRC
 
-State changes for todos and also notes should go into a Logbook drawer. Add closed date when todo goes to DONE state.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-log-into-drawer t)
-(setq org-log-done 'time)
-#+END_SRC
-
-Quickly open todo and config files.
+Quickly open the config file.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\e\ec") (lambda () (interactive) (find-file "~/.emacs.d/init.org")))
-(global-set-key (kbd "\e\em") (lambda () (interactive) (find-file "/Users/rakhim/Dropbox/Org/main.org")))
-(global-set-key (kbd "\e\eb") (lambda () (interactive) (find-file "~/code/rakhim.org/content-org/blog.org")))
-#+END_SRC
-
-Org capture and agenda.
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "s-=") 'org-capture)
-(global-set-key "\C-ca" 'org-agenda)
-#+END_SRC
-
-Don't show deadline prewarning if the task has scheduled date.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-agenda-skip-deadline-prewarning-if-scheduled t)
-#+END_SRC
-
-Easy export to HTML.
-
-#+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'org
-  (define-key org-mode-map (kbd "s-e") (kbd "C-c C-e h h")))
 #+END_SRC
 
 Not sure about this... I want to retain Shift-Alt movement and selection everywhere, but in Org mode these bindings are important built ins, and I don't know if there is a viable alternative.
@@ -986,7 +949,6 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
   (add-to-list
    'org-latex-classes
    '("tufte-book"
-
      "\\documentclass{tufte-book}
      \\input{/users/rakhim/.emacs.d/latex/tufte.tex}"
      ("\\part{%s}" . "\\part*{%s}")
