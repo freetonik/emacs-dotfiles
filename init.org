@@ -964,83 +964,6 @@ Narrow and widen with =Cmd+Ctrl+Up/Down=.
 (use-package ox-pandoc)
 #+END_SRC
 
-** Blogging with hugo
-
-Install =ox-hugo= and enable auto export.
-
-#+BEGIN_SRC emacs-lisp
-(use-package ox-hugo
-  :after ox)
-#+END_SRC
-
-Org Capture template to quickly create posts and generate slugs.
-
-#+BEGIN_SRC emacs-lisp
-;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
-(defvar org-capture-templates nil)
-(with-eval-after-load 'org-capture
-  (defun org-hugo-new-subtree-post-capture-template ()
-    "Returns `org-capture' template string for new blog post.
-See `org-capture-templates' for more information."
-    (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
-           (fname (org-hugo-slug title)))
-      (mapconcat #'identity
-                 `(
-                   ,(concat "* TODO " title)
-                   ":PROPERTIES:"
-                   ,(concat ":EXPORT_FILE_NAME: " fname)
-                   ":END:"
-                   "%?\n")          ;Place the cursor here finally
-                 "\n")))
-
-  (defun org-hugo-new-subtree-post-capture-template-comic ()
-    "Returns `org-capture' template string for new comic post.
-See `org-capture-templates' for more information."
-    (let* ((title (read-from-minibuffer "Comic Title: ")) ;Prompt to enter the post title
-           (fname (completing-read "Image File:" (directory-files "/Users/rakhim/code/rakhim.org/static/images/honestly-undefined/" nil "\\.jpg$")))
-           (cnumber (number-to-string (length (org-map-entries nil nil '("/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org"))))))
-
-      (mapconcat #'identity
-                 `(
-                   ,(concat "* TODO " title)
-                   ":PROPERTIES:"
-                   ,(concat ":EXPORT_FILE_NAME: " fname)
-                   ,(concat ":EXPORT_HUGO_SLUG: " cnumber)
-                   ":END:"
-                   "%?\n")          ;Place the cursor here finally
-                 "\n")))
-
-  (add-to-list 'org-capture-templates
-               '("b"
-                 "Blog post at rakhim.org"
-                 entry
-                 (file+olp "/Users/rakhim/code/rakhim.org/content-org/blog.org" "Blog")
-                 (function org-hugo-new-subtree-post-capture-template)))
-
-  (add-to-list 'org-capture-templates
-               '("c"
-                 "Comic at rakhim.org"
-                 entry
-                 (file+olp "/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org" "Comics")
-                 (function org-hugo-new-subtree-post-capture-template-comic))))
-#+END_SRC
-
-Org-download creates links, but I need to change the path for my blog. This simple hook runs on every save.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(defun org-mode-blog-fix-org-downloaded-image-paths ()
-  (when (equal (buffer-file-name) "/Users/rakhim/code/rakhim.org/content-org/blog.org")
-    (progn
-      (while (re-search-forward "file:../static" nil t)
-        (replace-match "file:"))
-
-      (while (re-search-backward "file:../static" nil t)
-        (replace-match "file:"))
-      )))
-
-(add-hook 'after-save-hook 'org-mode-blog-fix-org-downloaded-image-paths)
-#+END_SRC
-
 ** Slim HTML export
 
 slimhtml is an emacs org mode export backend. It is a set of transcoders for common org elements which outputs minimal HTML.
@@ -1412,6 +1335,83 @@ Temporarily disabled to see if I really need this.
 (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
 
 (setq mu4e-get-mail-command  "mbsync -a")
+#+END_SRC
+
+** Blogging with hugo
+
+Install =ox-hugo= and enable auto export.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package ox-hugo
+  :after ox)
+#+END_SRC
+
+Org Capture template to quickly create posts and generate slugs.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
+(defvar org-capture-templates nil)
+(with-eval-after-load 'org-capture
+  (defun org-hugo-new-subtree-post-capture-template ()
+    "Returns `org-capture' template string for new blog post.
+See `org-capture-templates' for more information."
+    (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
+           (fname (org-hugo-slug title)))
+      (mapconcat #'identity
+                 `(
+                   ,(concat "* TODO " title)
+                   ":PROPERTIES:"
+                   ,(concat ":EXPORT_FILE_NAME: " fname)
+                   ":END:"
+                   "%?\n")          ;Place the cursor here finally
+                 "\n")))
+
+  (defun org-hugo-new-subtree-post-capture-template-comic ()
+    "Returns `org-capture' template string for new comic post.
+See `org-capture-templates' for more information."
+    (let* ((title (read-from-minibuffer "Comic Title: ")) ;Prompt to enter the post title
+           (fname (completing-read "Image File:" (directory-files "/Users/rakhim/code/rakhim.org/static/images/honestly-undefined/" nil "\\.jpg$")))
+           (cnumber (number-to-string (length (org-map-entries nil nil '("/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org"))))))
+
+      (mapconcat #'identity
+                 `(
+                   ,(concat "* TODO " title)
+                   ":PROPERTIES:"
+                   ,(concat ":EXPORT_FILE_NAME: " fname)
+                   ,(concat ":EXPORT_HUGO_SLUG: " cnumber)
+                   ":END:"
+                   "%?\n")          ;Place the cursor here finally
+                 "\n")))
+
+  (add-to-list 'org-capture-templates
+               '("b"
+                 "Blog post at rakhim.org"
+                 entry
+                 (file+olp "/Users/rakhim/code/rakhim.org/content-org/blog.org" "Blog")
+                 (function org-hugo-new-subtree-post-capture-template)))
+
+  (add-to-list 'org-capture-templates
+               '("c"
+                 "Comic at rakhim.org"
+                 entry
+                 (file+olp "/Users/rakhim/code/rakhim.org/content-org/honestly-undefined.org" "Comics")
+                 (function org-hugo-new-subtree-post-capture-template-comic))))
+#+END_SRC
+
+Org-download creates links, but I need to change the path for my blog. This simple hook runs on every save.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun org-mode-blog-fix-org-downloaded-image-paths ()
+  (when (equal (buffer-file-name) "/Users/rakhim/code/rakhim.org/content-org/blog.org")
+    (progn
+      (while (re-search-forward "file:../static" nil t)
+        (replace-match "file:"))
+
+      (while (re-search-backward "file:../static" nil t)
+        (replace-match "file:"))
+      )))
+
+(add-hook 'after-save-hook 'org-mode-blog-fix-org-downloaded-image-paths)
 #+END_SRC
 
 * Final
