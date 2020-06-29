@@ -161,7 +161,7 @@ Install use-package.
   (package-install 'use-package))
 
 (eval-when-compile (require 'use-package))
-(setq use-package-always-ensure t)
+;; (setq use-package-always-ensure t)
 
 ;; this package is useful for overriding major mode keybindings
 (use-package bind-key)
