@@ -46,6 +46,5 @@
  '(line-number-current-line ((t (:inherit default :background "navajo white"))))
  '(markdown-code-face ((t nil)))
  '(markdown-inline-code-face ((t (:foreground "dark red"))))
- '(show-paren-match ((t (:background "grey84" :weight normal))))
  '(sp-pair-overlay-face ((t nil)))
  '(web-mode-current-element-highlight-face ((t (:background "gray88")))))
