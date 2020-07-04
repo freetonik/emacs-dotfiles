@@ -123,7 +123,7 @@ MS-Windows."
   :type 'boolean
   :group 'markdown-dnd)
 
-(defcustom dnd-save-directory "~/.emacs.d/markdown_image_files/images_for"
+(defcustom dnd-save-directory "~/.emacs.d/markdown_image_files/"
   "Image save directory. Precede with ~ for home. Nothing for relative to buffer file."
   :type '(string)
   :group 'markdown-dnd)
@@ -312,7 +312,6 @@ happened."
   )
   )
 
-;; slahes and spaces in the path are turned to _
 (defun markdown-img-dir-path ()
   (if (not buffer-file-name)
       (error (concat "ERROR: Couldn't find buffer-file-name "
@@ -321,9 +320,7 @@ happened."
    (expand-file-name
     (concat dnd-save-directory
     (if dnd-save-buffer-name
-    (replace-regexp-in-string "[/ ]+" "_" buffer-file-name)
-    )
-            ))))
+        (concat (format-time-string "%Y/%m/") (file-name-base buffer-file-name)))))))
 
 ;; returns name of dir created
 (defun dnd-try-mkdir (dir)
