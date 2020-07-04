@@ -1,8 +1,13 @@
 #+TITLE: Emacs configuration file
 #+AUTHOR: Rakhim Davletkaliyev
+
+Put the following into the header for it to work
+
+#+BEGIN_SRC
 #+BABEL: :cache yes
 #+PROPERTY: header-args :tangle yes
 #+STARTUP: overview
+#+END_SRC
 
 * Credits
 Initially inspired by [[https://github.com/larstvei/dot-emacs][larstvei's]] setup. Check out [[https://github.com/freetonik/emacscast][EmacsCast]], my podcast about Emacs. I talk about my config in [[https://github.com/freetonik/emacscast/blob/master/episode_2.org][Episode 2]], and then provide updates in consequent episodes.
@@ -161,7 +166,7 @@ Install use-package.
   (package-install 'use-package))
 
 (eval-when-compile (require 'use-package))
-;; (setq use-package-always-ensure t)
+(setq use-package-always-ensure t)
 
 ;; this package is useful for overriding major mode keybindings
 (use-package bind-key)
@@ -747,44 +752,45 @@ YASnippet is a template system for Emacs. It allows you to type an abbreviation 
 
 ** Markdown
 
-While I prefer Org, I still need to be able to work with Markdown efficiently. Here's a good package and =Cmd-O= to copy raw HTML to clipboard.
+Utility functions for export.
+
+#+BEGIN_SRC emacs-lisp
+(defun markdown-export-html-to-clipboard (lines-to-skip)
+  "Export Markdown to HTML while skipping first lines-to-skip, copy to cliboard"
+  (interactive)
+  (markdown-kill-ring-save)
+  (let ((oldbuf (current-buffer)))
+    (save-current-buffer
+      (set-buffer "*markdown-output*")
+      (if lines-to-skip
+          (progn
+            (goto-char (point-min))
+            (kill-whole-line)))
+      (with-no-warnings (mark-whole-buffer))
+      (simpleclip-copy (point-min) (point-max)))))
+
+(defun markdown-export-html-to-clipboard-full ()
+  (interactive) (markdown-export-html-to-clipboard nil))
+
+(defun markdown-export-html-to-clipboard-no-1st-line ()
+  (interactive) (markdown-export-html-to-clipboard 1))
+#+END_SRC
+
+
+=Cmd-O= to copy Markdown as raw HTML to clipboard. Widen and narrow like in Org.
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
+  :bind (:map markdown-mode-map
+              ("s-k" . 'markdown-insert-link)
+              ("C-s-<down>" . 'markdown-narrow-to-subtree)
+              ("C-s-<up>" . 'widen)
+              ("s-O" . 'markdown-export-html-to-clipboard-full)
+              ("M-s-O" . 'markdown-export-html-to-clipboard-no-1st-line))
   :init (setq markdown-command '("pandoc" "--no-highlight")))
-
-(eval-after-load 'markdown-mode
-  `(define-key markdown-mode-map (kbd "C-s-<down>") 'markdown-narrow-to-subtree))
-
-(eval-after-load 'markdown-mode
-  `(define-key markdown-mode-map (kbd "C-s-<up>") 'widen))
-
-(eval-after-load 'markdown-mode
-  `(define-key markdown-mode-map (kbd "s-O") (lambda ()
-                                               (interactive)
-                                               (markdown-kill-ring-save)
-                                               (let ((oldbuf (current-buffer)))
-                                                 (save-current-buffer
-                                                   (set-buffer "*markdown-output*")
-                                                   (with-no-warnings (mark-whole-buffer))
-                                                   (simpleclip-copy (point-min) (point-max)))))))
-
-;; Export without the first line (usually there's a header)
-(eval-after-load 'markdown-mode
-  `(define-key markdown-mode-map (kbd "M-s-O") (lambda ()
-                                               (interactive)
-                                               (markdown-kill-ring-save)
-                                               (let ((oldbuf (current-buffer)))
-                                                 (save-current-buffer
-                                                   (set-buffer "*markdown-output*")
-                                                   (goto-char (point-min))
-                                                   (kill-whole-line)
-                                                   (with-no-warnings (mark-whole-buffer))
-                                                   (simpleclip-copy (point-min) (point-max)))))))
-#+END_SRC
 
 ** Packages for programming
 
