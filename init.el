@@ -48,13 +48,14 @@
 ;; VISUALS
 
 (load-theme 'tsdh-light)
-;; (load-theme 'nord t)
 (setq-default line-spacing 0)
-(set-face-attribute 'default nil :font "Inconsolata LGC 15")
+;; (set-face-attribute 'default nil :font "Inconsolata LGC 15")
+(set-face-attribute 'default nil :font "SF Mono 15")
 ;; (show-paren-mode)
 ;; (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 ;; (set-face-background 'show-paren-match "wheat")
 (tool-bar-mode -1)
+;; run =defaults write org.gnu.Emacs TransparentTitleBar LIGHT= when using macport emacs
 (scroll-bar-mode -1)
 (blink-cursor-mode 0)
 (global-visual-line-mode t)
