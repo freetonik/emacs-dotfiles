@@ -197,15 +197,9 @@
   (global-set-key (kbd "s-;") 'avy-goto-char-timer))
 
 ;; Auto completion
-(use-package company
-  :bind (("<backtab>" . 'company-complete))
+(use-package auto-complete
   :config
-  (global-company-mode))
-
-;; alternative
-;; (use-package auto-complete
-;;   :config
-;;   (ac-config-default))
+  (ac-config-default))
 
 (use-package smartparens
   :config
@@ -437,13 +431,9 @@
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
 
-(use-package flyspell-popup
-  :config
-  (global-set-key (kbd "s-\\") 'flyspell-popup-correct))
-
 ;; Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX. Spellcheck current word.
 (add-hook 'text-mode-hook 'flyspell-mode)
-;; (global-set-key (kbd "s-\\") 'ispell-word)
+(global-set-key (kbd "s-\\") 'ispell-word)
 (global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
 
 ;; ---------
