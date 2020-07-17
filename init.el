@@ -10,6 +10,12 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;; Check if system is Darwin/macOS
+(defun is-macos ()
+  "Return true if system is darwin-based (Mac OS X)"
+  (string-equal system-type "darwin"))
+
+
 ;; -----------
 ;; USE PACKAGE
 
@@ -33,13 +39,14 @@
 (use-package bind-key)
 
 ;; Emacs control is Ctrl. Emacs Super is Command. Emacs Meta is Alt. Right Alt (option) can be used to enter symbols like em dashes =—=.
-(setq
- mac-right-command-modifier 'super
- mac-command-modifier 'super
- mac-option-modifier 'meta
- mac-left-option-modifier 'meta
- mac-right-option-modifier 'meta
- mac-right-option-modifier 'nil)
+(when (is-macos)
+  (setq
+   mac-right-command-modifier 'super
+   mac-command-modifier 'super
+   mac-option-modifier 'meta
+   mac-left-option-modifier 'meta
+   mac-right-option-modifier 'meta
+   mac-right-option-modifier 'nil))
 
 (global-set-key (kbd "s-=") 'text-scale-increase)
 (global-set-key (kbd "s--") 'text-scale-decrease)
@@ -61,9 +68,6 @@
 (global-visual-line-mode t)
 ;; Show full path in the title bar.
 (setq-default frame-title-format "%b (%f)")
-
-;; yes...
-(use-package nyan-mode)
 
 ;; Show columns in addition to rows in mode line
 (setq column-number-mode t)
@@ -132,32 +136,35 @@
 ;; OS integration
 
 ;; Pass system shell environment to Emacs. This is important primarily for shell inside Emacs, but also things like Org mode export to Tex PDF don't work, since it relies on running external command =pdflatex=, which is loaded from =PATH=.
-(use-package exec-path-from-shell
-  :config
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize)))
+
+(when (is-macos)
+  (use-package exec-path-from-shell
+    :config
+    (when (memq window-system '(mac ns))
+      (exec-path-from-shell-initialize))))
 
 ;; Use =Cmd+i= to open the current folder in a new tab of iTerm:
-(defun iterm-goto-filedir-or-home ()
-  "Go to present working dir and focus iterm"
-  (interactive)
-  (do-applescript
-   (concat
-    " tell application \"iTerm2\"\n"
-    "   tell current window\n"
-    "     create tab with profile \"Default\"\n"
-    "   end tell\n"
-    "   tell the current session of current window\n"
-    (format "     write text \"cd %s\" \n"
-            ;; string escaping madness for applescript
-            (replace-regexp-in-string "\\\\" "\\\\\\\\"
-                                      (shell-quote-argument (or default-directory "~"))))
-    "   end tell\n"
-    " end tell\n"
-    " do shell script \"open -a iTerm\"\n"
-    ))
-  )
-(global-set-key (kbd "s-i") 'iterm-goto-filedir-or-home)
+(when (is-macos)
+  (defun iterm-goto-filedir-or-home ()
+    "Go to present working dir and focus iterm"
+    (interactive)
+    (do-applescript
+     (concat
+      " tell application \"iTerm2\"\n"
+      "   tell current window\n"
+      "     create tab with profile \"Default\"\n"
+      "   end tell\n"
+      "   tell the current session of current window\n"
+      (format "     write text \"cd %s\" \n"
+              ;; string escaping madness for applescript
+              (replace-regexp-in-string "\\\\" "\\\\\\\\"
+                                        (shell-quote-argument (or default-directory "~"))))
+      "   end tell\n"
+      " end tell\n"
+      " do shell script \"open -a iTerm\"\n"
+      ))
+    )
+  (global-set-key (kbd "s-i") 'iterm-goto-filedir-or-home))
 
 ;; ----------------------
 ;; Navigation and editing
@@ -200,19 +207,6 @@
 (use-package auto-complete
   :config
   (ac-config-default))
-
-(use-package smartparens
-  :config
-  ;; (require 'smartparens-config)
-  (smartparens-global-mode t)
-  (show-smartparens-global-mode t)
-  (setq sp-show-pair-delay 0)
-  ;; no '' pair in emacs-lisp-mode
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-  (sp-local-pair 'markdown-mode "`"   nil :actions '(wrap insert))  ;; only use ` for wrap and auto insertion in markdown-mode
-  (sp-local-tag 'markdown-mode "s" "```scheme" "```")
-  (define-key smartparens-mode-map (kbd "C-s-<right>") 'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-s-<left>") 'sp-forward-barf-sexp))
 
 ;; Go back to previous mark (position) within buffer and go back (forward?).
 (defun my-pop-local-mark-ring ()

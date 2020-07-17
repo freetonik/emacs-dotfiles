@@ -7,7 +7,7 @@
  '(markdown-fontify-code-blocks-natively t)
  '(package-selected-packages
    (quote
-    (auto-complete unkillable-scratch nyan-mode flyspell-popup company-mode smartparens nord-theme easy-hugo crux org ivy-rich format-all undo-fu ox-latex winner-mode esup go-mode ox-tufte elixir-mode synosaurus embrace avy edit-indirect slim-mode ox-slimhtml handlebars-mode emmet-mode shackle define-word yaml-mode which-key web-mode use-package spaceline smex simpleclip powerthesaurus multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell cider)))
+    (gruvbox-theme auto-complete unkillable-scratch nyan-mode flyspell-popup company-mode nord-theme easy-hugo crux org ivy-rich format-all undo-fu ox-latex winner-mode esup go-mode ox-tufte elixir-mode synosaurus embrace avy edit-indirect slim-mode ox-slimhtml handlebars-mode emmet-mode shackle define-word yaml-mode which-key web-mode use-package spaceline smex simpleclip powerthesaurus multiple-cursors move-text markdown-mode magit haml-mode flx expand-region exec-path-from-shell cider)))
  '(pop-up-frames nil)
  '(safe-local-variable-values
    (quote
